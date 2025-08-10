@@ -16,7 +16,7 @@ const CreateSchema = z.object({
     .string()
     .min(3)
     .max(12)
-    .regex(/^[0-9]{5}(?:-[0-9]{4})?$/i, { message: "Invalid ZIP format (use 12345 or 12345-6789)" }),
+    .regex(/^[0-9]{3,5}(?:-?[0-9]{0,4})?$/i, { message: "Invalid ZIP format" }),
 
   professionalQualification: z.string().min(2).max(200),
   interest: z.string().min(10).max(2000),
