@@ -12,14 +12,18 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle2, ShieldCheck, TriangleAlert } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { ApplicationStatus } from "@prisma/client"
 
-type AppStatus = "pending" | "approved" | "rejected" | "expired"
 type Application = {
   applicantName: string
   applicantEmailMasked: string
   sponsorEmailMasked: string
-  status: AppStatus
+  status: ApplicationStatus
   createdAt: string
+}
+
+function formatStatus(status: ApplicationStatus): string {
+  return status.toLowerCase()
 }
 
 export default function ApprovePage({ params }: { params: Promise<{ token: string }> }) {
@@ -92,11 +96,11 @@ export default function ApprovePage({ params }: { params: Promise<{ token: strin
                     </div>
                     <div className="rounded bg-muted px-2 py-1">
                       <span className="text-muted-foreground">Status:</span>{" "}
-                      <span className="text-foreground capitalize">{app.status}</span>
+                      <span className="text-foreground capitalize">{formatStatus(app.status)}</span>
                     </div>
                   </div>
                 </div>
-                <ApproveForm token={token} disabled={app.status !== "pending"} />
+                <ApproveForm token={token} disabled={app.status !== ApplicationStatus.PENDING} />
               </>
             )}
           </CardContent>

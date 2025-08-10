@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getApplicationByToken, maskEmail, expireOldApplications } from "@/lib/database"
+import { ApplicationStatus } from "@prisma/client"
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
@@ -9,7 +10,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ tok
     if (!app) {
       return NextResponse.json({ message: "Unknown or invalid approval link." }, { status: 404 })
     }
-    if (app.status === "expired") {
+    if (app.status === ApplicationStatus.EXPIRED) {
       return NextResponse.json({ message: "This approval link has expired." }, { status: 410 })
     }
     return NextResponse.json({

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { approveApplication, expireOldApplications, findMemberByEmail, getApplicationByToken } from "@/lib/database"
+import { ApplicationStatus } from "@prisma/client"
 
 const ApproveSchema = z.object({
   memberEmail: z.string().email().max(200),
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
     if (!app) {
       return NextResponse.json({ message: "Unknown or invalid approval link." }, { status: 404 })
     }
-    if (app.status !== "pending") {
+    if (app.status !== ApplicationStatus.PENDING) {
       return NextResponse.json({ message: "This application is not pending." }, { status: 400 })
     }
 
