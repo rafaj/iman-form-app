@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Member {
+  id                  String        @id @default(cuid())
+  name                String
+  email               String        @unique
+  active              Boolean       @default(true)
+  approvalsInWindow   Int           @default(0)
+  lastApprovalAt      DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  
+  // Relations
+  sponsoredApplications Application[] @relation("SponsorApplications")
+  approvedApplications  Application[] @relation("ApproverApplications")
+
+  @@map("members")
+}
+
+model Application {
+  id                       String            @id @default(cuid())
+  token                    String            @unique
+  applicantName            String
+  applicantEmail           String
+  sponsorEmail             String
+  sponsorMemberId          String
+  
+  // Address fields
+  streetAddress            String
+  city                     String
+  state                    String
+  zip                      String
+  
+  // Application fields
+  professionalQualification String
+  interest                 String
+  contribution             String
+  employer                 String?
+  linkedin                 String?
+  
+  status                   ApplicationStatus @default(PENDING)
+  createdAt                DateTime          @default(now())
+  expiresAt                DateTime
+  approvedAt               DateTime?
+  verificationCode         String
+  
+  // Relations
+  sponsor                  Member            @relation("SponsorApplications", fields: [sponsorMemberId], references: [id])
+  approvedBy               Member?           @relation("ApproverApplications", fields: [approvedById], references: [id])
+  approvedById             String?
+  
+  // Audit trail
+  auditLogs                AuditLog[]
+
+  @@map("applications")
+}
+
+model AuditLog {
+  id            String      @id @default(cuid())
+  applicationId String
+  event         String
+  performedBy   String?
+  metadata      Json?
+  createdAt     DateTime    @default(now())
+  
+  // Relations
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}

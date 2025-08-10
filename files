@@ -1,0 +1,58 @@
+export interface Member {
+  id: string;
+  name: string;
+  email: string;
+  active: boolean;
+  approvalsInWindow: number;
+}
+
+function seedMembers(): Member[] {
+  // Demo member directory. Replace with your real member database.
+  return [
+    { id: "MBR-1001", name: "Jamie Rivera", email: "jamie@iman.org", active: true, approvalsInWindow: 0 },
+    { id: "MBR-1002", name: "Taylor Kim", email: "taylor@iman.org", active: true, approvalsInWindow: 0 },
+    { id: "MBR-1003", name: "Morgan Patel", email: "morgan@iman.org", active: false, approvalsInWindow: 0 }, // inactive
+  ]
+}
+
+// app/page.tsx
+import { Button, Input } from "antd";
+import { Copy } from 'lucide-react';
+import { useState } from "react";
+
+const ApprovalShare = ({ result }) => {
+  const [copied, setCopied] = useState(false);
+
+  const copy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <Input readOnly value={result.approvalLink} className="focus-visible:ring-emerald-500" />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => copy(result.approvalLink)}
+          aria-label="Copy approval link"
+          className="hover:border-emerald-500"
+        >
+          <Copy className="h-4 w-4" />
+        </Button>
+        <Button
+          asChild
+          className="bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
+          aria-label="Open approval link in a new tab"
+        >
+          <a href={result.approvalLink} target="_blank" rel="noopener noreferrer">Open link</a>
+        </Button>
+      </div>
+      {copied && <div className="mt-2 text-sm text-emerald-500">Link copied!</div>}
+    </div>
+  );
+};
+
+export default ApprovalShare;
