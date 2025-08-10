@@ -17,3 +17,4 @@ A membership application form built with Next.js, Prisma, and PostgreSQL.
 - Tailwind CSS
 - shadcn/ui components
 
+# Database connection fixed
