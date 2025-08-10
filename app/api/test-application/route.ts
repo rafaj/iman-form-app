@@ -1,13 +1,43 @@
 import { NextResponse } from "next/server"
 import { findMemberByEmail, createApplication } from "@/lib/database"
 
+export async function GET() {
+  // Test with hardcoded data for easier testing
+  const testData = {
+    applicantName: "Test User",
+    applicantEmail: "test@example.com",
+    sponsorEmail: "john.doe@example.com", // We'll need to use a real sponsor email
+    streetAddress: "123 Main St",
+    city: "Test City",
+    state: "CA", 
+    zip: "12345",
+    professionalQualification: "Software Engineer",
+    interest: "I am interested in joining this organization",
+    contribution: "I can contribute my technical skills"
+  }
+  
+  return await testApplicationCreation(testData)
+}
+
 export async function POST(req: Request) {
+  try {
+    const body = await req.json()
+    return await testApplicationCreation(body)
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      error: "Failed to parse request body",
+      details: error instanceof Error ? error.message : "Unknown error"
+    }, { status: 400 })
+  }
+}
+
+async function testApplicationCreation(body: any) {
   try {
     console.log("Testing application creation...")
     
     // Test 1: Parse request
-    const body = await req.json()
-    console.log("✅ Request parsed:", Object.keys(body))
+    console.log("✅ Request data:", Object.keys(body))
     
     // Test 2: Find sponsor
     const sponsor = await findMemberByEmail(body.sponsorEmail)
