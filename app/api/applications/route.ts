@@ -63,9 +63,19 @@ export async function POST(req: NextRequest) {
       demoVerificationCode: app.verificationCode,
     })
   } catch (err: unknown) {
+    console.error("Application creation error:", err)
+    
     if (err && typeof err === 'object' && 'name' in err && err.name === "ZodError") {
       return NextResponse.json({ message: "Invalid input." }, { status: 400 })
     }
-    return NextResponse.json({ message: "Unexpected error." }, { status: 500 })
+    
+    // Log the actual error for debugging
+    const errorMessage = err instanceof Error ? err.message : "Unknown error"
+    console.error("Detailed error:", errorMessage)
+    
+    return NextResponse.json({ 
+      message: "Unexpected error.", 
+      error: process.env.NODE_ENV === 'development' ? errorMessage : undefined 
+    }, { status: 500 })
   }
 }
