@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { getApplicationByToken, maskEmail, expireOldApplications } from "@/lib/db"
+import { getApplicationByToken, maskEmail, expireOldApplications } from "@/lib/database"
 
-export async function GET(_req: NextRequest, ctx: { params: { token: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
-    expireOldApplications()
-    const token = ctx.params.token
-    const app = getApplicationByToken(token)
+    await expireOldApplications()
+    const { token } = await params
+    const app = await getApplicationByToken(token)
     if (!app) {
       return NextResponse.json({ message: "Unknown or invalid approval link." }, { status: 404 })
     }

@@ -22,8 +22,8 @@ type Application = {
   createdAt: string
 }
 
-export default function ApprovePage(props: { params: { token: string } }) {
-  const token = props.params.token
+export default function ApprovePage({ params }: { params: Promise<{ token: string }> }) {
+  const [token, setToken] = useState<string>("")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [app, setApp] = useState<Application | null>(null)
@@ -32,7 +32,9 @@ export default function ApprovePage(props: { params: { token: string } }) {
     let active = true
     ;(async () => {
       try {
-        const res = await fetch(`/api/applications/${token}`)
+        const { token: resolvedToken } = await params
+        setToken(resolvedToken)
+        const res = await fetch(`/api/applications/${resolvedToken}`)
         if (!res.ok) {
           const err = await res.json().catch(() => ({}))
           throw new Error(err?.message || "Application not found")
@@ -48,7 +50,7 @@ export default function ApprovePage(props: { params: { token: string } }) {
     return () => {
       active = false
     }
-  }, [token])
+  }, [params])
 
   return (
     <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">

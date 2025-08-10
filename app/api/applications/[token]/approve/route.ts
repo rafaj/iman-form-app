@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { approveApplication, expireOldApplications, findMemberByEmail, getApplicationByToken } from "@/lib/db"
+import { approveApplication, expireOldApplications, findMemberByEmail, getApplicationByToken } from "@/lib/database"
 
 const ApproveSchema = z.object({
   memberEmail: z.string().email().max(200),
@@ -11,13 +11,13 @@ const ApproveSchema = z.object({
     .regex(/^[0-9]+$/),
 })
 
-export async function POST(req: NextRequest, ctx: { params: { token: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
-    expireOldApplications()
-    const token = ctx.params.token
+    await expireOldApplications()
+    const { token } = await params
     const payload = ApproveSchema.parse(await req.json())
 
-    const app = getApplicationByToken(token)
+    const app = await getApplicationByToken(token)
     if (!app) {
       return NextResponse.json({ message: "Unknown or invalid approval link." }, { status: 404 })
     }
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, ctx: { params: { token: string } })
     }
 
     // Verify sponsor identity
-    const member = findMemberByEmail(payload.memberEmail)
+    const member = await findMemberByEmail(payload.memberEmail)
     if (!member || !member.active || member.id !== payload.memberId) {
       return NextResponse.json({ message: "Member verification failed." }, { status: 401 })
     }
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest, ctx: { params: { token: string } })
     }
 
     // Validate verification code and rate-limits, then approve
-    const ok = approveApplication({
+    const ok = await approveApplication({
       token,
       memberId: payload.memberId,
       verificationCode: payload.verificationCode,

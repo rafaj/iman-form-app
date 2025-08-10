@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { createApplication, findMemberByEmail } from "@/lib/db"
+import { createApplication, findMemberByEmail } from "@/lib/database"
 
 const emptyToUndefined = (v: unknown) => (typeof v === "string" && v.trim() === "" ? undefined : v)
 
@@ -32,12 +32,12 @@ export async function POST(req: NextRequest) {
     const body = CreateSchema.parse(json)
 
     // Ensure sponsor exists and is active
-    const sponsor = findMemberByEmail(body.sponsorEmail)
+    const sponsor = await findMemberByEmail(body.sponsorEmail)
     if (!sponsor || !sponsor.active) {
       return NextResponse.json({ message: "Sponsor must be an active existing member." }, { status: 400 })
     }
 
-    const app = createApplication({
+    const app = await createApplication({
       applicantName: body.applicantName,
       applicantEmail: body.applicantEmail,
       sponsorEmail: body.sponsorEmail,
