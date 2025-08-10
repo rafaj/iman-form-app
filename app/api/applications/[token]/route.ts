@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, ctx: { params: { token: string } })
       status: app.status,
       createdAt: app.createdAt,
     })
-  } catch (err) {
+  } catch {
     return NextResponse.json({ message: "Unexpected error." }, { status: 500 })
   }
 }

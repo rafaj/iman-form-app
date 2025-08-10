@@ -34,7 +34,7 @@ export type Application = {
   expiresAt: number
   approvedAt?: string
   verificationCode: string // 6-digit
-  audit: Array<{ at: string; event: string; by?: string; meta?: Record<string, any> }>
+  audit: Array<{ at: string; event: string; by?: string; meta?: Record<string, unknown> }>
 }
 
 type CreateInput = {

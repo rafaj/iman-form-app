@@ -73,8 +73,8 @@ function ApplyCard() {
     }
 
     // Remove optional empties so zod optional passes cleanly
-    if (!payload.employer) delete (payload as any).employer
-    if (!payload.linkedin) delete (payload as any).linkedin
+    if (!payload.employer) delete (payload as Record<string, unknown>).employer
+    if (!payload.linkedin) delete (payload as Record<string, unknown>).linkedin
 
     setServerError(null)
     setLoading(true)
@@ -92,9 +92,10 @@ function ApplyCard() {
       setResult(data)
       toast({ title: "Application submitted", description: "Awaiting sponsor approval." })
       form.reset()
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" })
-      setServerError(err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred'
+      toast({ title: "Error", description: errorMessage, variant: "destructive" })
+      setServerError(errorMessage)
     } finally {
       setLoading(false)
     }

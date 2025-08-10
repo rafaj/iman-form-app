@@ -1,5 +1,5 @@
 import { PrismaClient, ApplicationStatus, Member, Application } from '@prisma/client'
-import { randomBytes, randomUUID } from "crypto"
+import { randomBytes } from "crypto"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -208,7 +208,7 @@ export async function approveApplication(input: ApproveApplicationInput): Promis
 export async function expireOldApplications(): Promise<void> {
   const now = new Date()
   
-  const expiredApps = await prisma.application.updateMany({
+  await prisma.application.updateMany({
     where: {
       status: ApplicationStatus.PENDING,
       expiresAt: {

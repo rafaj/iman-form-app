@@ -53,8 +53,8 @@ export async function POST(req: NextRequest, ctx: { params: { token: string } })
     }
 
     return NextResponse.json({ message: "Application approved." })
-  } catch (err: any) {
-    if (err?.name === "ZodError") {
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'name' in err && err.name === "ZodError") {
       return NextResponse.json({ message: "Invalid input." }, { status: 400 })
     }
     return NextResponse.json({ message: "Unexpected error." }, { status: 500 })

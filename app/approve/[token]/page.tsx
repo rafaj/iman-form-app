@@ -39,8 +39,8 @@ export default function ApprovePage(props: { params: { token: string } }) {
         }
         const data = (await res.json()) as Application
         if (active) setApp(data)
-      } catch (e: any) {
-        if (active) setError(e.message)
+      } catch (e: unknown) {
+        if (active) setError(e instanceof Error ? e.message : 'An error occurred')
       } finally {
         if (active) setLoading(false)
       }
@@ -129,8 +129,12 @@ function ApproveForm({ token, disabled }: { token: string; disabled: boolean }) 
       }
       toast({ title: "Approved", description: "Membership application approved." })
       router.refresh()
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" })
+    } catch (err: unknown) {
+      toast({ 
+        title: "Error", 
+        description: err instanceof Error ? err.message : 'An error occurred', 
+        variant: "destructive" 
+      })
     } finally {
       setLoading(false)
     }
