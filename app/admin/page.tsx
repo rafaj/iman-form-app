@@ -63,18 +63,6 @@ export default function AdminPage() {
   const { toast } = useToast()
   const router = useRouter()
 
-  // Check authentication on mount
-  useEffect(() => {
-    checkAuthentication()
-  }, [checkAuthentication])
-
-  // Fetch data only if authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchData()
-    }
-  }, [isAuthenticated, fetchData])
-
   const checkAuthentication = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/check-auth', {
@@ -94,27 +82,6 @@ export default function AdminPage() {
       setCheckingAuth(false)
     }
   }, [router])
-
-  async function handleLogout() {
-    try {
-      await fetch('/api/admin/logout', { 
-        method: 'POST',
-        credentials: 'include' // Include cookies for authentication
-      })
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
-      })
-      router.push('/admin/login')
-    } catch (error) {
-      console.error('Logout failed:', error)
-      toast({
-        title: "Logout failed",
-        description: "There was an error logging out. Please try again.",
-        variant: "destructive"
-      })
-    }
-  }
 
   const fetchData = useCallback(async () => {
     try {
@@ -168,6 +135,39 @@ export default function AdminPage() {
       setLoading(false)
     }
   }, [router])
+
+  // Check authentication on mount
+  useEffect(() => {
+    checkAuthentication()
+  }, [checkAuthentication])
+
+  // Fetch data only if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchData()
+    }
+  }, [isAuthenticated, fetchData])
+
+  async function handleLogout() {
+    try {
+      await fetch('/api/admin/logout', { 
+        method: 'POST',
+        credentials: 'include' // Include cookies for authentication
+      })
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      })
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+      toast({
+        title: "Logout failed",
+        description: "There was an error logging out. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
 
   function getStatusBadge(status: string) {
     switch (status.toLowerCase()) {

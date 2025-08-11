@@ -60,12 +60,6 @@ export default function ApplicationReviewPage() {
 
   const token = params.token as string
 
-  useEffect(() => {
-    if (token) {
-      fetchApplication()
-    }
-  }, [token, fetchApplication])
-
   const fetchApplication = useCallback(async () => {
     try {
       setLoading(true)
@@ -83,6 +77,12 @@ export default function ApplicationReviewPage() {
       setLoading(false)
     }
   }, [token])
+
+  useEffect(() => {
+    if (token) {
+      fetchApplication()
+    }
+  }, [token, fetchApplication])
 
   async function handleApprove() {
     if (!verificationCode.trim()) {
