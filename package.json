@@ -12,7 +12,10 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "deploy:setup": "tsx scripts/create-production-members.ts",
+    "deploy:verify": "tsx scripts/verify-deployment.ts",
+    "deploy:prepare": "npm run db:generate && npm run db:push && npm run deploy:setup"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
