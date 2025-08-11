@@ -83,6 +83,9 @@ export async function GET(request: NextRequest) {
       })
     )
     
+    // Sort the final result by createdAt descending (newest first)
+    membersWithDetails.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    
     return NextResponse.json({ 
       success: true, 
       sponsors: membersWithDetails,

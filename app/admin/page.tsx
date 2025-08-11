@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield } from "lucide-react"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 
@@ -169,6 +169,44 @@ export default function AdminPage() {
     }
   }
 
+  async function deleteMember(memberId: string, memberName: string, memberEmail: string) {
+    // Confirm deletion
+    if (!confirm(`Are you sure you want to delete member "${memberName}" (${memberEmail})?\n\nThis will also delete all their related applications and cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/members/${memberId}/delete`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast({
+          title: "Member deleted",
+          description: `${memberName} has been deleted successfully.`,
+        })
+        // Refresh the data to show updated list
+        fetchData()
+      } else {
+        toast({
+          title: "Delete failed",
+          description: data.message || "Failed to delete member.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Delete member failed:', error)
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting the member. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
+
   function getStatusBadge(status: string) {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -294,6 +332,15 @@ export default function AdminPage() {
                           <Badge variant={member.active ? "default" : "secondary"}>
                             {member.active ? "Active" : "Inactive"}
                           </Badge>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deleteMember(member.id, member.name, member.email)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            title={`Delete ${member.name}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
 
