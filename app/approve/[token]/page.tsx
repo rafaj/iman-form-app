@@ -24,7 +24,7 @@ type Application = {
 
 function formatStatus(status: ApplicationStatus | string | undefined): string {
   if (!status) return 'unknown'
-  return typeof status === 'string' ? status : status.toLowerCase()
+  return String(status).toLowerCase()
 }
 
 export default function ApprovePage({ params }: { params: Promise<{ token: string }> }) {
