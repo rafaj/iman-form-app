@@ -1,11 +1,20 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/database"
+import { validateAdminRequest } from "@/lib/admin-auth"
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { token: string } }
 ) {
   try {
+    // Check admin authentication
+    const session = validateAdminRequest(request)
+    if (!session) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized - Admin login required" },
+        { status: 401 }
+      )
+    }
     const { token } = params
 
     // Find the application

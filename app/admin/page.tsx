@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin } from "lucide-react"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 
 type Member = {
@@ -56,10 +58,58 @@ export default function AdminPage() {
   const [applications, setApplications] = useState<Application[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [checkingAuth, setCheckingAuth] = useState(true)
+  const { toast } = useToast()
+  const router = useRouter()
 
+  // Check authentication on mount
   useEffect(() => {
-    fetchData()
+    checkAuthentication()
   }, [])
+
+  // Fetch data only if authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchData()
+    }
+  }, [isAuthenticated])
+
+  async function checkAuthentication() {
+    try {
+      const response = await fetch('/api/admin/check-auth')
+      const data = await response.json()
+      
+      if (data.authenticated) {
+        setIsAuthenticated(true)
+      } else {
+        router.push('/admin/login')
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error)
+      router.push('/admin/login')
+    } finally {
+      setCheckingAuth(false)
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' })
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      })
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Logout failed:', error)
+      toast({
+        title: "Logout failed",
+        description: "There was an error logging out. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
 
   async function fetchData() {
     try {
@@ -117,6 +167,23 @@ export default function AdminPage() {
   const pendingApplications = applications.filter(app => app.status.toLowerCase() === 'pending')
   const allApplications = applications
 
+  if (checkingAuth) {
+    return (
+      <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
+        <section className="mx-auto max-w-7xl px-4 py-10">
+          <div className="text-center">
+            <Shield className="w-12 h-12 text-emerald-600 mx-auto mb-4" />
+            <div className="text-lg">Checking authentication...</div>
+          </div>
+        </section>
+      </main>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return null // Will redirect to login
+  }
+
   if (loading) {
     return (
       <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
@@ -138,9 +205,19 @@ export default function AdminPage() {
                 Manage members and review applications
               </p>
             </div>
-            <Link href="/">
-              <Button variant="outline">Back to Home</Button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/">
+                <Button variant="outline">Back to Home</Button>
+              </Link>
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </header>
 

@@ -1,8 +1,17 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma, maskEmail } from "@/lib/database"
+import { validateAdminRequest } from "@/lib/admin-auth"
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Check admin authentication
+    const session = validateAdminRequest(request)
+    if (!session) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized - Admin login required" },
+        { status: 401 }
+      )
+    }
     const activeMembers = await prisma.member.findMany({
       where: {
         active: true
