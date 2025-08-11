@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -51,6 +52,7 @@ function ApplyCard() {
   const [result, setResult] = useState<CreateResponse | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
   const { toast } = useToast()
+  const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -89,9 +91,15 @@ function ApplyCard() {
         throw new Error(err?.message || "Failed to create application")
       }
       const data = (await res.json()) as CreateResponse
-      setResult(data)
-      toast({ title: "Application submitted", description: "Awaiting sponsor approval." })
-      form.reset()
+      
+      // Show success toast
+      toast({ 
+        title: "Application submitted successfully!", 
+        description: "Redirecting to confirmation page..." 
+      })
+      
+      // Redirect to thank you page
+      router.push("/thank-you")
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred'
       toast({ title: "Error", description: errorMessage, variant: "destructive" })
