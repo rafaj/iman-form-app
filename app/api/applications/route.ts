@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { createApplication, findMemberByEmail } from "@/lib/database"
+import { sendSponsorNotificationEmail } from "@/lib/email"
 
 const emptyToUndefined = (v: unknown) => (typeof v === "string" && v.trim() === "" ? undefined : v)
 
@@ -56,6 +57,22 @@ export async function POST(req: NextRequest) {
 
     const origin = req.headers.get("origin") || req.nextUrl.origin
     const approvalLink = `${origin}/approve/${app.token}`
+
+    // Send email notification to sponsor
+    try {
+      await sendSponsorNotificationEmail({
+        sponsorEmail: sponsor.email,
+        sponsorName: sponsor.name,
+        applicantName: body.applicantName,
+        applicantEmail: body.applicantEmail,
+        approvalLink,
+        verificationCode: app.verificationCode,
+      })
+      console.log(`Email sent successfully to sponsor: ${sponsor.email}`)
+    } catch (emailError) {
+      console.error('Failed to send sponsor notification email:', emailError)
+      // Don't fail the entire request if email fails - the application is still created
+    }
 
     return NextResponse.json({
       token: app.token,
