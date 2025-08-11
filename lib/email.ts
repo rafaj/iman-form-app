@@ -19,7 +19,7 @@ export async function sendSponsorNotificationEmail({
 }) {
   try {
     const { data, error } = await resend.emails.send({
-      from: 'IMAN Professional Network <noreply@yourdomain.com>', // You'll need to update this
+      from: 'IMAN Professional Network <onboarding@resend.dev>',
       to: [sponsorEmail],
       subject: `New Membership Application - ${applicantName}`,
       html: `
