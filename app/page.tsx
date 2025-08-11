@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +23,14 @@ export default function HomePage() {
             A sponsor-approved application to join IMAN’s community of professionals.
           </p>
         </header>
+
+        <div className="mb-6 text-right">
+          <Link href="/admin">
+            <Button variant="outline" className="hover:border-emerald-500 hover:text-emerald-600">
+              Admin Dashboard
+            </Button>
+          </Link>
+        </div>
 
         {/* Primary apply card */}
         <div className="grid grid-cols-1">
