@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye } from "lucide-react"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin } from "lucide-react"
 import Link from "next/link"
 
 type Member = {
@@ -14,6 +14,20 @@ type Member = {
   name: string
   email: string
   active: boolean
+  createdAt: string
+  approvalsInWindow: number
+  lastApprovalAt: string | null
+  // Application details
+  streetAddress: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  professionalQualification: string | null
+  interest: string | null
+  contribution: string | null
+  employer: string | null
+  linkedin: string | null
+  applicationDate: string | null
 }
 
 type Application = {
@@ -155,28 +169,130 @@ export default function AdminPage() {
                   Active Members ({members.length})
                 </CardTitle>
                 <CardDescription>
-                  Members who can sponsor new applications
+                  Members who can sponsor new applications with their detailed profiles
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-6">
                   {members.map((member) => (
-                    <div key={member.id} className="p-4 bg-emerald-50 rounded-lg border border-emerald-100">
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge variant={member.active ? "default" : "secondary"}>
-                          {member.active ? "Active" : "Inactive"}
-                        </Badge>
+                    <div key={member.id} className="p-6 bg-emerald-50 rounded-lg border border-emerald-100 space-y-4">
+                      {/* Header with name and status */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-xl text-emerald-900">{member.name}</h3>
+                          <p className="text-emerald-700">{member.email}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={member.active ? "default" : "secondary"}>
+                            {member.active ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-lg">{member.name}</p>
-                        <p className="text-sm text-muted-foreground">{member.email}</p>
-                        <p className="text-xs text-muted-foreground mt-1">ID: {member.id}</p>
+
+                      <Separator className="bg-emerald-200" />
+
+                      {/* Member details grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Contact & Location */}
+                        {member.streetAddress && (
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-emerald-800">Address</p>
+                            <div className="text-sm text-emerald-700">
+                              <p>{member.streetAddress}</p>
+                              <p>{member.city}, {member.state} {member.zip}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Professional Info */}
+                        {member.professionalQualification && (
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-emerald-800">Professional Qualification</p>
+                            <p className="text-sm text-emerald-700">{member.professionalQualification}</p>
+                          </div>
+                        )}
+
+                        {member.employer && (
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-emerald-800">Employer</p>
+                            <p className="text-sm text-emerald-700">{member.employer}</p>
+                          </div>
+                        )}
+
+                        {/* LinkedIn */}
+                        {member.linkedin && (
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-emerald-800">LinkedIn</p>
+                            <a 
+                              href={member.linkedin} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                            >
+                              <Linkedin className="w-3 h-3" />
+                              View Profile
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Member Stats */}
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-emerald-800">Approvals This Period</p>
+                          <p className="text-sm text-emerald-700">{member.approvalsInWindow}</p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-emerald-800">Member Since</p>
+                          <p className="text-sm text-emerald-700">
+                            {formatDate(member.createdAt)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Interest and Contribution - Full width */}
+                      {(member.interest || member.contribution) && (
+                        <>
+                          <Separator className="bg-emerald-200" />
+                          <div className="space-y-4">
+                            {member.interest && (
+                              <div>
+                                <p className="text-sm font-medium text-emerald-800 mb-2">Interest in IMAN</p>
+                                <div className="bg-white p-3 rounded border border-emerald-200">
+                                  <p className="text-sm text-emerald-700">{member.interest}</p>
+                                </div>
+                              </div>
+                            )}
+
+                            {member.contribution && (
+                              <div>
+                                <p className="text-sm font-medium text-emerald-800 mb-2">How They Contribute</p>
+                                <div className="bg-white p-3 rounded border border-emerald-200">
+                                  <p className="text-sm text-emerald-700">{member.contribution}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {/* Footer with ID and dates */}
+                      <div className="flex justify-between items-center pt-2 border-t border-emerald-200">
+                        <div className="text-xs text-emerald-600">
+                          Member ID: {member.id}
+                        </div>
+                        <div className="text-xs text-emerald-600">
+                          {member.lastApprovalAt && (
+                            <>Last approval: {formatDate(member.lastApprovalAt)}</>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
                   {members.length === 0 && (
-                    <div className="col-span-full">
-                      <p className="text-muted-foreground text-center py-8">No members found</p>
+                    <div className="text-center py-12">
+                      <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground text-lg">No members found</p>
+                      <p className="text-sm text-muted-foreground">Members will appear here once applications are approved</p>
                     </div>
                   )}
                 </div>
