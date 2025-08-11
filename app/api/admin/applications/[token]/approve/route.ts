@@ -6,9 +6,10 @@ import { checkRateLimit, logSecurityEvent } from "@/lib/security"
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  context: { params: Promise<{ token: string }> }
 ) {
   try {
+    const params = await context.params
     // Check admin authentication
     const session = validateAdminRequest(request)
     if (!session) {

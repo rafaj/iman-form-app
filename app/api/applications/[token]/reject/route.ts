@@ -3,9 +3,10 @@ import { prisma } from "@/lib/database"
 
 export async function POST(
   request: Request,
-  { params }: { params: { token: string } }
+  context: { params: Promise<{ token: string }> }
 ) {
   try {
+    const params = await context.params
     const { token } = params
 
     // Find the application

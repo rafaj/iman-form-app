@@ -3,9 +3,10 @@ import { prisma, maskEmail } from "@/lib/database"
 
 export async function GET(
   request: Request,
-  { params }: { params: { token: string } }
+  context: { params: Promise<{ token: string }> }
 ) {
   try {
+    const params = await context.params
     const { token } = params
 
     const application = await prisma.application.findUnique({
