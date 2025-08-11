@@ -13,13 +13,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle2, Copy } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
-type CreateResponse = {
-  token: string
-  approvalLink: string
-  // Demo-only: in production, this would be emailed to the sponsor
-  demoVerificationCode: string
-}
-
 export default function HomePage() {
   return (
     <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
@@ -244,62 +237,8 @@ function ApplyCard() {
           </div>
           {serverError && <p className="text-sm text-red-600">{serverError}</p>}
         </form>
-
-        {result && <ApprovalShare result={result} />}
       </CardContent>
     </Card>
-  )
-}
-
-function ApprovalShare({ result }: { result: CreateResponse }) {
-  const { toast } = useToast()
-
-  async function copy(text: string) {
-    await navigator.clipboard.writeText(text)
-    toast({ title: "Copied", description: "Link copied to clipboard" })
-  }
-
-  return (
-    <div className="rounded-lg border p-4">
-      <div className="mb-2 flex items-center gap-2">
-        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-        <p className="font-medium">Application created</p>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        {"We sent your sponsor an approval link. For this demo, share the link below with them."}
-      </p>
-      <div className="mt-3 flex items-center gap-2">
-        <Input readOnly value={result.approvalLink} className="focus-visible:ring-emerald-500" />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => copy(result.approvalLink)}
-          aria-label="Copy approval link"
-          className="hover:border-emerald-500"
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
-        <Button
-          asChild
-          className="bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm"
-          aria-label="Open approval link in a new tab"
-        >
-          <a href={result.approvalLink} target="_blank" rel="noopener noreferrer">
-            Open link
-          </a>
-        </Button>
-      </div>
-      <Separator className="my-3" />
-      <div className="space-y-1">
-        <p className="text-sm">Demo verification code (would be emailed to sponsor):</p>
-        <div className="flex items-center gap-2">
-          <code className="rounded bg-muted px-2 py-1 text-sm">{result.demoVerificationCode}</code>
-          <Button variant="ghost" size="sm" onClick={() => navigator.clipboard.writeText(result.demoVerificationCode)}>
-            Copy code
-          </Button>
-        </div>
-      </div>
-    </div>
   )
 }
 
