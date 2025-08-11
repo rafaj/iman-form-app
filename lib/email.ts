@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { getRelevantGroups, generateWhatsAppInviteMessage } from './whatsapp'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -83,6 +84,103 @@ export async function sendSponsorNotificationEmail({
     return data
   } catch (error) {
     console.error('Email service error:', error)
+    throw error
+  }
+}
+
+export async function sendApprovalNotificationEmail({
+  applicantName,
+  applicantEmail,
+  professionalQualification,
+  interest,
+}: {
+  applicantName: string
+  applicantEmail: string
+  professionalQualification: string
+  interest: string
+}) {
+  try {
+    // Get relevant WhatsApp groups based on their background
+    const relevantGroups = getRelevantGroups(professionalQualification, interest)
+    const whatsappMessage = generateWhatsAppInviteMessage(applicantName, relevantGroups)
+    
+    const { data, error } = await resend.emails.send({
+      from: 'IMAN Professional Network <onboarding@resend.dev>',
+      to: [applicantEmail],
+      subject: '🎉 Welcome to IMAN Professional Network!',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #059669; margin-bottom: 10px;">🎉 Congratulations!</h1>
+            <h2 style="color: #374151; margin-top: 0;">You've been approved to join IMAN Professional Network</h2>
+          </div>
+          
+          <p>Dear ${applicantName},</p>
+          
+          <p>We're excited to welcome you to the IMAN Professional Network community! Your application has been reviewed and approved.</p>
+          
+          <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
+            <h3 style="margin-top: 0; color: #059669;">🔗 Join Our WhatsApp Groups</h3>
+            <p style="margin-bottom: 15px;">Connect with fellow members in our WhatsApp communities:</p>
+            
+            ${relevantGroups.map(group => `
+              <div style="margin-bottom: 15px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #d1fae5;">
+                <h4 style="margin: 0 0 5px 0; color: #059669;">${group.name}</h4>
+                <p style="margin: 0 0 10px 0; font-size: 14px; color: #6b7280;">${group.description}</p>
+                <a href="${group.inviteLink}" 
+                   style="background-color: #25D366; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px; display: inline-block;">
+                  📱 Join Group
+                </a>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #d97706;">📋 Next Steps</h3>
+            <ol style="margin: 0; padding-left: 20px; color: #92400e;">
+              <li>Join the WhatsApp groups above</li>
+              <li>Introduce yourself to the community</li>
+              <li>Update your LinkedIn to mention IMAN membership</li>
+              <li>Start connecting with fellow members</li>
+              <li>Share opportunities and insights</li>
+            </ol>
+          </div>
+          
+          <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin-top: 0; color: #1d4ed8;">🤝 Community Guidelines</h3>
+            <ul style="margin: 0; padding-left: 20px; color: #1e40af; font-size: 14px;">
+              <li>Keep all discussions professional and respectful</li>
+              <li>Share opportunities and insights with the community</li>
+              <li>Support fellow members in their professional journeys</li>
+              <li>Follow Islamic principles in all interactions</li>
+              <li>Respect privacy and confidentiality</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="font-size: 18px; color: #059669; font-weight: bold;">Welcome to the family! 🌟</p>
+            <p style="color: #6b7280;">We look forward to your contributions to our community.</p>
+          </div>
+          
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+          <p style="color: #9ca3af; font-size: 12px; text-align: center;">
+            IMAN Professional Network<br>
+            Building bridges in the Muslim professional community<br>
+            This is an automated message, please do not reply.
+          </p>
+        </div>
+      `,
+    })
+
+    if (error) {
+      console.error('Approval email sending error:', error)
+      throw new Error(`Failed to send approval email: ${error.message}`)
+    }
+
+    console.log('Approval email sent successfully:', data)
+    return data
+  } catch (error) {
+    console.error('Approval email service error:', error)
     throw error
   }
 }

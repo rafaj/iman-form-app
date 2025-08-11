@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { approveApplication, expireOldApplications, findMemberByEmail, getApplicationByToken } from "@/lib/database"
+import { sendApprovalNotificationEmail } from "@/lib/email"
 import { ApplicationStatus } from "@prisma/client"
 
 const ApproveSchema = z.object({
@@ -51,6 +52,20 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
 
     if (!ok.ok) {
       return NextResponse.json({ message: ok.message }, { status: ok.status })
+    }
+
+    // Send welcome email with WhatsApp group invites
+    try {
+      await sendApprovalNotificationEmail({
+        applicantName: app.applicantName,
+        applicantEmail: app.applicantEmail,
+        professionalQualification: app.professionalQualification,
+        interest: app.interest,
+      })
+      console.log(`Welcome email with WhatsApp groups sent to ${app.applicantEmail}`)
+    } catch (emailError) {
+      console.error('Failed to send welcome email:', emailError)
+      // Don't fail the approval if email fails
     }
 
     return NextResponse.json({ message: "Application approved." })
