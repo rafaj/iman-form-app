@@ -14,10 +14,17 @@ export async function GET() {
         active: true,
         createdAt: true,
         approvalsInWindow: true,
-        lastApprovalAt: true,
-        // Get their approved application details
-        approvedApplications: {
+        lastApprovalAt: true
+      }
+    })
+    
+    // For each member, find their approved application by matching email
+    const membersWithDetails = await Promise.all(
+      activeMembers.map(async (member) => {
+        // Find the approved application for this member
+        const approvedApplication = await prisma.application.findFirst({
           where: {
+            applicantEmail: member.email,
             status: 'APPROVED'
           },
           select: {
@@ -32,41 +39,37 @@ export async function GET() {
             contribution: true,
             employer: true,
             linkedin: true,
-            createdAt: true
+            createdAt: true,
+            approvedAt: true
           },
           orderBy: {
-            createdAt: 'desc'
-          },
-          take: 1 // Get the most recent approved application
+            approvedAt: 'desc'
+          }
+        })
+        
+        return {
+          id: member.id,
+          name: member.name,
+          email: maskEmail(member.email),
+          active: member.active,
+          createdAt: member.createdAt,
+          approvalsInWindow: member.approvalsInWindow,
+          lastApprovalAt: member.lastApprovalAt,
+          // Application details (if available)
+          streetAddress: approvedApplication?.streetAddress || null,
+          city: approvedApplication?.city || null,
+          state: approvedApplication?.state || null,
+          zip: approvedApplication?.zip || null,
+          professionalQualification: approvedApplication?.professionalQualification || null,
+          interest: approvedApplication?.interest || null,
+          contribution: approvedApplication?.contribution || null,
+          employer: approvedApplication?.employer || null,
+          linkedin: approvedApplication?.linkedin || null,
+          applicationDate: approvedApplication?.createdAt || null,
+          approvedDate: approvedApplication?.approvedAt || null
         }
-      }
-    })
-    
-    // Transform the data to include application details at the top level
-    const membersWithDetails = activeMembers.map(member => {
-      const latestApplication = member.approvedApplications[0]
-      
-      return {
-        id: member.id,
-        name: member.name,
-        email: maskEmail(member.email),
-        active: member.active,
-        createdAt: member.createdAt,
-        approvalsInWindow: member.approvalsInWindow,
-        lastApprovalAt: member.lastApprovalAt,
-        // Application details (if available)
-        streetAddress: latestApplication?.streetAddress || null,
-        city: latestApplication?.city || null,
-        state: latestApplication?.state || null,
-        zip: latestApplication?.zip || null,
-        professionalQualification: latestApplication?.professionalQualification || null,
-        interest: latestApplication?.interest || null,
-        contribution: latestApplication?.contribution || null,
-        employer: latestApplication?.employer || null,
-        linkedin: latestApplication?.linkedin || null,
-        applicationDate: latestApplication?.createdAt || null
-      }
-    })
+      })
+    )
     
     return NextResponse.json({ 
       success: true, 
