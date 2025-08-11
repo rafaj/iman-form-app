@@ -1,26 +1,62 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { getApplicationByToken, maskEmail, expireOldApplications } from "@/lib/database"
-import { ApplicationStatus } from "@prisma/client"
+import { NextResponse } from "next/server"
+import { prisma, maskEmail } from "@/lib/database"
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { token: string } }
+) {
   try {
-    await expireOldApplications()
-    const { token } = await params
-    const app = await getApplicationByToken(token)
-    if (!app) {
-      return NextResponse.json({ message: "Unknown or invalid approval link." }, { status: 404 })
-    }
-    if (app.status === ApplicationStatus.EXPIRED) {
-      return NextResponse.json({ message: "This approval link has expired." }, { status: 410 })
-    }
-    return NextResponse.json({
-      applicantName: app.applicantName,
-      applicantEmailMasked: maskEmail(app.applicantEmail),
-      sponsorEmailMasked: maskEmail(app.sponsorEmail),
-      status: app.status,
-      createdAt: app.createdAt,
+    const { token } = params
+
+    const application = await prisma.application.findUnique({
+      where: { token },
+      select: {
+        id: true,
+        token: true,
+        applicantName: true,
+        applicantEmail: true,
+        sponsorEmail: true,
+        status: true,
+        createdAt: true,
+        expiresAt: true,
+        streetAddress: true,
+        city: true,
+        state: true,
+        zip: true,
+        professionalQualification: true,
+        interest: true,
+        contribution: true,
+        employer: true,
+        linkedin: true,
+        verificationCode: true
+      }
     })
-  } catch {
-    return NextResponse.json({ message: "Unexpected error." }, { status: 500 })
+
+    if (!application) {
+      return NextResponse.json(
+        { success: false, message: "Application not found" },
+        { status: 404 }
+      )
+    }
+
+    // Mask emails for privacy in admin interface
+    const maskedApplication = {
+      ...application,
+      applicantEmail: maskEmail(application.applicantEmail),
+      sponsorEmail: maskEmail(application.sponsorEmail),
+      status: application.status.toLowerCase()
+    }
+
+    return NextResponse.json({
+      success: true,
+      application: maskedApplication
+    })
+
+  } catch (error) {
+    console.error("Error fetching application:", error)
+    return NextResponse.json(
+      { success: false, message: "Internal server error" },
+      { status: 500 }
+    )
   }
 }

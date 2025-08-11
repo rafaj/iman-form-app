@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye } from "lucide-react"
 import Link from "next/link"
 
@@ -97,6 +98,10 @@ export default function AdminPage() {
     })
   }
 
+  // Filter applications by status
+  const pendingApplications = applications.filter(app => app.status.toLowerCase() === 'pending')
+  const allApplications = applications
+
   if (loading) {
     return (
       <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
@@ -130,115 +135,176 @@ export default function AdminPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Members Section */}
-          <Card className="border-emerald-100">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-emerald-600" />
-                Members ({members.length})
-              </CardTitle>
-              <CardDescription>
-                Active members who can sponsor new applications
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {members.map((member) => (
-                  <div key={member.id} className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
-                    <div>
-                      <p className="font-medium">{member.name}</p>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
-                      <p className="text-xs text-muted-foreground">ID: {member.id}</p>
-                    </div>
-                    <Badge variant={member.active ? "default" : "secondary"}>
-                      {member.active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                ))}
-                {members.length === 0 && (
-                  <p className="text-muted-foreground text-center py-4">No members found</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+        <Tabs defaultValue="members" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="members" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Members ({members.length})
+            </TabsTrigger>
+            <TabsTrigger value="applications" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Pending Applications ({pendingApplications.length})
+            </TabsTrigger>
+          </TabsList>
 
-          {/* Applications Section */}
-          <Card className="border-emerald-100">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-emerald-600" />
-                Applications ({applications.length})
-              </CardTitle>
-              <CardDescription>
-                Recent membership applications and their status
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                {applications.map((app) => (
-                  <div key={app.id} className="p-4 border rounded-lg space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{app.applicantName}</p>
-                        <p className="text-sm text-muted-foreground">{app.applicantEmail}</p>
-                      </div>
-                      {getStatusBadge(app.status)}
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-muted-foreground">Sponsor</p>
-                        <p>{app.sponsorEmail}</p>
+          <TabsContent value="members" className="space-y-4">
+            <Card className="border-emerald-100">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-emerald-600" />
+                  Active Members ({members.length})
+                </CardTitle>
+                <CardDescription>
+                  Members who can sponsor new applications
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {members.map((member) => (
+                    <div key={member.id} className="p-4 bg-emerald-50 rounded-lg border border-emerald-100">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant={member.active ? "default" : "secondary"}>
+                          {member.active ? "Active" : "Inactive"}
+                        </Badge>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Location</p>
-                        <p>{app.city}, {app.state}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Submitted</p>
-                        <p>{formatDate(app.createdAt)}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground">Expires</p>
-                        <p>{formatDate(app.expiresAt)}</p>
+                        <p className="font-medium text-lg">{member.name}</p>
+                        <p className="text-sm text-muted-foreground">{member.email}</p>
+                        <p className="text-xs text-muted-foreground mt-1">ID: {member.id}</p>
                       </div>
                     </div>
-                    
-                    <div className="text-sm">
-                      <p className="text-muted-foreground">Professional Qualification</p>
-                      <p className="truncate">{app.professionalQualification}</p>
+                  ))}
+                  {members.length === 0 && (
+                    <div className="col-span-full">
+                      <p className="text-muted-foreground text-center py-8">No members found</p>
                     </div>
-                    
-                    {app.employer && (
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="applications" className="space-y-4">
+            <Card className="border-emerald-100">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-emerald-600" />
+                  Pending Applications ({pendingApplications.length})
+                </CardTitle>
+                <CardDescription>
+                  Applications awaiting review and approval
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {pendingApplications.map((app) => (
+                    <div key={app.id} className="p-4 border rounded-lg space-y-3 bg-amber-50/30 border-amber-200">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-lg">{app.applicantName}</p>
+                          <p className="text-sm text-muted-foreground">{app.applicantEmail}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getStatusBadge(app.status)}
+                          <Link href={`/admin/application/${app.token}`}>
+                            <Button size="sm" variant="outline" className="hover:border-emerald-500 hover:text-emerald-600">
+                              <Eye className="w-3 h-3 mr-1" />
+                              Review
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground font-medium">Sponsor</p>
+                          <p>{app.sponsorEmail}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground font-medium">Location</p>
+                          <p>{app.city}, {app.state}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground font-medium">Submitted</p>
+                          <p>{formatDate(app.createdAt)}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground font-medium">Expires</p>
+                          <p className={new Date(app.expiresAt) < new Date() ? 'text-red-600 font-medium' : ''}>
+                            {formatDate(app.expiresAt)}
+                          </p>
+                        </div>
+                      </div>
+                      
                       <div className="text-sm">
-                        <p className="text-muted-foreground">Employer</p>
-                        <p>{app.employer}</p>
+                        <p className="text-muted-foreground font-medium">Professional Qualification</p>
+                        <p className="truncate">{app.professionalQualification}</p>
                       </div>
-                    )}
-                    
-                    <div className="flex items-center justify-between pt-2">
-                      <div className="text-xs text-muted-foreground">
+                      
+                      {app.employer && (
+                        <div className="text-sm">
+                          <p className="text-muted-foreground font-medium">Employer</p>
+                          <p>{app.employer}</p>
+                        </div>
+                      )}
+                      
+                      <div className="text-xs text-muted-foreground pt-2 border-t">
                         Token: {app.token}
                       </div>
-                      <Link href={`/admin/application/${app.token}`}>
-                        <Button size="sm" variant="outline" className="hover:border-emerald-500 hover:text-emerald-600">
-                          <Eye className="w-3 h-3 mr-1" />
-                          View Details
-                        </Button>
-                      </Link>
                     </div>
+                  ))}
+                  {pendingApplications.length === 0 && (
+                    <div className="text-center py-8">
+                      <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground text-lg">No pending applications</p>
+                      <p className="text-sm text-muted-foreground">All applications have been processed</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* All Applications Summary */}
+            <Card className="border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-lg">All Applications Summary</CardTitle>
+                <CardDescription>
+                  Overview of all applications by status
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                  <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <p className="text-2xl font-bold text-amber-600">
+                      {applications.filter(app => app.status.toLowerCase() === 'pending').length}
+                    </p>
+                    <p className="text-sm text-amber-700">Pending</p>
                   </div>
-                ))}
-                {applications.length === 0 && (
-                  <p className="text-muted-foreground text-center py-4">No applications found</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                    <p className="text-2xl font-bold text-green-600">
+                      {applications.filter(app => app.status.toLowerCase() === 'approved').length}
+                    </p>
+                    <p className="text-sm text-green-700">Approved</p>
+                  </div>
+                  <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                    <p className="text-2xl font-bold text-red-600">
+                      {applications.filter(app => app.status.toLowerCase() === 'rejected').length}
+                    </p>
+                    <p className="text-sm text-red-700">Rejected</p>
+                  </div>
+                  <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <p className="text-2xl font-bold text-gray-600">
+                      {applications.filter(app => app.status.toLowerCase() === 'expired').length}
+                    </p>
+                    <p className="text-sm text-gray-700">Expired</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         <div className="mt-8 text-center">
           <Button onClick={fetchData} variant="outline">
