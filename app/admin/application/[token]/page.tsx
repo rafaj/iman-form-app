@@ -97,7 +97,7 @@ export default function ApplicationReviewPage() {
 
     try {
       setApproving(true)
-      const response = await fetch(`/api/applications/${token}/approve`, {
+      const response = await fetch(`/api/admin/applications/${token}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ export default function ApplicationReviewPage() {
   async function handleReject() {
     try {
       setRejecting(true)
-      const response = await fetch(`/api/applications/${token}/reject`, {
+      const response = await fetch(`/api/admin/applications/${token}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

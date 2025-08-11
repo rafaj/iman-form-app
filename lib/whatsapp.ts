@@ -2,7 +2,7 @@
 
 export const WHATSAPP_GROUP = {
   name: "IMAN Professional Network",
-  inviteLink: "https://chat.whatsapp.com/YOUR_GROUP_INVITE_CODE_HERE", // Replace with your actual invite link
+  inviteLink: "https://chat.whatsapp.com/EK55KM2Y8WG0vj0M8OhNkN", // Replace with your actual invite link
   description: "Main community group for all IMAN members"
 }
 
