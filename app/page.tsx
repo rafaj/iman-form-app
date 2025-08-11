@@ -30,12 +30,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Move How it works to the bottom */}
-      <section className="border-t bg-white/60">
-        <div className="mx-auto max-w-5xl px-4 py-10">
-          <HowItWorksCard />
-        </div>
-      </section>
     </main>
   )
 }
@@ -136,9 +130,6 @@ function ApplyCard() {
                 required
                 className={inputClass}
               />
-              <p className="text-xs text-muted-foreground">
-                Demo sponsors: jamie@iman.org (MBR-1001), taylor@iman.org (MBR-1002), jafar@jafar.com (MBR-2001)
-              </p>
             </div>
           </div>
 
@@ -242,30 +233,3 @@ function ApplyCard() {
   )
 }
 
-function HowItWorksCard() {
-  return (
-    <Card className="border-emerald-100 shadow-sm">
-      <CardHeader>
-        <CardTitle>{"How it works"}</CardTitle>
-        <CardDescription>{"Fast for applicants, safe for the network."}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4 text-sm text-muted-foreground">
-        <ol className="list-decimal space-y-2 pl-5">
-          <li>{"You apply with your details and your sponsor’s email (existing member)."}</li>
-          <li>{"We create a one-time approval link and verification code for your sponsor."}</li>
-          <li>{"Your sponsor verifies themselves and approves in one click."}</li>
-        </ol>
-        <Separator />
-        <div className="space-y-2">
-          <p className="font-medium text-foreground">Built-in safeguards</p>
-          <ul className="list-disc space-y-1 pl-5">
-            <li>{"Single-use, expiring approval links (7 days)"}</li>
-            <li>{"Sponsor must be an active member; no self-approval"}</li>
-            <li>{"Verification code required to approve"}</li>
-            <li>{"Rate-limits per sponsor; audit trail of approvals"}</li>
-          </ul>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}

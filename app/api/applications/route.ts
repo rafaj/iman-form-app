@@ -77,7 +77,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       token: app.token,
       approvalLink,
-      demoVerificationCode: app.verificationCode,
     })
   } catch (err: unknown) {
     console.error("Application creation error:", err)

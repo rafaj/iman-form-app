@@ -192,9 +192,7 @@ function ApproveForm({ token, disabled }: { token: string; disabled: boolean }) 
           className={inputClass}
         />
         <p className="text-xs text-muted-foreground">
-          {
-            "This code is sent to the sponsor. In this demo, it appears on the applicant's screen so you can test quickly."
-          }
+          This verification code is sent to the sponsor via email.
         </p>
       </div>
       <Button
