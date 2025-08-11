@@ -59,8 +59,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       await sendApprovalNotificationEmail({
         applicantName: app.applicantName,
         applicantEmail: app.applicantEmail,
-        professionalQualification: app.professionalQualification,
-        interest: app.interest,
       })
       console.log(`Welcome email with WhatsApp groups sent to ${app.applicantEmail}`)
     } catch (emailError) {
