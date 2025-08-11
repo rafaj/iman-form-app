@@ -28,6 +28,7 @@ type Member = {
   employer: string | null
   linkedin: string | null
   applicationDate: string | null
+  approvedDate: string | null
 }
 
 type Application = {
@@ -71,10 +72,6 @@ export default function AdminPage() {
       // Fetch applications
       const appsRes = await fetch('/api/list-applications')
       const appsData = await appsRes.json()
-      
-      // Debug: log the data
-      console.log('Members data:', membersData)
-      console.log('Applications data:', appsData)
       
       if (membersData.success) {
         setMembers(membersData.sponsors)
@@ -194,21 +191,6 @@ export default function AdminPage() {
                       </div>
 
                       <Separator className="bg-emerald-200" />
-
-                      {/* Debug section - temporary */}
-                      <div className="bg-yellow-50 p-3 rounded border border-yellow-200">
-                        <p className="text-xs font-medium text-yellow-800 mb-2">Debug Info:</p>
-                        <pre className="text-xs text-yellow-700 overflow-auto">
-                          {JSON.stringify({
-                            hasAddress: !!member.streetAddress,
-                            hasQualification: !!member.professionalQualification,
-                            hasEmployer: !!member.employer,
-                            hasLinkedIn: !!member.linkedin,
-                            hasInterest: !!member.interest,
-                            hasContribution: !!member.contribution
-                          }, null, 2)}
-                        </pre>
-                      </div>
 
                       {/* Member details grid */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
