@@ -4,10 +4,8 @@ import { createApplication, findMemberByEmail } from "@/lib/database"
 import { sendSponsorNotificationEmail } from "@/lib/email"
 import { 
   checkRateLimit, 
-  generateSecureVerificationCode, 
   validateEmail, 
   validateName, 
-  sanitizeInput, 
   detectSuspiciousPatterns,
   logSecurityEvent 
 } from "@/lib/security"

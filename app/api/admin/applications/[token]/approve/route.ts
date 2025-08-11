@@ -113,8 +113,6 @@ export async function POST(
       await sendApprovalNotificationEmail({
         applicantName: application.applicantName,
         applicantEmail: application.applicantEmail,
-        professionalQualification: application.professionalQualification,
-        interest: application.interest,
       })
       console.log(`Welcome email with WhatsApp group sent to ${application.applicantEmail}`)
     } catch (emailError) {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -50,7 +50,6 @@ type ApplicationDetail = {
 
 export default function ApplicationReviewPage() {
   const params = useParams()
-  const router = useRouter()
   const { toast } = useToast()
   const [application, setApplication] = useState<ApplicationDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -65,7 +64,7 @@ export default function ApplicationReviewPage() {
     if (token) {
       fetchApplication()
     }
-  }, [token])
+  }, [token, fetchApplication])
 
   async function fetchApplication() {
     try {

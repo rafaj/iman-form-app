@@ -66,14 +66,14 @@ export default function AdminPage() {
   // Check authentication on mount
   useEffect(() => {
     checkAuthentication()
-  }, [])
+  }, [checkAuthentication])
 
   // Fetch data only if authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetchData()
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, fetchData])
 
   async function checkAuthentication() {
     try {
@@ -196,7 +196,6 @@ export default function AdminPage() {
 
   // Filter applications by status
   const pendingApplications = applications.filter(app => app.status.toLowerCase() === 'pending')
-  const allApplications = applications
 
   if (checkingAuth) {
     return (

@@ -91,13 +91,9 @@ export async function sendSponsorNotificationEmail({
 export async function sendApprovalNotificationEmail({
   applicantName,
   applicantEmail,
-  professionalQualification,
-  interest,
 }: {
   applicantName: string
   applicantEmail: string
-  professionalQualification: string
-  interest: string
 }) {
   try {
     const { data, error } = await resend.emails.send({

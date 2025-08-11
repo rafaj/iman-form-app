@@ -140,7 +140,7 @@ export function logSecurityEvent(event: {
   type: 'application_submitted' | 'approval_attempt' | 'rate_limit_exceeded' | 'suspicious_activity'
   ip?: string
   userAgent?: string
-  details: Record<string, any>
+  details: Record<string, unknown>
 }) {
   // In production, send to security monitoring service
   console.log(`[SECURITY] ${event.type}:`, {

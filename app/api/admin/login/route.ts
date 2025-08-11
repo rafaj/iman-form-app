@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { validateAdminCredentials, createAdminSession, setAdminSessionCookie } from "@/lib/admin-auth"
+import { validateAdminCredentials, createAdminSession } from "@/lib/admin-auth"
 
 export async function POST(request: NextRequest) {
   try {
