@@ -24,6 +24,9 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         approvalsInWindow: true,
         lastApprovalAt: true
+      },
+      orderBy: {
+        createdAt: 'desc'  // Show newest members first
       }
     })
     

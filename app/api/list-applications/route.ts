@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
     const applications = await prisma.application.findMany({
       orderBy: {
-        createdAt: 'desc'
+        createdAt: 'desc'  // Show newest applications first
       },
       select: {
         id: true,
