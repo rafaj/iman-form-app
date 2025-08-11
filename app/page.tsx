@@ -49,7 +49,6 @@ export default function HomePage() {
 
 function ApplyCard() {
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<CreateResponse | null>(null)
   const [serverError, setServerError] = useState<string | null>(null)
   const { toast } = useToast()
   const router = useRouter()
@@ -90,7 +89,6 @@ function ApplyCard() {
         const err = await res.json().catch(() => ({}))
         throw new Error(err?.message || "Failed to create application")
       }
-      const data = (await res.json()) as CreateResponse
       
       // Show success toast
       toast({ 

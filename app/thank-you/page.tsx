@@ -30,7 +30,7 @@ export default function ThankYouPage() {
                 <ul className="text-blue-800 space-y-2 text-sm">
                   <li>• Your sponsor will receive an email notification</li>
                   <li>• They will review your application and provide approval</li>
-                  <li>• You'll be notified once a decision has been made</li>
+                  <li>• You&apos;ll be notified once a decision has been made</li>
                   <li>• The review process typically takes 3-5 business days</li>
                 </ul>
               </div>
