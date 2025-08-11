@@ -1,5 +1,7 @@
 # IMAN Professional Network - Membership Application System
 
+<!-- Deployment trigger: Environment variables updated -->
+
 A comprehensive, secure membership application system for the IMAN Professional Network, built with Next.js 15, TypeScript, and enterprise-level security practices.
 
 ## 🌟 **Features Overview**
