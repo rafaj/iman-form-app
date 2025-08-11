@@ -16,14 +16,15 @@ import { ApplicationStatus } from "@prisma/client"
 
 type Application = {
   applicantName: string
-  applicantEmailMasked: string
-  sponsorEmailMasked: string
-  status: ApplicationStatus
+  applicantEmail: string
+  sponsorEmail: string
+  status: string
   createdAt: string
 }
 
-function formatStatus(status: ApplicationStatus): string {
-  return status.toLowerCase()
+function formatStatus(status: ApplicationStatus | string | undefined): string {
+  if (!status) return 'unknown'
+  return typeof status === 'string' ? status : status.toLowerCase()
 }
 
 export default function ApprovePage({ params }: { params: Promise<{ token: string }> }) {
@@ -43,8 +44,12 @@ export default function ApprovePage({ params }: { params: Promise<{ token: strin
           const err = await res.json().catch(() => ({}))
           throw new Error(err?.message || "Application not found")
         }
-        const data = (await res.json()) as Application
-        if (active) setApp(data)
+        const data = await res.json()
+        if (data.success && data.application) {
+          if (active) setApp(data.application)
+        } else {
+          throw new Error(data.message || "Application not found")
+        }
       } catch (e: unknown) {
         if (active) setError(e instanceof Error ? e.message : 'An error occurred')
       } finally {
@@ -87,12 +92,12 @@ export default function ApprovePage({ params }: { params: Promise<{ token: strin
                   <p className="text-sm text-muted-foreground">Applicant</p>
                   <div className="mt-1 text-sm">
                     <p className="font-medium text-foreground">{app.applicantName}</p>
-                    <p className="text-muted-foreground">{app.applicantEmailMasked}</p>
+                    <p className="text-muted-foreground">{app.applicantEmail}</p>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                     <div className="rounded bg-muted px-2 py-1">
                       <span className="text-muted-foreground">Sponsor:</span>{" "}
-                      <span className="text-foreground">{app.sponsorEmailMasked}</span>
+                      <span className="text-foreground">{app.sponsorEmail}</span>
                     </div>
                     <div className="rounded bg-muted px-2 py-1">
                       <span className="text-muted-foreground">Status:</span>{" "}
@@ -100,7 +105,7 @@ export default function ApprovePage({ params }: { params: Promise<{ token: strin
                     </div>
                   </div>
                 </div>
-                <ApproveForm token={token} disabled={app.status !== ApplicationStatus.PENDING} />
+                <ApproveForm token={token} disabled={app.status !== 'pending'} />
               </>
             )}
           </CardContent>
