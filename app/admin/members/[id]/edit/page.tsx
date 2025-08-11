@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ArrowLeft, Save, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
@@ -232,10 +231,12 @@ export default function EditMemberPage({ params }: { params: Promise<{ id: strin
 
             {/* Active Status */}
             <div className="flex items-center space-x-2">
-              <Switch
+              <input
+                type="checkbox"
                 id="active"
                 checked={formData.active || false}
-                onCheckedChange={(checked) => handleInputChange('active', checked)}
+                onChange={(e) => handleInputChange('active', e.target.checked)}
+                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
               />
               <Label htmlFor="active">Active Member</Label>
             </div>
