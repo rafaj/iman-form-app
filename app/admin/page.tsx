@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -75,7 +75,7 @@ export default function AdminPage() {
     }
   }, [isAuthenticated, fetchData])
 
-  async function checkAuthentication() {
+  const checkAuthentication = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/check-auth', {
         credentials: 'include' // Include cookies for authentication
@@ -93,7 +93,7 @@ export default function AdminPage() {
     } finally {
       setCheckingAuth(false)
     }
-  }
+  }, [router])
 
   async function handleLogout() {
     try {
@@ -116,7 +116,7 @@ export default function AdminPage() {
     }
   }
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -167,7 +167,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
 
   function getStatusBadge(status: string) {
     switch (status.toLowerCase()) {

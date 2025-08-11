@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -66,7 +66,7 @@ export default function ApplicationReviewPage() {
     }
   }, [token, fetchApplication])
 
-  async function fetchApplication() {
+  const fetchApplication = useCallback(async () => {
     try {
       setLoading(true)
       const response = await fetch(`/api/applications/${token}`)
@@ -82,7 +82,7 @@ export default function ApplicationReviewPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token])
 
   async function handleApprove() {
     if (!verificationCode.trim()) {
