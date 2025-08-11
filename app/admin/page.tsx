@@ -77,7 +77,9 @@ export default function AdminPage() {
 
   async function checkAuthentication() {
     try {
-      const response = await fetch('/api/admin/check-auth')
+      const response = await fetch('/api/admin/check-auth', {
+        credentials: 'include' // Include cookies for authentication
+      })
       const data = await response.json()
       
       if (data.authenticated) {
@@ -95,7 +97,10 @@ export default function AdminPage() {
 
   async function handleLogout() {
     try {
-      await fetch('/api/admin/logout', { method: 'POST' })
+      await fetch('/api/admin/logout', { 
+        method: 'POST',
+        credentials: 'include' // Include cookies for authentication
+      })
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
@@ -114,24 +119,50 @@ export default function AdminPage() {
   async function fetchData() {
     try {
       setLoading(true)
+      setError(null)
       
       // Fetch members
-      const membersRes = await fetch('/api/list-sponsors')
+      const membersRes = await fetch('/api/list-sponsors', {
+        credentials: 'include' // Include cookies for authentication
+      })
+      
+      if (membersRes.status === 401) {
+        // Session expired, redirect to login
+        router.push('/admin/login')
+        return
+      }
+      
       const membersData = await membersRes.json()
       
       // Fetch applications
-      const appsRes = await fetch('/api/list-applications')
+      const appsRes = await fetch('/api/list-applications', {
+        credentials: 'include' // Include cookies for authentication
+      })
+      
+      if (appsRes.status === 401) {
+        // Session expired, redirect to login
+        router.push('/admin/login')
+        return
+      }
+      
       const appsData = await appsRes.json()
       
       if (membersData.success) {
         setMembers(membersData.sponsors)
+      } else {
+        console.error('Failed to fetch members:', membersData.message)
+        setError('Failed to load member data')
       }
       
       if (appsData.success) {
         setApplications(appsData.applications)
+      } else {
+        console.error('Failed to fetch applications:', appsData.message)
+        setError('Failed to load application data')
       }
       
     } catch (err) {
+      console.error('Data fetch error:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch data')
     } finally {
       setLoading(false)

@@ -2,6 +2,15 @@ import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { createApplication, findMemberByEmail } from "@/lib/database"
 import { sendSponsorNotificationEmail } from "@/lib/email"
+import { 
+  checkRateLimit, 
+  generateSecureVerificationCode, 
+  validateEmail, 
+  validateName, 
+  sanitizeInput, 
+  detectSuspiciousPatterns,
+  logSecurityEvent 
+} from "@/lib/security"
 
 const emptyToUndefined = (v: unknown) => (typeof v === "string" && v.trim() === "" ? undefined : v)
 
@@ -29,13 +38,82 @@ const CreateSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    const clientIp = req.headers.get('x-forwarded-for') || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown'
+    const userAgent = req.headers.get('user-agent') || 'unknown'
+
+    // Rate limiting by IP
+    const ipRateLimit = checkRateLimit(`ip:${clientIp}`, 3, 15 * 60 * 1000) // 3 per 15 minutes
+    if (!ipRateLimit.allowed) {
+      logSecurityEvent({
+        type: 'rate_limit_exceeded',
+        ip: clientIp,
+        userAgent,
+        details: { type: 'ip_rate_limit', resetTime: ipRateLimit.resetTime }
+      })
+      
+      return NextResponse.json(
+        { 
+          message: "Too many applications. Please wait before submitting again.",
+          resetTime: ipRateLimit.resetTime 
+        },
+        { status: 429 }
+      )
+    }
+
     const json = await req.json()
     const body = CreateSchema.parse(json)
+
+    // Additional validation
+    if (!validateEmail(body.applicantEmail) || !validateEmail(body.sponsorEmail)) {
+      return NextResponse.json({ message: "Invalid email format." }, { status: 400 })
+    }
+
+    if (!validateName(body.applicantName)) {
+      return NextResponse.json({ message: "Invalid name format." }, { status: 400 })
+    }
+
+    // Prevent self-sponsorship
+    if (body.applicantEmail.toLowerCase() === body.sponsorEmail.toLowerCase()) {
+      return NextResponse.json({ message: "You cannot sponsor yourself." }, { status: 400 })
+    }
+
+    // Rate limiting by email
+    const emailRateLimit = checkRateLimit(`email:${body.applicantEmail.toLowerCase()}`, 2, 24 * 60 * 60 * 1000) // 2 per day
+    if (!emailRateLimit.allowed) {
+      return NextResponse.json(
+        { message: "You have already submitted applications recently. Please wait before submitting again." },
+        { status: 429 }
+      )
+    }
 
     // Ensure sponsor exists and is active
     const sponsor = await findMemberByEmail(body.sponsorEmail)
     if (!sponsor || !sponsor.active) {
       return NextResponse.json({ message: "Sponsor must be an active existing member." }, { status: 400 })
+    }
+
+    // Security analysis
+    const suspiciousPatterns = detectSuspiciousPatterns({
+      applicantName: body.applicantName,
+      applicantEmail: body.applicantEmail,
+      sponsorEmail: body.sponsorEmail,
+      professionalQualification: body.professionalQualification,
+      interest: body.interest
+    })
+    
+    if (suspiciousPatterns.length > 0) {
+      logSecurityEvent({
+        type: 'suspicious_activity',
+        ip: clientIp,
+        userAgent,
+        details: { 
+          patterns: suspiciousPatterns,
+          applicantEmail: body.applicantEmail,
+          sponsorEmail: body.sponsorEmail
+        }
+      })
     }
 
     const app = await createApplication({

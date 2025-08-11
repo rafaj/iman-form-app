@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/database"
 import { sendApprovalNotificationEmail } from "@/lib/email"
 import { validateAdminRequest } from "@/lib/admin-auth"
+import { checkRateLimit, logSecurityEvent } from "@/lib/security"
 
 export async function POST(
   request: NextRequest,
@@ -14,6 +15,29 @@ export async function POST(
       return NextResponse.json(
         { success: false, message: "Unauthorized - Admin login required" },
         { status: 401 }
+      )
+    }
+
+    const clientIp = request.headers.get('x-forwarded-for') || 
+                     request.headers.get('x-real-ip') || 
+                     'unknown'
+
+    // Rate limiting for admin approvals
+    const rateLimit = checkRateLimit(`admin_approve:${session.username}`, 10, 5 * 60 * 1000) // 10 per 5 minutes
+    if (!rateLimit.allowed) {
+      logSecurityEvent({
+        type: 'rate_limit_exceeded',
+        ip: clientIp,
+        details: { 
+          type: 'admin_approval_rate_limit', 
+          admin: session.username,
+          resetTime: rateLimit.resetTime 
+        }
+      })
+      
+      return NextResponse.json(
+        { success: false, message: "Too many approval attempts. Please wait before trying again." },
+        { status: 429 }
       )
     }
     const { token } = params

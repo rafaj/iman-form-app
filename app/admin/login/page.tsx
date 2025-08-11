@@ -30,6 +30,7 @@ export default function AdminLoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify({ username, password }),
       })
 
