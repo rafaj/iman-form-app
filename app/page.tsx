@@ -24,14 +24,6 @@ export default function HomePage() {
           </p>
         </header>
 
-        <div className="mb-6 text-right">
-          <Link href="/admin">
-            <Button variant="outline" className="hover:border-emerald-500 hover:text-emerald-600">
-              Admin Dashboard
-            </Button>
-          </Link>
-        </div>
-
         {/* Primary apply card */}
         <div className="grid grid-cols-1">
           <ApplyCard />
