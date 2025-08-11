@@ -28,8 +28,8 @@ export function createAdminSession(username: string): AdminSession {
   }
 }
 
-export function setAdminSessionCookie(session: AdminSession) {
-  const cookieStore = cookies()
+export async function setAdminSessionCookie(session: AdminSession) {
+  const cookieStore = await cookies()
   cookieStore.set(ADMIN_SESSION_COOKIE, JSON.stringify(session), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -39,9 +39,9 @@ export function setAdminSessionCookie(session: AdminSession) {
   })
 }
 
-export function getAdminSession(): AdminSession | null {
+export async function getAdminSession(): Promise<AdminSession | null> {
   try {
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const sessionCookie = cookieStore.get(ADMIN_SESSION_COOKIE)
     
     if (!sessionCookie?.value) {
@@ -62,13 +62,13 @@ export function getAdminSession(): AdminSession | null {
   }
 }
 
-export function clearAdminSession() {
-  const cookieStore = cookies()
+export async function clearAdminSession() {
+  const cookieStore = await cookies()
   cookieStore.delete(ADMIN_SESSION_COOKIE)
 }
 
-export function isAdminAuthenticated(): boolean {
-  const session = getAdminSession()
+export async function isAdminAuthenticated(): Promise<boolean> {
+  const session = await getAdminSession()
   return session !== null
 }
 

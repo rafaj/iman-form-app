@@ -47,11 +47,11 @@ export async function createApplication(input: CreateApplicationInput): Promise<
     where: {
       applicantEmail: {
         equals: input.applicantEmail,
-        mode: 'insensitive'
+        ...(process.env.DATABASE_URL?.includes('postgresql') && { mode: 'insensitive' })
       },
       sponsorEmail: {
         equals: input.sponsorEmail,
-        mode: 'insensitive'
+        ...(process.env.DATABASE_URL?.includes('postgresql') && { mode: 'insensitive' })
       },
       status: ApplicationStatus.PENDING
     }
