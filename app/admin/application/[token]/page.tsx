@@ -60,6 +60,7 @@ export default function ApplicationReviewPage() {
 
   const token = params.token as string
 
+  // Fetch application data with proper useCallback ordering
   const fetchApplication = useCallback(async () => {
     try {
       setLoading(true)
