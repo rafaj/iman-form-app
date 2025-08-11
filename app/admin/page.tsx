@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye } from "lucide-react"
 import Link from "next/link"
 
 type Member = {
@@ -219,8 +219,16 @@ export default function AdminPage() {
                       </div>
                     )}
                     
-                    <div className="text-xs text-muted-foreground">
-                      Token: {app.token}
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="text-xs text-muted-foreground">
+                        Token: {app.token}
+                      </div>
+                      <Link href={`/admin/application/${app.token}`}>
+                        <Button size="sm" variant="outline" className="hover:border-emerald-500 hover:text-emerald-600">
+                          <Eye className="w-3 h-3 mr-1" />
+                          View Details
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                 ))}
