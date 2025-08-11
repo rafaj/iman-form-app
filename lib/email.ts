@@ -1,5 +1,5 @@
 import { Resend } from 'resend'
-import { getRelevantGroups, generateWhatsAppInviteMessage } from './whatsapp'
+import { WHATSAPP_GROUP } from './whatsapp'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -100,10 +100,6 @@ export async function sendApprovalNotificationEmail({
   interest: string
 }) {
   try {
-    // Get relevant WhatsApp groups based on their background
-    const relevantGroups = getRelevantGroups(professionalQualification, interest)
-    const whatsappMessage = generateWhatsAppInviteMessage(applicantName, relevantGroups)
-    
     const { data, error } = await resend.emails.send({
       from: 'IMAN Professional Network <onboarding@resend.dev>',
       to: [applicantEmail],
@@ -119,26 +115,24 @@ export async function sendApprovalNotificationEmail({
           
           <p>We're excited to welcome you to the IMAN Professional Network community! Your application has been reviewed and approved.</p>
           
-          <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #059669;">
-            <h3 style="margin-top: 0; color: #059669;">🔗 Join Our WhatsApp Groups</h3>
-            <p style="margin-bottom: 15px;">Connect with fellow members in our WhatsApp communities:</p>
+          <div style="background-color: #f0fdf4; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #059669;">
+            <h3 style="margin-top: 0; color: #059669;">📱 Join Our WhatsApp Community</h3>
+            <p style="margin-bottom: 20px;">Connect with fellow IMAN members in our WhatsApp group:</p>
             
-            ${relevantGroups.map(group => `
-              <div style="margin-bottom: 15px; padding: 15px; background-color: white; border-radius: 6px; border: 1px solid #d1fae5;">
-                <h4 style="margin: 0 0 5px 0; color: #059669;">${group.name}</h4>
-                <p style="margin: 0 0 10px 0; font-size: 14px; color: #6b7280;">${group.description}</p>
-                <a href="${group.inviteLink}" 
-                   style="background-color: #25D366; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px; display: inline-block;">
-                  📱 Join Group
-                </a>
-              </div>
-            `).join('')}
+            <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
+              <h4 style="margin: 0 0 10px 0; color: #059669; font-size: 18px;">${WHATSAPP_GROUP.name}</h4>
+              <p style="margin: 0 0 20px 0; color: #6b7280; font-size: 14px;">${WHATSAPP_GROUP.description}</p>
+              <a href="${WHATSAPP_GROUP.inviteLink}" 
+                 style="background-color: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block;">
+                📱 Join WhatsApp Group
+              </a>
+            </div>
           </div>
           
           <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #d97706;">📋 Next Steps</h3>
             <ol style="margin: 0; padding-left: 20px; color: #92400e;">
-              <li>Join the WhatsApp groups above</li>
+              <li>Join the WhatsApp group using the button above</li>
               <li>Introduce yourself to the community</li>
               <li>Update your LinkedIn to mention IMAN membership</li>
               <li>Start connecting with fellow members</li>
