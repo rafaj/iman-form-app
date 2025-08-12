@@ -5,11 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Building2, Plus, Upload, ExternalLink, Star, Trash2, Image as ImageIcon } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Building2, Plus, Upload, ExternalLink, Trash2, ImageIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-
 type Sponsor = {
   id: string
   name: string
@@ -287,7 +286,7 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
                     <select
                       id="tier"
                       value={formData.tier}
-                      onChange={(e) => setFormData({ ...formData, tier: e.target.value as any })}
+                      onChange={(e) => setFormData({ ...formData, tier: e.target.value as 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE' })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="BRONZE">Bronze</option>

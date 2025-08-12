@@ -230,7 +230,7 @@ function generateMockEvents(): Event[] {
           <div className="text-center mb-12">
             <h3 className="text-3xl font-bold text-emerald-900 mb-4">Our Sponsors</h3>
             <p className="text-emerald-700 max-w-2xl mx-auto">
-              We're grateful for the support of these organizations who believe in our mission
+              We&apos;re grateful for the support of these organizations who believe in our mission
             </p>
           </div>
 
