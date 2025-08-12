@@ -79,9 +79,30 @@ model AuditLog {
   @@map("audit_logs")
 }
 
+model Sponsor {
+  id          String      @id @default(cuid())
+  name        String
+  description String      // The blurb
+  website     String?
+  logoUrl     String?     // Path to the uploaded image
+  tier        SponsorTier @default(BRONZE)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("sponsors")
+}
+
 enum ApplicationStatus {
   PENDING
   APPROVED
   REJECTED
   EXPIRED
+}
+
+enum SponsorTier {
+  PLATINUM
+  GOLD
+  SILVER
+  BRONZE
 }

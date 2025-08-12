@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit } from "lucide-react"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus, Upload, ExternalLink, Star } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import SponsorsTab from "@/components/admin/SponsorsTab"
 
 type Member = {
   id: string
@@ -53,9 +54,22 @@ type Application = {
   linkedin?: string
 }
 
+type Sponsor = {
+  id: string
+  name: string
+  description: string
+  website?: string
+  logoUrl?: string
+  tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export default function AdminPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [applications, setApplications] = useState<Application[]>([])
+  const [sponsors, setSponsors] = useState<Sponsor[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -114,6 +128,19 @@ export default function AdminPage() {
       
       const appsData = await appsRes.json()
       
+      // Fetch sponsors
+      const sponsorsRes = await fetch('/api/admin/sponsors', {
+        credentials: 'include' // Include cookies for authentication
+      })
+      
+      if (sponsorsRes.status === 401) {
+        // Session expired, redirect to login
+        router.push('/admin/login')
+        return
+      }
+      
+      const sponsorsData = await sponsorsRes.json()
+      
       if (membersData.success) {
         setMembers(membersData.sponsors)
       } else {
@@ -126,6 +153,13 @@ export default function AdminPage() {
       } else {
         console.error('Failed to fetch applications:', appsData.message)
         setError('Failed to load application data')
+      }
+      
+      if (sponsorsData.success) {
+        setSponsors(sponsorsData.sponsors)
+      } else {
+        console.error('Failed to fetch sponsors:', sponsorsData.message)
+        setError('Failed to load sponsors data')
       }
       
     } catch (err) {
@@ -296,7 +330,7 @@ export default function AdminPage() {
         )}
 
         <Tabs defaultValue="members" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="members" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Members ({members.length})
@@ -304,6 +338,10 @@ export default function AdminPage() {
             <TabsTrigger value="applications" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
               Pending Applications ({pendingApplications.length})
+            </TabsTrigger>
+            <TabsTrigger value="sponsors" className="flex items-center gap-2">
+              <Building2 className="w-4 h-4" />
+              Sponsors ({sponsors.length})
             </TabsTrigger>
           </TabsList>
 
@@ -584,6 +622,10 @@ export default function AdminPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="sponsors" className="space-y-4">
+            <SponsorsTab sponsors={sponsors} onRefresh={fetchData} />
           </TabsContent>
         </Tabs>
 

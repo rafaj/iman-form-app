@@ -1,117 +1,96 @@
-"use client"
-
-import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Users, Building2, ArrowRight, MapPin, Clock, ExternalLink, Mail, Phone } from "lucide-react"
 import Link from "next/link"
+import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
+import { prisma } from "@/lib/database"
 
-type Event = {
-  id: string
-  title: string
-  description: string
-  date: string
-  time: string
-  location: string
-  type: 'networking' | 'workshop' | 'conference' | 'social'
-}
+type Event = IMANEvent
 
 type Sponsor = {
   id: string
   name: string
-  logo?: string
+  logoUrl?: string
   website?: string
   description: string
-  tier: 'platinum' | 'gold' | 'silver' | 'bronze'
+  tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
+  active: boolean
 }
 
-export default function HomePage() {
-  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
-  const [sponsors, setSponsors] = useState<Sponsor[]>([])
-  const [loading, setLoading] = useState(true)
+export default async function HomePage() {
+  // Try to get real events from Eventbrite, fall back to mock data
+  let upcomingEvents: Event[] = []
+  
+  try {
+    upcomingEvents = await getUpcomingEvents(12)
+  } catch (error) {
+    console.log('Eventbrite API not available, using mock data')
+  }
 
-  // Mock data for now - will be replaced with API calls
-  useEffect(() => {
-    // Generate events for every Thursday
-    const generateThursdayEvents = () => {
-      const events = []
-      const today = new Date()
-      const currentDate = new Date(today)
-      
-      // Find next Thursday
-      const daysUntilThursday = (4 - currentDate.getDay() + 7) % 7
-      if (daysUntilThursday === 0 && currentDate.getHours() >= 18) {
-        // If it's Thursday after 6 PM, start from next Thursday
-        currentDate.setDate(currentDate.getDate() + 7)
-      } else {
-        currentDate.setDate(currentDate.getDate() + daysUntilThursday)
-      }
+  // If no events from API, show mock data
+  if (upcomingEvents.length === 0) {
+    upcomingEvents = generateMockEvents()
+  }
 
-      const eventTypes = [
-        { type: 'networking', title: 'Weekly Networking Mixer', description: 'Join fellow professionals for networking and refreshments' },
-        { type: 'workshop', title: 'Professional Development Workshop', description: 'Skills development for career advancement' },
-        { type: 'social', title: 'Community Social Hour', description: 'Casual gathering for community building' },
-        { type: 'networking', title: 'Industry Meetup', description: 'Connect with professionals in your field' }
+  // Fetch real sponsors from database
+  let sponsors: Sponsor[] = []
+  try {
+    const dbSponsors = await prisma.sponsor.findMany({
+      where: { active: true },
+      orderBy: [
+        { tier: 'asc' }, // PLATINUM first, then GOLD, SILVER, BRONZE
+        { createdAt: 'desc' }
       ]
+    })
+    sponsors = dbSponsors
+  } catch (error) {
+    console.log('Failed to fetch sponsors:', error)
+    // Fallback to empty array - no sponsors shown if database fails
+    sponsors = []
+  }
 
-      for (let i = 0; i < 12; i++) {
-        const eventTemplate = eventTypes[i % eventTypes.length]
-        const eventDate = new Date(currentDate)
-        eventDate.setDate(currentDate.getDate() + (i * 7))
+function generateMockEvents(): Event[] {
+  const events = []
+  const today = new Date()
+  const currentDate = new Date(today)
+  
+  // Find next Thursday
+  const daysUntilThursday = (4 - currentDate.getDay() + 7) % 7
+  if (daysUntilThursday === 0 && currentDate.getHours() >= 18) {
+    // If it's Thursday after 6 PM, start from next Thursday
+    currentDate.setDate(currentDate.getDate() + 7)
+  } else {
+    currentDate.setDate(currentDate.getDate() + daysUntilThursday)
+  }
 
-        events.push({
-          id: (i + 1).toString(),
-          title: eventTemplate.title,
-          description: eventTemplate.description,
-          date: eventDate.toISOString().split('T')[0],
-          time: '6:00 PM - 8:00 PM',
-          location: 'IMAN Center, Kirkland',
-          type: eventTemplate.type as Event['type']
-        })
-      }
+  const eventTypes = [
+    { type: 'networking', title: 'Weekly Networking Mixer', description: 'Join fellow professionals for networking and refreshments' },
+    { type: 'workshop', title: 'Professional Development Workshop', description: 'Skills development for career advancement' },
+    { type: 'social', title: 'Community Social Hour', description: 'Casual gathering for community building' },
+    { type: 'networking', title: 'Industry Meetup', description: 'Connect with professionals in your field' }
+  ] as const
 
-      return events
-    }
+  for (let i = 0; i < 12; i++) {
+    const eventTemplate = eventTypes[i % eventTypes.length]
+    const eventDate = new Date(currentDate)
+    eventDate.setDate(currentDate.getDate() + (i * 7))
 
-    // Simulate API call
-    setTimeout(() => {
-      setUpcomingEvents(generateThursdayEvents())
+    events.push({
+      id: (i + 1).toString(),
+      title: eventTemplate.title,
+      description: eventTemplate.description,
+      date: eventDate.toISOString().split('T')[0],
+      time: '6:00 PM - 8:00 PM',
+      location: 'IMAN Center, Kirkland',
+      type: eventTemplate.type,
+      registrationUrl: `https://eventbrite.com/e/iman-${i + 1}`,
+      hasAvailableTickets: true
+    })
+  }
 
-      setSponsors([
-        {
-          id: '1',
-          name: 'Microsoft',
-          website: 'https://microsoft.com',
-          description: 'Technology partner supporting professional development',
-          tier: 'platinum'
-        },
-        {
-          id: '2',
-          name: 'Amazon',
-          website: 'https://amazon.com',
-          description: 'Committed to diversity and inclusion in tech',
-          tier: 'gold'
-        },
-        {
-          id: '3',
-          name: 'Boeing',
-          website: 'https://boeing.com',
-          description: 'Aerospace leader supporting Muslim professionals',
-          tier: 'gold'
-        },
-        {
-          id: '4',
-          name: 'Starbucks',
-          website: 'https://starbucks.com',
-          description: 'Community partner for networking events',
-          tier: 'silver'
-        }
-      ])
-
-      setLoading(false)
-    }, 1000)
-  }, [])
+  return events
+}
 
   const getEventTypeColor = (type: Event['type']) => {
     switch (type) {
@@ -125,10 +104,10 @@ export default function HomePage() {
 
   const getSponsorTierColor = (tier: Sponsor['tier']) => {
     switch (tier) {
-      case 'platinum': return 'bg-gray-100 text-gray-800 border-gray-300'
-      case 'gold': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'silver': return 'bg-gray-50 text-gray-700 border-gray-200'
-      case 'bronze': return 'bg-orange-100 text-orange-800 border-orange-300'
+      case 'PLATINUM': return 'bg-gray-100 text-gray-800 border-gray-300'
+      case 'GOLD': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
+      case 'SILVER': return 'bg-gray-50 text-gray-700 border-gray-200'
+      case 'BRONZE': return 'bg-orange-100 text-orange-800 border-orange-300'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -193,64 +172,55 @@ export default function HomePage() {
             </p>
           </div>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-              <p className="mt-4 text-emerald-600">Loading events...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {upcomingEvents.slice(0, 3).map((event) => (
-                <Card key={event.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge className={getEventTypeColor(event.type)}>
-                        {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                      </Badge>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {upcomingEvents.slice(0, 3).map((event) => (
+              <Card key={event.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge className={getEventTypeColor(event.type)}>
+                      {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-emerald-900">{event.title}</CardTitle>
+                  <CardDescription>{event.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
+                      {new Date(event.date).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
                     </div>
-                    <CardTitle className="text-emerald-900">{event.title}</CardTitle>
-                    <CardDescription>{event.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
-                        {new Date(event.date).toLocaleDateString('en-US', { 
-                          weekday: 'long', 
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric' 
-                        })}
-                      </div>
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 mr-2 text-emerald-600" />
-                        {event.time}
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2 text-emerald-600" />
-                        {event.location}
-                      </div>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 mr-2 text-emerald-600" />
+                      {event.time}
                     </div>
-                    <Button className="w-full mt-4" variant="outline">
-                      Learn More
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                    <div className="flex items-center">
+                      <MapPin className="h-4 w-4 mr-2 text-emerald-600" />
+                      {event.location}
+                    </div>
+                  </div>
+                  <Button className="w-full mt-4" variant="outline">
+                    Learn More
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
           
-          {!loading && (
-            <div className="text-center mt-8">
-              <Link href="/events">
-                <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                  View All Events
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          )}
+          <div className="text-center mt-8">
+            <Link href="/events">
+              <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                View All Events
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -264,41 +234,43 @@ export default function HomePage() {
             </p>
           </div>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-              <p className="mt-4 text-emerald-600">Loading sponsors...</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {sponsors.slice(0, 3).map((sponsor) => (
-                <Card key={sponsor.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge className={getSponsorTierColor(sponsor.tier)}>
-                        {sponsor.tier.charAt(0).toUpperCase() + sponsor.tier.slice(1)}
-                      </Badge>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {sponsors.slice(0, 3).map((sponsor) => (
+              <Card key={sponsor.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge className={getSponsorTierColor(sponsor.tier)}>
+                      {sponsor.tier.charAt(0).toUpperCase() + sponsor.tier.slice(1)}
+                    </Badge>
+                  </div>
+                  {sponsor.logoUrl && (
+                    <div className="mb-4">
+                      <img
+                        src={sponsor.logoUrl}
+                        alt={`${sponsor.name} logo`}
+                        className="h-12 w-auto object-contain"
+                      />
                     </div>
-                    <CardTitle className="text-emerald-900">{sponsor.name}</CardTitle>
-                    <CardDescription>{sponsor.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {sponsor.website && (
-                      <a 
-                        href={sponsor.website} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-emerald-600 hover:text-emerald-700"
-                      >
-                        Visit Website
-                        <ExternalLink className="h-4 w-4 ml-1" />
-                      </a>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+                  )}
+                  <CardTitle className="text-emerald-900">{sponsor.name}</CardTitle>
+                  <CardDescription>{sponsor.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {sponsor.website && (
+                    <a 
+                      href={sponsor.website} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-emerald-600 hover:text-emerald-700"
+                    >
+                      Visit Website
+                      <ExternalLink className="h-4 w-4 ml-1" />
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
