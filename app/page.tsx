@@ -11,8 +11,8 @@ type Event = IMANEvent
 type Sponsor = {
   id: string
   name: string
-  logoUrl?: string
-  website?: string
+  logoUrl?: string | null
+  website?: string | null
   description: string
   tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
   active: boolean
