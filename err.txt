@@ -1,0 +1,7 @@
+Error uploading file: Error: EROFS: read-only file system, open '/var/task/public/uploads/sponsors/1754977050505_sbc.png'
+    at async d (.next/server/app/api/admin/sponsors/upload/route.js:1:2201) {
+  errno: -30,
+  code: 'EROFS',
+  syscall: 'open',
+  path: '/var/task/public/uploads/sponsors/1754977050505_sbc.png'
+}

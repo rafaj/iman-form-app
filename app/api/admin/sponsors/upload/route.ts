@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAdminRequest } from '@/lib/admin-auth'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { put } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,28 +40,19 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
     // Create unique filename
     const timestamp = Date.now()
     const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_')
-    const filename = `${timestamp}_${sanitizedName}`
+    const filename = `sponsors/${timestamp}_${sanitizedName}`
     
-    // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'sponsors')
-    await mkdir(uploadsDir, { recursive: true })
-    
-    // Write file
-    const filePath = path.join(uploadsDir, filename)
-    await writeFile(filePath, buffer)
-    
-    // Return the public URL path
-    const publicPath = `/uploads/sponsors/${filename}`
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: 'public',
+    })
 
     return NextResponse.json({
       success: true,
-      logoUrl: publicPath
+      logoUrl: blob.url
     })
 
   } catch (error) {
