@@ -24,7 +24,7 @@ export default async function HomePage() {
   
   try {
     upcomingEvents = await getUpcomingEvents(12)
-  } catch (error) {
+  } catch {
     console.log('Eventbrite API not available, using mock data')
   }
 

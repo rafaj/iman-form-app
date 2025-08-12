@@ -13,7 +13,7 @@ export default async function EventsPage() {
   
   try {
     events = await getUpcomingEvents(16)
-  } catch (error) {
+  } catch {
     console.log('Eventbrite API not available, using mock data')
     // Generate mock events for demo
     events = generateMockEvents()
