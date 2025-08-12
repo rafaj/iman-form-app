@@ -6,7 +6,7 @@ import path from 'path'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Check admin authentication
@@ -17,7 +17,7 @@ export async function DELETE(
       }, { status: 401 })
     }
 
-    const sponsorId = params.id
+    const { id: sponsorId } = await params
 
     if (!sponsorId) {
       return NextResponse.json({
