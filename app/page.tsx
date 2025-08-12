@@ -6,6 +6,9 @@ import Link from "next/link"
 import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 import { prisma } from "@/lib/database"
 
+// Force dynamic rendering to show new sponsors immediately
+export const dynamic = 'force-dynamic'
+
 type Event = IMANEvent
 
 type Sponsor = {
@@ -44,6 +47,7 @@ export default async function HomePage() {
       ]
     })
     sponsors = dbSponsors
+    console.log(`Found ${sponsors.length} active sponsors:`, sponsors.map(s => ({ name: s.name, tier: s.tier })))
   } catch (error) {
     console.log('Failed to fetch sponsors:', error)
     // Fallback to empty array - no sponsors shown if database fails
