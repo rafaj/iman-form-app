@@ -28,11 +28,16 @@ interface SponsorsTabProps {
 
 export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
   const [showAddForm, setShowAddForm] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string
+    description: string
+    website: string
+    tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
+  }>({
     name: '',
     description: '',
     website: '',
-    tier: 'BRONZE' as const
+    tier: 'BRONZE'
   })
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
