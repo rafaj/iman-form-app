@@ -8,7 +8,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 
 ### **🎯 Core Functionality**
 - **Professional Application Form** - Clean, user-friendly membership application interface
-- **Sponsor-Based Approval System** - Existing members sponsor and approve new applicants
+- **Community Spotlight Integration** - Highlighting key community members and organizations
 - **Automated Email Notifications** - Sponsors receive approval requests via Resend email service
 - **Comprehensive Admin Dashboard** - Full member and application management system
 - **WhatsApp Integration** - Automatic group invites for approved members
@@ -68,6 +68,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Resend** - Professional email delivery service with high deliverability rates
 - **Neon** - Serverless PostgreSQL hosting with automatic scaling
 - **Vercel** - Recommended deployment platform with automatic CI/CD
+- **Eventbrite** - Event management and ticketing platform for event details
 
 ### **Security Infrastructure**
 - **Session-Based Authentication** - Secure admin access with HTTP-only cookies
@@ -81,6 +82,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Node.js 18+** and npm package manager
 - **PostgreSQL database** (Neon recommended) or SQLite for development
 - **Resend API key** for email delivery service
+- **Eventbrite API Key and Organization ID** for fetching event details
 - **WhatsApp group** for member community invitations
 
 ### **Development Setup**
@@ -114,6 +116,10 @@ DATABASE_URL="postgresql://user:pass@host:port/db?sslmode=require"
 
 # Email Service (Get from https://resend.com)
 RESEND_API_KEY="re_your_resend_api_key_here"
+
+# Eventbrite API (Get from https://www.eventbrite.com/platform/api)
+EVENTBRITE_API_KEY="YOUR_EVENTBRITE_API_KEY"
+EVENTBRITE_ORGANIZATION_ID="YOUR_EVENTBRITE_ORGANIZATION_ID"
 
 # Admin Authentication (Change for production!)
 ADMIN_USERNAME="your_secure_admin_username"
@@ -248,6 +254,8 @@ iman-form-app/
 ### **Key System Components**
 - **Application Form** (`app/page.tsx`) - Main membership application interface
 - **Admin Dashboard** (`app/admin/page.tsx`) - Complete management system
+- **Community Spotlight** (`app/page.tsx`) - Highlighting key community members and organizations
+- **Events Page** (`app/events/page.tsx`) - Displays upcoming events with images and responsive design
 - **Security Layer** (`lib/security.ts`) - Rate limiting and protection utilities
 - **Email Service** (`lib/email.ts`) - Resend integration with templates
 - **Authentication** (`lib/admin-auth.ts`) - Secure admin session management
@@ -335,6 +343,8 @@ npm run deploy:verify     # Complete deployment configuration verification
 ✅ **Admin Management** - Comprehensive dashboard for system administration  
 ✅ **Scalable Architecture** - Built for growth with serverless infrastructure  
 ✅ **Complete Documentation** - Deployment guides and security analysis  
+✅ **Community Spotlight** - Highlighting key community members and organizations  
+✅ **Enhanced Events Page** - Displays upcoming events with images and responsive design  
 
 **Ready for immediate deployment to serve the IMAN Professional Network community.** 🚀
 

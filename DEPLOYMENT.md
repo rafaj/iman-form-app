@@ -64,6 +64,8 @@ Make sure to set these in your Vercel project:
 
 - `DATABASE_URL`: Your PostgreSQL connection string
 - `NODE_ENV`: Set to "production" (Vercel sets this automatically)
+- `EVENTBRITE_API_KEY`: Your Eventbrite API key for fetching event details
+- `EVENTBRITE_ORGANIZATION_ID`: Your Eventbrite organization ID for fetching event details
 
 ## Post-Deployment
 
