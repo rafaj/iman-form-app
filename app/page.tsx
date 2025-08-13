@@ -237,11 +237,21 @@ function generateMockEvents(): Event[] {
                   
                   {spotlight.logoUrl && (
                     <div className="mb-4">
-                      <img
-                        src={spotlight.logoUrl}
-                        alt={`${spotlight.name} logo`}
-                        className="h-12 w-auto object-contain"
-                      />
+                      {spotlight.website ? (
+                        <a href={spotlight.website} target="_blank" rel="noopener noreferrer">
+                          <img
+                            src={spotlight.logoUrl}
+                            alt={`${spotlight.name} logo`}
+                            className="h-12 w-auto object-contain"
+                          />
+                        </a>
+                      ) : (
+                        <img
+                          src={spotlight.logoUrl}
+                          alt={`${spotlight.name} logo`}
+                          className="h-12 w-auto object-contain"
+                        />
+                      )}
                     </div>
                   )}
                   <CardTitle className="text-emerald-900">{spotlight.name}</CardTitle>
