@@ -134,12 +134,14 @@ function generateMockEvents(): Event[] {
             const dateInfo = formatDate(event.date)
             return (
               <Card key={event.id} className="hover:shadow-lg transition-shadow overflow-hidden">
-                <div className="flex">
+                <div className="flex flex-col sm:flex-row">
                   {/* Date Column */}
-                  <div className="bg-emerald-600 text-white p-6 flex flex-col items-center justify-center min-w-[120px]">
-                    <div className="text-2xl font-bold">{dateInfo.day}</div>
-                    <div className="text-sm uppercase tracking-wide">{dateInfo.month}</div>
-                    <div className="text-xs mt-1 opacity-90">{dateInfo.weekday}</div>
+                  <div className="bg-emerald-600 text-white p-4 flex items-center sm:flex-col sm:items-center sm:justify-center sm:p-6 sm:w-32">
+                    <div className="text-2xl font-bold sm:text-3xl">{dateInfo.day}</div>
+                    <div className="ml-4 sm:ml-0 sm:mt-1">
+                        <div className="text-sm uppercase tracking-wide">{dateInfo.month}</div>
+                        <div className="text-xs opacity-90 hidden sm:block">{dateInfo.weekday}</div>
+                    </div>
                   </div>
                   
                   {/* Event Details */}
