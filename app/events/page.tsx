@@ -134,6 +134,13 @@ function generateMockEvents(): Event[] {
             const dateInfo = formatDate(event.date)
             return (
               <Card key={event.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+                {event.imageUrl && (
+                  <img 
+                    src={event.imageUrl} 
+                    alt={event.title} 
+                    className="w-full h-48 object-cover rounded-t-lg" 
+                  />
+                )}
                 <div className="flex flex-col sm:flex-row">
                   {/* Date Column */}
                   <div className="bg-emerald-600 text-white p-4 flex items-center sm:flex-col sm:items-center sm:justify-center sm:p-6 sm:w-32">
