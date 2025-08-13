@@ -45,7 +45,7 @@ export default async function HomePage() {
       ]
     })
     communitySpotlights = dbCommunitySpotlights
-    console.log(`Found ${communitySpotlights.length} active community spotlights:`, communitySpotlights.map(s => ({ name: s.name, tier: s.tier })))
+    console.log(`Found ${communitySpotlights.length} active community spotlights:`, communitySpotlights.map(s => ({ name: s.name })))
   } catch (error) {
     console.log('Failed to fetch community spotlights:', error)
     // Fallback to empty array - no community spotlights shown if database fails
