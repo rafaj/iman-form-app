@@ -208,10 +208,12 @@ function generateMockEvents(): Event[] {
                       {event.location}
                     </div>
                   </div>
-                  <Button className="w-full mt-4" variant="outline">
-                    Learn More
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+                  <Link href={event.registrationUrl} passHref>
+                    <Button className="w-full mt-4" variant="outline">
+                      Learn More
+                      <ArrowRight className="h-4 w-4 ml-2" />
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
