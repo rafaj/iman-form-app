@@ -11,13 +11,12 @@ export const dynamic = 'force-dynamic'
 
 type Event = IMANEvent
 
-type Sponsor = {
+type CommunitySpotlight = {
   id: string
   name: string
   logoUrl?: string | null
   website?: string | null
   description: string
-  tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
   active: boolean
 }
 
@@ -36,22 +35,21 @@ export default async function HomePage() {
     upcomingEvents = generateMockEvents()
   }
 
-  // Fetch real sponsors from database
-  let sponsors: Sponsor[] = []
+  // Fetch real community spotlights from database
+  let communitySpotlights: CommunitySpotlight[] = []
   try {
-    const dbSponsors = await prisma.sponsor.findMany({
+    const dbCommunitySpotlights = await prisma.sponsor.findMany({
       where: { active: true },
       orderBy: [
-        { tier: 'asc' }, // PLATINUM first, then GOLD, SILVER, BRONZE
         { createdAt: 'desc' }
       ]
     })
-    sponsors = dbSponsors
-    console.log(`Found ${sponsors.length} active sponsors:`, sponsors.map(s => ({ name: s.name, tier: s.tier })))
+    communitySpotlights = dbCommunitySpotlights
+    console.log(`Found ${communitySpotlights.length} active community spotlights:`, communitySpotlights.map(s => ({ name: s.name, tier: s.tier })))
   } catch (error) {
-    console.log('Failed to fetch sponsors:', error)
-    // Fallback to empty array - no sponsors shown if database fails
-    sponsors = []
+    console.log('Failed to fetch community spotlights:', error)
+    // Fallback to empty array - no community spotlights shown if database fails
+    communitySpotlights = []
   }
 
 function generateMockEvents(): Event[] {
@@ -106,15 +104,7 @@ function generateMockEvents(): Event[] {
     }
   }
 
-  const getSponsorTierColor = (tier: Sponsor['tier']) => {
-    switch (tier) {
-      case 'PLATINUM': return 'bg-gray-100 text-gray-800 border-gray-300'
-      case 'GOLD': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'SILVER': return 'bg-gray-50 text-gray-700 border-gray-200'
-      case 'BRONZE': return 'bg-orange-100 text-orange-800 border-orange-300'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
@@ -130,7 +120,7 @@ function generateMockEvents(): Event[] {
             </div>
             <nav className="hidden md:flex space-x-8">
               <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
-              <a href="#sponsors" className="text-emerald-700 hover:text-emerald-900 font-medium">Sponsors</a>
+              <a href="#spotlight" className="text-emerald-700 hover:text-emerald-900 font-medium">Community Spotlight</a>
               <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
               <Link href="/apply">
                 <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
@@ -230,41 +220,37 @@ function generateMockEvents(): Event[] {
         </div>
       </section>
 
-      {/* Sponsors Section */}
-      <section id="sponsors" className="py-20 bg-white">
+      {/* Community Spotlight Section */}
+      <section id="spotlight" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-emerald-900 mb-4">Our Sponsors</h3>
+            <h3 className="text-3xl font-bold text-emerald-900 mb-4">Community Spotlight</h3>
             <p className="text-emerald-700 max-w-2xl mx-auto">
-              We&apos;re grateful for the support of these organizations who believe in our mission
+              Highlighting the amazing organizations and individuals in our community.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {sponsors.slice(0, 3).map((sponsor) => (
-              <Card key={sponsor.id} className="hover:shadow-lg transition-shadow">
+            {communitySpotlights.slice(0, 3).map((spotlight) => (
+              <Card key={spotlight.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge className={getSponsorTierColor(sponsor.tier)}>
-                      {sponsor.tier.charAt(0).toUpperCase() + sponsor.tier.slice(1)}
-                    </Badge>
-                  </div>
-                  {sponsor.logoUrl && (
+                  
+                  {spotlight.logoUrl && (
                     <div className="mb-4">
                       <img
-                        src={sponsor.logoUrl}
-                        alt={`${sponsor.name} logo`}
+                        src={spotlight.logoUrl}
+                        alt={`${spotlight.name} logo`}
                         className="h-12 w-auto object-contain"
                       />
                     </div>
                   )}
-                  <CardTitle className="text-emerald-900">{sponsor.name}</CardTitle>
-                  <CardDescription>{sponsor.description}</CardDescription>
+                  <CardTitle className="text-emerald-900">{spotlight.name}</CardTitle>
+                  <CardDescription>{spotlight.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {sponsor.website && (
+                  {spotlight.website && (
                     <a 
-                      href={sponsor.website} 
+                      href={spotlight.website} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex items-center text-emerald-600 hover:text-emerald-700"
@@ -339,7 +325,7 @@ function generateMockEvents(): Event[] {
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/events" className="hover:text-white">Events</Link></li>
-                <li><a href="#sponsors" className="hover:text-white">Sponsors</a></li>
+                <li><a href="#spotlight" className="hover:text-white">Community Spotlight</a></li>
                 <li><Link href="/apply" className="hover:text-white">Become a Member</Link></li>
               </ul>
             </div>
