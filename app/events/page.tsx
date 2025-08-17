@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, MapPin, Clock, ExternalLink, ArrowLeft } from "lucide-react"
+import { Users, MapPin, Clock, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 import { auth, signOut } from "@/auth"
@@ -158,7 +158,7 @@ function generateMockEvents(): Event[] {
                 </>
               ) : (
                 <>
-                  <a href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
+                  <Link href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</Link>
                   <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Events</Link>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
                     Member Sign In

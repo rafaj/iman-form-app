@@ -254,7 +254,7 @@ export default async function HomePage() {
                 </div>
                 <h3 className="text-xl font-semibold text-emerald-900 mb-3">Community</h3>
                 <p className="text-emerald-700">
-                  Building lasting relationships and supporting one another's success through shared experiences and mutual growth.
+                  Building lasting relationships and supporting one another&apos;s success through shared experiences and mutual growth.
                 </p>
               </div>
               <div className="text-center">

@@ -104,7 +104,7 @@ function ApplyCard() {
         <CardDescription>
           Takes a few minutes. Your sponsor must be an existing member.
           <br />
-          <strong>Note:</strong> You'll need a Google account to sign in after approval.
+          <strong>Note:</strong> You&apos;ll need a Google account to sign in after approval.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

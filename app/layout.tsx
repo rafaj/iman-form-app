@@ -4,7 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import AuthProvider from "@/components/auth-provider"
-import Navigation from "@/components/navigation"
+// import Navigation from "@/components/navigation"
 import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 

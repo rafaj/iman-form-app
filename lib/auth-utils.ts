@@ -1,5 +1,4 @@
 import { auth } from "@/auth"
-import { prisma } from "@/lib/database"
 import { UserRole } from "@prisma/client"
 
 export async function getCurrentUser() {

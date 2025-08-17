@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const userIsAdmin = await isAdmin()
     return NextResponse.json({ isAdmin: userIsAdmin })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ isAdmin: false })
   }
 }

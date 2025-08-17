@@ -40,7 +40,7 @@ export default async function CompleteActivation({ params }: CompleteActivationP
           </CardHeader>
           <CardContent>
             <p className="text-sm text-red-600 text-center">
-              The email address you signed in with ({session.user.email}) doesn't match 
+              The email address you signed in with ({session.user.email}) doesn&apos;t match 
               the email on this application ({application.applicantEmail}).
             </p>
             <p className="text-sm text-gray-600 text-center mt-4">
