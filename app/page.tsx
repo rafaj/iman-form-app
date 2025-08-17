@@ -63,7 +63,13 @@ export default async function HomePage() {
   const events = generateMockEvents()
 
   // Fetch community spotlight data from database
-  let communitySpotlight = []
+  let communitySpotlight: Array<{
+    id: string
+    name: string
+    logo: string
+    website: string
+    description: string
+  }> = []
   try {
     const sponsors = await prisma.sponsor.findMany({
       where: { active: true },
