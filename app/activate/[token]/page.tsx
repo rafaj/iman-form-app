@@ -6,16 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Chrome } from "lucide-react"
 
 interface ActivatePageProps {
-  params: {
+  params: Promise<{
     token: string
-  }
+  }>
 }
 
 export default async function ActivatePage({ params }: ActivatePageProps) {
+  const { token } = await params
   // Find the application with this activation token
   const application = await prisma.application.findUnique({
     where: {
-      activationToken: params.token,
+      activationToken: token,
       status: "APPROVED"
     }
   })
@@ -58,7 +59,7 @@ export default async function ActivatePage({ params }: ActivatePageProps) {
             action={async () => {
               "use server"
               await signIn("google", { 
-                redirectTo: `/activate/${params.token}/complete` 
+                redirectTo: `/activate/${token}/complete` 
               })
             }}
           >

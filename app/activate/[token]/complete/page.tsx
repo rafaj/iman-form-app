@@ -4,22 +4,23 @@ import { prisma } from "@/lib/database"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 interface CompleteActivationProps {
-  params: {
+  params: Promise<{
     token: string
-  }
+  }>
 }
 
 export default async function CompleteActivation({ params }: CompleteActivationProps) {
+  const { token } = await params
   const session = await auth()
   
   if (!session?.user?.email) {
-    redirect(`/activate/${params.token}`)
+    redirect(`/activate/${token}`)
   }
 
   // Find the application
   const application = await prisma.application.findUnique({
     where: {
-      activationToken: params.token,
+      activationToken: token,
       status: "APPROVED"
     }
   })
