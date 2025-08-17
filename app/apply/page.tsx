@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,6 +39,7 @@ function ApplyCard() {
   const [serverError, setServerError] = useState<string | null>(null)
   const { toast } = useToast()
   const router = useRouter()
+  const { data: session } = useSession()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -99,13 +101,24 @@ function ApplyCard() {
     <Card className="border-emerald-100 shadow-sm">
       <CardHeader>
         <CardTitle>Apply for membership</CardTitle>
-        <CardDescription>{"Takes a few minutes. Your sponsor must be an existing member."}</CardDescription>
+        <CardDescription>
+          Takes a few minutes. Your sponsor must be an existing member.
+          <br />
+          <strong>Note:</strong> You'll need a Google account to sign in after approval.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="applicantName">Full name</Label>
-            <Input id="applicantName" name="applicantName" placeholder="Alex Doe" required className={inputClass} />
+            <Input 
+              id="applicantName" 
+              name="applicantName" 
+              placeholder="Alex Doe" 
+              defaultValue={session?.user?.name || ""}
+              required 
+              className={inputClass} 
+            />
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
@@ -115,6 +128,7 @@ function ApplyCard() {
                 name="applicantEmail"
                 type="email"
                 placeholder="you@example.com"
+                defaultValue={session?.user?.email || ""}
                 required
                 className={inputClass}
               />

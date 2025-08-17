@@ -7,7 +7,8 @@ import { join } from 'path'
 export async function POST(request: NextRequest) {
   try {
     // Check admin authentication
-    if (!validateAdminRequest(request)) {
+    const adminSession = validateAdminRequest(request)
+    if (!adminSession) {
       return NextResponse.json({ 
         success: false, 
         message: 'Unauthorized access' 
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Check if we're in production with Vercel Blob or development
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       // Use Vercel Blob in production
-      const blobFilename = `sponsors/${filename}`
+      const blobFilename = `member-spotlight/${filename}`
       const blob = await put(blobFilename, file, {
         access: 'public',
       })
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
       const buffer = Buffer.from(bytes)
       
       // Create uploads directory if it doesn't exist
-      const uploadsDir = join(process.cwd(), 'public', 'uploads', 'sponsors')
+      const uploadsDir = join(process.cwd(), 'public', 'uploads', 'member-spotlight')
       await writeFile(join(uploadsDir, filename), buffer).catch(async (error) => {
         if (error.code === 'ENOENT') {
           // Directory doesn't exist, create it
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
         }
       })
       
-      logoUrl = `/uploads/sponsors/${filename}`
+      logoUrl = `/uploads/member-spotlight/${filename}`
     }
 
     return NextResponse.json({

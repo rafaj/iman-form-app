@@ -1,5 +1,4 @@
 import { PrismaClient, ApplicationStatus, Member, Application } from '@prisma/client'
-import { randomBytes } from "crypto"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -47,11 +46,11 @@ export async function createApplication(input: CreateApplicationInput): Promise<
     where: {
       applicantEmail: {
         equals: input.applicantEmail,
-        ...(process.env.DATABASE_URL?.includes('postgresql') && { mode: 'insensitive' })
+        mode: 'insensitive'
       },
       sponsorEmail: {
         equals: input.sponsorEmail,
-        ...(process.env.DATABASE_URL?.includes('postgresql') && { mode: 'insensitive' })
+        mode: 'insensitive'
       },
       status: ApplicationStatus.PENDING
     }
@@ -66,7 +65,7 @@ export async function createApplication(input: CreateApplicationInput): Promise<
 
   const application = await prisma.application.create({
     data: {
-      token: base64url(randomBytes(16)),
+      token: generateToken(),
       applicantName: input.applicantName,
       applicantEmail: input.applicantEmail,
       sponsorEmail: input.sponsorEmail,
@@ -252,8 +251,8 @@ export function maskEmail(email: string): string {
 }
 
 // Utility functions
-function base64url(buf: Buffer): string {
-  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "")
+function generateToken(): string {
+  return Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
 }
 
 function generateCode(): string {

@@ -60,8 +60,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Custom Security Middleware** - Rate limiting, authentication, and protection layers
 
 ### **Database & Storage**
-- **PostgreSQL (Production)** - Robust relational database via Neon serverless
-- **SQLite (Development)** - Local development database for easy setup
+- **PostgreSQL** - Robust relational database via Neon serverless (development and production)
 - **Prisma Schema** - Type-safe database modeling and automated migrations
 
 ### **External Services**
@@ -80,7 +79,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 
 ### **Prerequisites**
 - **Node.js 18+** and npm package manager
-- **PostgreSQL database** (Neon recommended) or SQLite for development
+- **PostgreSQL database** (Neon recommended for both development and production)
 - **Resend API key** for email delivery service
 - **Eventbrite API Key and Organization ID** for fetching event details
 - **WhatsApp group** for member community invitations
@@ -96,7 +95,7 @@ npm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your configuration
+# Edit .env.local with your Neon PostgreSQL DATABASE_URL and other config
 
 # Initialize database and generate Prisma client
 npm run db:push

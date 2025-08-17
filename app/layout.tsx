@@ -3,14 +3,16 @@ import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { Plus_Jakarta_Sans } from "next/font/google"
+import AuthProvider from "@/components/auth-provider"
+import Navigation from "@/components/navigation"
+import { Toaster } from "@/components/ui/toaster"
 import "./globals.css"
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.dev",
+  title: "IMAN Professional Network",
+  description: "Professional networking and membership application system for the IMAN community",
 }
 
 export default function RootLayout({
@@ -29,7 +31,12 @@ html {
 }
         `}</style>
       </head>
-      <body className={`${jakarta.className} min-h-screen bg-background text-foreground antialiased`}>{children}</body>
+      <body className={`${jakarta.className} min-h-screen bg-background text-foreground antialiased`}>
+        <AuthProvider>
+          <main>{children}</main>
+          <Toaster />
+        </AuthProvider>
+      </body>
     </html>
   )
 }

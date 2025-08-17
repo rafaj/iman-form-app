@@ -174,3 +174,87 @@ export async function sendApprovalNotificationEmail({
     throw error
   }
 }
+
+interface SendActivationEmailParams {
+  to: string
+  applicantName: string
+  activationToken: string
+}
+
+export async function sendActivationEmail({ 
+  to, 
+  applicantName, 
+  activationToken 
+}: SendActivationEmailParams) {
+  const activationUrl = `${process.env.NEXTAUTH_URL}/activate/${activationToken}`
+  
+  try {
+    const { data, error } = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "IMAN Professional Network <onboarding@resend.dev>",
+      to,
+      subject: "🎉 Your IMAN Professional Network Application Has Been Approved!",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px;">Welcome to IMAN!</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Professional Network</p>
+          </div>
+          
+          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
+            <p style="font-size: 18px; margin-bottom: 20px;">Dear ${applicantName},</p>
+            
+            <p style="margin-bottom: 20px;">🎉 <strong>Congratulations!</strong> Your application to join the IMAN Professional Network has been approved by your sponsor.</p>
+            
+            <p style="margin-bottom: 25px;">To complete your membership setup and access all member benefits, please create your account by clicking the button below:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${activationUrl}" 
+                 style="background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+                Create My Account
+              </a>
+            </div>
+            
+            <div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 20px; margin: 25px 0;">
+              <h3 style="margin: 0 0 10px 0; color: #047857; font-size: 16px;">What's Next?</h3>
+              <ul style="margin: 0; padding-left: 20px;">
+                <li>Click the button above to create your account</li>
+                <li>Sign in using Google or Facebook</li>
+                <li>Access weekly networking events</li>
+                <li>Connect with fellow professionals</li>
+                <li>Explore community resources</li>
+              </ul>
+            </div>
+            
+            <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
+              If the button doesn't work, copy and paste this link into your browser:<br>
+              <a href="${activationUrl}" style="color: #10b981; word-break: break-all;">${activationUrl}</a>
+            </p>
+            
+            <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px; font-size: 14px; color: #6b7280;">
+              <p>Best regards,<br>The IMAN Professional Network Team</p>
+              <p style="margin-top: 15px;"><em>Building bridges. Creating opportunities. Strengthening communities.</em></p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    })
+    
+    if (error) {
+      console.error("Failed to send activation email:", error)
+      throw new Error(`Failed to send activation email: ${error.message}`)
+    }
+    
+    console.log('Activation email sent successfully:', data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("Failed to send activation email:", error)
+    return { success: false, error }
+  }
+}

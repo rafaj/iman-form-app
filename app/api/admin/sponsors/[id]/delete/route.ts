@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/database'
 import { validateAdminRequest } from '@/lib/admin-auth'
-import fs from 'fs/promises'
-import path from 'path'
+import { del } from '@vercel/blob'
 
 export async function DELETE(
   request: NextRequest,
@@ -38,14 +37,13 @@ export async function DELETE(
       }, { status: 404 })
     }
 
-    // Delete the logo file if it exists
+    // Delete the logo from Vercel Blob if it exists
     if (sponsor.logoUrl) {
       try {
-        const logoPath = path.join(process.cwd(), 'public', sponsor.logoUrl)
-        await fs.unlink(logoPath)
+        await del(sponsor.logoUrl)
       } catch (fileError) {
-        // File might not exist, continue with sponsor deletion
-        console.warn('Could not delete logo file:', sponsor.logoUrl, fileError)
+        // File might not exist in blob storage, continue with sponsor deletion
+        console.warn('Could not delete logo from blob storage:', sponsor.logoUrl, fileError)
       }
     }
 

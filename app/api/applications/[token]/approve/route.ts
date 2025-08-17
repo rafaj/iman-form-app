@@ -1,8 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { approveApplication, expireOldApplications, findMemberByEmail, getApplicationByToken } from "@/lib/database"
-import { sendApprovalNotificationEmail } from "@/lib/email"
+import { sendActivationEmail } from "@/lib/email"
 import { ApplicationStatus } from "@prisma/client"
+import { prisma } from "@/lib/database"
+import { randomBytes } from "crypto"
 
 const ApproveSchema = z.object({
   memberEmail: z.string().email().max(200),
@@ -54,19 +56,30 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       return NextResponse.json({ message: ok.message }, { status: ok.status })
     }
 
-    // Send welcome email with WhatsApp group invites
+    // Generate activation token for account creation
+    const activationToken = randomBytes(32).toString('hex')
+    
     try {
-      await sendApprovalNotificationEmail({
-        applicantName: app.applicantName,
-        applicantEmail: app.applicantEmail,
+      // Update application with activation token
+      await prisma.application.update({
+        where: { token },
+        data: { activationToken }
       })
-      console.log(`Welcome email with WhatsApp groups sent to ${app.applicantEmail}`)
+
+      // Send activation email
+      await sendActivationEmail({
+        to: app.applicantEmail,
+        applicantName: app.applicantName,
+        activationToken
+      })
+      
+      console.log(`Activation email sent to ${app.applicantEmail}`)
     } catch (emailError) {
-      console.error('Failed to send welcome email:', emailError)
+      console.error('Failed to send activation email:', emailError)
       // Don't fail the approval if email fails
     }
 
-    return NextResponse.json({ message: "Application approved." })
+    return NextResponse.json({ message: "Application approved and activation email sent." })
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'name' in err && err.name === "ZodError") {
       return NextResponse.json({ message: "Invalid input." }, { status: 400 })

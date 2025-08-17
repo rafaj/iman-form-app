@@ -1,13 +1,38 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Users, MapPin, Clock, ExternalLink } from "lucide-react"
+import { Users, MapPin, Clock, ExternalLink, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
+import { auth, signOut } from "@/auth"
+import { prisma } from "@/lib/database"
 
 type Event = IMANEvent
 
 export default async function EventsPage() {
+  const session = await auth()
+  
+  // Check if user is an actual member (has completed activation)
+  let isMember = false
+  if (session?.user?.id) {
+    try {
+      // Allow admin users to see member content
+      if (session.user.email === process.env.ADMIN_EMAIL) {
+        isMember = true
+      } else {
+        const member = await prisma.member.findUnique({
+          where: { userId: session.user.id }
+        })
+        isMember = !!member
+      }
+    } catch (error) {
+      console.error("Error checking member status:", error)
+      if (session.user.email === process.env.ADMIN_EMAIL) {
+        isMember = true
+      }
+    }
+  }
+
   // Try to get real events from Eventbrite, fall back to mock data
   let events: Event[] = []
   
@@ -99,23 +124,53 @@ function generateMockEvents(): Event[] {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <Link href="/">
-                <Button variant="ghost" className="mr-4">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Home
-                </Button>
-              </Link>
-              <div>
-                <h1 className="text-2xl font-bold text-emerald-900">IMAN Events</h1>
-                <p className="text-sm text-emerald-600">Every Thursday at the IMAN Center</p>
+              <div className="flex-shrink-0">
+                <h1 className="text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                <p className="text-sm text-emerald-600">Events - Every Thursday at the IMAN Center</p>
               </div>
             </div>
-            <Link href="/apply">
-              <Button className="bg-emerald-600 hover:bg-emerald-700">
-                <Users className="h-4 w-4 mr-2" />
-                Become a Member
-              </Button>
-            </Link>
+            <nav className="hidden md:flex space-x-8 items-center">
+              {session ? (
+                <>
+                  <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
+                  {isMember && (
+                    <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Events</Link>
+                  )}
+                  <Link href="/apply" className="text-emerald-700 hover:text-emerald-900 font-medium">Apply</Link>
+                  {session.user?.role === 'ADMIN' && (
+                    <Link href="/admin" className="text-emerald-700 hover:text-emerald-900 font-medium">Admin</Link>
+                  )}
+                  <div className="flex items-center space-x-3">
+                    {session.user?.image && (
+                      <img 
+                        src={session.user.image} 
+                        alt={session.user.name || "User"} 
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <span className="text-sm font-medium text-emerald-700">{session.user?.name}</span>
+                  </div>
+                  <form action={async () => { "use server"; await signOut() }}>
+                    <Button type="submit" variant="outline" size="sm" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                      Sign Out
+                    </Button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <a href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
+                  <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Events</Link>
+                  <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
+                    Member Sign In
+                  </Link>
+                  <Link href="/apply">
+                    <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                      Become a Member
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </nav>
           </div>
         </div>
       </header>

@@ -15,9 +15,11 @@
     "db:studio": "prisma studio",
     "deploy:setup": "tsx scripts/create-production-members.ts",
     "deploy:verify": "tsx scripts/verify-deployment.ts",
-    "deploy:prepare": "npm run db:generate && npm run db:push && npm run deploy:setup"
+    "deploy:prepare": "npm run db:generate && npm run db:push && npm run deploy:setup",
+    "admin:create": "tsx scripts/create-admin-user.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.10.0",
     "@prisma/client": "^6.13.0",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-separator": "^1.1.7",
@@ -32,6 +34,7 @@
     "geist": "^1.4.2",
     "lucide-react": "^0.539.0",
     "next": "15.2.4",
+    "next-auth": "^5.0.0-beta.29",
     "pg": "^8.16.3",
     "prisma": "^6.13.0",
     "react": "^19.0.0",

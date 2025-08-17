@@ -1,110 +1,87 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Calendar, Users, Building2, ArrowRight, MapPin, Clock, ExternalLink, Mail, Phone } from "lucide-react"
+import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar } from "lucide-react"
 import Link from "next/link"
-import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
+import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
 
-// Force dynamic rendering to show new sponsors immediately
-export const dynamic = 'force-dynamic'
-
-type Event = IMANEvent
-
-type CommunitySpotlight = {
-  id: string
-  name: string
-  logoUrl?: string | null
-  website?: string | null
-  description: string
-  active: boolean
-}
-
 export default async function HomePage() {
-  // Try to get real events from Eventbrite, fall back to mock data
-  let upcomingEvents: Event[] = []
+  const session = await auth()
   
-  try {
-    upcomingEvents = await getUpcomingEvents(12)
-  } catch {
-    console.log('Eventbrite API not available, using mock data')
-  }
-
-  // If no events from API, show mock data
-  if (upcomingEvents.length === 0) {
-    upcomingEvents = generateMockEvents()
-  }
-
-  // Fetch real community spotlights from database
-  let communitySpotlights: CommunitySpotlight[] = []
-  try {
-    const dbCommunitySpotlights = await prisma.sponsor.findMany({
-      where: { active: true },
-      orderBy: [
-        { createdAt: 'desc' }
-      ]
-    })
-    communitySpotlights = dbCommunitySpotlights
-    console.log(`Found ${communitySpotlights.length} active community spotlights:`, communitySpotlights.map(s => ({ name: s.name })))
-  } catch (error) {
-    console.log('Failed to fetch community spotlights:', error)
-    // Fallback to empty array - no community spotlights shown if database fails
-    communitySpotlights = []
-  }
-
-function generateMockEvents(): Event[] {
-  const events = []
-  const today = new Date()
-  const currentDate = new Date(today)
-  
-  // Find next Thursday
-  const daysUntilThursday = (4 - currentDate.getDay() + 7) % 7
-  if (daysUntilThursday === 0 && currentDate.getHours() >= 18) {
-    // If it's Thursday after 6 PM, start from next Thursday
-    currentDate.setDate(currentDate.getDate() + 7)
-  } else {
-    currentDate.setDate(currentDate.getDate() + daysUntilThursday)
-  }
-
-  const eventTypes = [
-    { type: 'networking', title: 'Weekly Networking Mixer', description: 'Join fellow professionals for networking and refreshments' },
-    { type: 'workshop', title: 'Professional Development Workshop', description: 'Skills development for career advancement' },
-    { type: 'social', title: 'Community Social Hour', description: 'Casual gathering for community building' },
-    { type: 'networking', title: 'Industry Meetup', description: 'Connect with professionals in your field' }
-  ] as const
-
-  for (let i = 0; i < 12; i++) {
-    const eventTemplate = eventTypes[i % eventTypes.length]
-    const eventDate = new Date(currentDate)
-    eventDate.setDate(currentDate.getDate() + (i * 7))
-
-    events.push({
-      id: (i + 1).toString(),
-      title: eventTemplate.title,
-      description: eventTemplate.description,
-      date: eventDate.toISOString().split('T')[0],
-      time: '6:00 PM - 8:00 PM',
-      location: 'IMAN Center, Kirkland',
-      type: eventTemplate.type,
-      registrationUrl: `https://eventbrite.com/e/iman-${i + 1}`,
-      hasAvailableTickets: true
-    })
-  }
-
-  return events
-}
-
-  const getEventTypeColor = (type: Event['type']) => {
-    switch (type) {
-      case 'networking': return 'bg-blue-100 text-blue-800'
-      case 'workshop': return 'bg-green-100 text-green-800'
-      case 'conference': return 'bg-purple-100 text-purple-800'
-      case 'social': return 'bg-orange-100 text-orange-800'
-      default: return 'bg-gray-100 text-gray-800'
+  // Check if user is an actual member (has completed activation)
+  let isMember = false
+  if (session?.user?.id) {
+    try {
+      // Allow admin users to see member content in development
+      if (session.user.email === process.env.ADMIN_EMAIL) {
+        isMember = true
+      } else {
+        const member = await prisma.member.findUnique({
+          where: { userId: session.user.id }
+        })
+        isMember = !!member
+      }
+    } catch (error) {
+      console.error("Error checking member status:", error)
+      // Fallback for admin in case of database issues
+      if (session.user.email === process.env.ADMIN_EMAIL) {
+        isMember = true
+      }
     }
   }
 
-  
+  // Generate mock events
+  function generateMockEvents() {
+    const events = [
+      {
+        id: 1,
+        title: "Professional Networking Mixer",
+        date: "2025-01-25",
+        time: "6:00 PM - 8:00 PM",
+        location: "IMAN Center",
+        description: "Join fellow professionals for an evening of networking and meaningful connections."
+      },
+      {
+        id: 2,
+        title: "Career Development Workshop",
+        date: "2025-02-08",
+        time: "10:00 AM - 12:00 PM",
+        location: "Virtual",
+        description: "Learn strategies for advancing your career while maintaining your values."
+      },
+      {
+        id: 3,
+        title: "Community Service Project",
+        date: "2025-02-15",
+        time: "9:00 AM - 3:00 PM",
+        location: "Local Community Center",
+        description: "Give back to the community through volunteer work and service."
+      }
+    ]
+    return events
+  }
+
+  const events = generateMockEvents()
+
+  // Fetch community spotlight data from database
+  let communitySpotlight = []
+  try {
+    const sponsors = await prisma.sponsor.findMany({
+      where: { active: true },
+      orderBy: { createdAt: 'desc' }
+    })
+    
+    communitySpotlight = sponsors.map(sponsor => ({
+      id: sponsor.id,
+      name: sponsor.name,
+      logo: sponsor.logoUrl || '/placeholder-logo.png',
+      website: sponsor.website || '#',
+      description: sponsor.description
+    }))
+  } catch (error) {
+    console.error("Error fetching community spotlight data:", error)
+    // Fallback to empty array if database fails
+    communitySpotlight = []
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
@@ -118,207 +95,286 @@ function generateMockEvents(): Event[] {
                 <p className="text-sm text-emerald-600">Connecting Professionals in the Seattle Metro</p>
               </div>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
-              <a href="#spotlight" className="text-emerald-700 hover:text-emerald-900 font-medium">Community Spotlight</a>
-              <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
-              <Link href="/apply">
-                <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                  Become a Member
-                </Button>
-              </Link>
+            <nav className="hidden md:flex space-x-8 items-center">
+              {session ? (
+                <>
+                  <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
+                  {isMember && (
+                    <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                  )}
+                  <Link href="/apply" className="text-emerald-700 hover:text-emerald-900 font-medium">Apply</Link>
+                  {session.user?.role === 'ADMIN' && (
+                    <Link href="/admin" className="text-emerald-700 hover:text-emerald-900 font-medium">Admin</Link>
+                  )}
+                  <div className="flex items-center space-x-3">
+                    {session.user?.image && (
+                      <img 
+                        src={session.user.image} 
+                        alt={session.user.name || "User"} 
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <span className="text-sm font-medium text-emerald-700">{session.user?.name}</span>
+                  </div>
+                  <form action={async () => { "use server"; await signOut() }}>
+                    <Button type="submit" variant="outline" size="sm" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                      Sign Out
+                    </Button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
+                  <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                  <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
+                    Member Sign In
+                  </Link>
+                  <Link href="/apply">
+                    <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                      Become a Member
+                    </Button>
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-xl text-emerald-700 mb-8 max-w-3xl mx-auto">
-            Join a thriving community of Muslim professionals in the Seattle Metro. 
-            Network, learn, and grow together through meaningful connections and professional development.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/apply">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3">
-                <Users className="h-5 w-5 mr-2" />
-                Join Our Network
-              </Button>
-            </Link>
-            <Link href="/events">
-              <Button size="lg" variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-3">
-                <Calendar className="h-5 w-5 mr-2" />
-                View Events
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Upcoming Events Section */}
-      <section id="events" className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-emerald-900 mb-4">Upcoming Events</h3>
-            <p className="text-emerald-700 max-w-2xl mx-auto">
-              Join us every Thursday for networking, professional development, and community building events at the IMAN Center
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {upcomingEvents.slice(0, 3).map((event) => (
-              <Card key={event.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge className={getEventTypeColor(event.type)}>
-                      {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-                    </Badge>
-                  </div>
-                  <CardTitle className="text-emerald-900">{event.title}</CardTitle>
-                  <CardDescription>{event.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-2 text-emerald-600" />
-                      {new Date(event.date).toLocaleDateString('en-US', { 
-                        weekday: 'long', 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                      })}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2 text-emerald-600" />
-                      {event.time}
-                    </div>
-                    <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2 text-emerald-600" />
-                      {event.location}
-                    </div>
-                  </div>
-                  <Link href={event.registrationUrl} passHref>
-                    <Button className="w-full mt-4" variant="outline">
-                      Learn More
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          
-          <div className="text-center mt-8">
-            <Link href="/events">
-              <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                View All Events
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Community Spotlight Section */}
-      <section id="spotlight" className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-emerald-900 mb-4">Community Spotlight</h3>
-            <p className="text-emerald-700 max-w-2xl mx-auto">
-              Highlighting the amazing organizations and individuals in our community.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {communitySpotlights.slice(0, 3).map((spotlight) => (
-              <Card key={spotlight.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  
-                  {spotlight.logoUrl && (
-                    <div className="mb-4">
-                      {spotlight.website ? (
-                        <a href={spotlight.website} target="_blank" rel="noopener noreferrer">
-                          <img
-                            src={spotlight.logoUrl}
-                            alt={`${spotlight.name} logo`}
-                            className="h-12 w-auto object-contain"
-                          />
-                        </a>
-                      ) : (
-                        <img
-                          src={spotlight.logoUrl}
-                          alt={`${spotlight.name} logo`}
-                          className="h-12 w-auto object-contain"
-                        />
-                      )}
-                    </div>
-                  )}
-                  <CardTitle className="text-emerald-900">{spotlight.name}</CardTitle>
-                  <CardDescription>{spotlight.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {spotlight.website && (
-                    <a 
-                      href={spotlight.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-emerald-600 hover:text-emerald-700"
-                    >
-                      Visit Website
-                      <ExternalLink className="h-4 w-4 ml-1" />
-                    </a>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section id="about" className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-3xl font-bold text-emerald-900 mb-6">About IMAN Professional Network</h3>
-              <p className="text-emerald-700 mb-6">
-                The IMAN Professional Network is a vibrant community of Muslim professionals 
-                in the Seattle Metro, dedicated to fostering career growth, meaningful 
-                connections, and positive impact in our communities.
+      {/* Hero Section - For non-members (including non-logged-in users) */}
+      {!isMember && (
+        <section className="relative py-20 lg:py-28">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-6xl font-bold text-emerald-900 mb-6">
+                IMAN Professional Network
+              </h1>
+              <p className="text-xl md:text-2xl text-emerald-700 mb-8 max-w-4xl mx-auto">
+                Connecting Muslim professionals in the Seattle Metro through meaningful 
+                relationships, career growth, and community impact.
               </p>
-              <p className="text-emerald-700 mb-6">
-                Through networking events, professional development workshops, and community 
-                service initiatives, we empower our members to excel in their careers while 
-                staying true to their values and faith.
-              </p>
-              <Link href="/apply">
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  Join Our Community
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/apply">
+                  <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 text-lg">
+                    <Users className="h-6 w-6 mr-2" />
+                    Join Our Network
+                  </Button>
+                </Link>
+                <Link href="/auth/signin">
+                  <Button variant="outline" size="lg" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg">
+                    Sign In with Google
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="bg-emerald-100 rounded-lg p-8">
-              <h4 className="text-xl font-semibold text-emerald-900 mb-4">Get Involved</h4>
-              <div className="space-y-4">
-                <div className="flex items-center">
-                  <Users className="h-5 w-5 text-emerald-600 mr-3" />
-                  <span className="text-emerald-700">Attend networking events</span>
-                </div>
-                <div className="flex items-center">
-                  <Building2 className="h-5 w-5 text-emerald-600 mr-3" />
-                  <span className="text-emerald-700">Professional development workshops</span>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="h-5 w-5 text-emerald-600 mr-3" />
-                  <span className="text-emerald-700">Community service projects</span>
+          </div>
+        </section>
+      )}
+
+      {/* Welcome Section - For members only */}
+      {isMember && (
+        <section className="relative py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center">
+              <h1 className="text-2xl md:text-3xl font-bold text-emerald-900 mb-2">
+                Welcome back, {session.user?.name}!
+              </h1>
+              <p className="text-emerald-700">
+                Stay connected with your professional community
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Mission Section - Only show for non-members */}
+      {!isMember && (
+        <section id="about" className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold text-emerald-900 mb-6">Our Mission</h2>
+                <p className="text-emerald-700 mb-6 text-lg">
+                  The IMAN Professional Network is a vibrant community of Muslim professionals 
+                  in the Seattle Metro, dedicated to fostering career growth, meaningful 
+                  connections, and positive impact in our communities.
+                </p>
+                <p className="text-emerald-700 mb-6">
+                  Through networking events, professional development workshops, and community 
+                  service initiatives, we empower our members to excel in their careers while 
+                  staying true to their values and faith.
+                </p>
+                <Link href="/apply">
+                  <Button className="bg-emerald-600 hover:bg-emerald-700">
+                    Learn More About Membership
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="bg-emerald-50 rounded-lg p-8">
+                <h3 className="text-xl font-semibold text-emerald-900 mb-6">What We Offer</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center">
+                    <Users className="h-6 w-6 text-emerald-600 mr-3 flex-shrink-0" />
+                    <span className="text-emerald-700">Weekly networking events and mixers</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Building2 className="h-6 w-6 text-emerald-600 mr-3 flex-shrink-0" />
+                    <span className="text-emerald-700">Professional development workshops</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Calendar className="h-6 w-6 text-emerald-600 mr-3 flex-shrink-0" />
+                    <span className="text-emerald-700">Community service opportunities</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Users className="h-6 w-6 text-emerald-600 mr-3 flex-shrink-0" />
+                    <span className="text-emerald-700">Mentorship and career guidance</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Values Section - Only show for non-members */}
+      {!isMember && (
+        <section className="py-20 bg-emerald-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-emerald-900 mb-4">Our Values</h2>
+              <p className="text-emerald-700 max-w-2xl mx-auto">
+                We believe in building a community that reflects our shared values and commitments.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="bg-emerald-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-emerald-900 mb-3">Community</h3>
+                <p className="text-emerald-700">
+                  Building lasting relationships and supporting one another's success through shared experiences and mutual growth.
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="bg-emerald-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <Building2 className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-emerald-900 mb-3">Excellence</h3>
+                <p className="text-emerald-700">
+                  Striving for professional excellence while maintaining our Islamic values and ethical principles in all endeavors.
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="bg-emerald-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                  <ArrowRight className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold text-emerald-900 mb-3">Impact</h3>
+                <p className="text-emerald-700">
+                  Making a positive difference in our local community and beyond through service and professional contribution.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Events Section - Only show for members */}
+      {isMember && (
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-emerald-900 mb-4">Upcoming Events</h3>
+              <p className="text-emerald-700 mb-6">Join us for weekly networking and professional development</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {events.map((event) => (
+                <div key={event.id} className="bg-emerald-50 rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-emerald-900 mb-2">{event.title}</h4>
+                      <div className="space-y-1 text-sm text-emerald-700">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          <span>{event.date}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="ml-6">{event.time}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span>{event.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-emerald-700 text-sm mb-4">{event.description}</p>
+                  <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700">
+                    Learn More
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <div className="text-center">
+              <Link href="/events">
+                <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
+                  <Calendar className="h-5 w-5 mr-2" />
+                  View All Events
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Community Spotlight Section - Only show for members */}
+      {isMember && (
+        <section className="py-20 bg-emerald-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-emerald-900 mb-4">Community Spotlight</h3>
+              <p className="text-emerald-700 max-w-2xl mx-auto">
+                Proud to be supported by these outstanding organizations in our community.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {communitySpotlight.map((member) => (
+                <div key={member.id} className="bg-white rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-300">
+                  <a 
+                    href={member.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <div className="flex items-center gap-6 mb-4">
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={member.logo} 
+                          alt={member.name}
+                          className="h-24 w-24 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-3 bg-white"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xl font-semibold text-emerald-900">{member.name}</h4>
+                      </div>
+                    </div>
+                    {member.description && (
+                      <p className="text-sm text-emerald-600 line-clamp-3">{member.description}</p>
+                    )}
+                  </a>
+                </div>
+              ))}
+              {communitySpotlight.length === 0 && (
+                <div className="col-span-full text-center py-12">
+                  <Building2 className="w-16 h-16 text-emerald-300 mx-auto mb-4" />
+                  <p className="text-emerald-600">No community members in spotlight yet.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="bg-emerald-900 text-white py-12">
@@ -334,9 +390,7 @@ function generateMockEvents(): Event[] {
             <div>
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
-                <li><Link href="/events" className="hover:text-white">Events</Link></li>
-                <li><a href="#spotlight" className="hover:text-white">Community Spotlight</a></li>
-                <li><Link href="/apply" className="hover:text-white">Become a Member</Link></li>
+                <li><a href="#about" className="hover:text-white">About</a></li>
               </ul>
             </div>
             <div>

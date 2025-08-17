@@ -9,35 +9,32 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Building2, Plus, Upload, ExternalLink, Trash2, ImageIcon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-type Sponsor = {
+type Member = {
   id: string
   name: string
   description: string
   website?: string
   logoUrl?: string
-  tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
   active: boolean
   createdAt: string
   updatedAt: string
 }
 
-interface SponsorsTabProps {
-  sponsors: Sponsor[]
+interface MemberSpotlightTabProps {
+  members: Member[]
   onRefresh: () => void
 }
 
-export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
+export default function MemberSpotlightTab({ members, onRefresh }: MemberSpotlightTabProps) {
   const [showAddForm, setShowAddForm] = useState(false)
   const [formData, setFormData] = useState<{
     name: string
     description: string
     website: string
-    tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
   }>({
     name: '',
     description: '',
-    website: '',
-    tier: 'BRONZE'
+    website: ''
   })
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
@@ -104,7 +101,7 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
         const uploadFormData = new FormData()
         uploadFormData.append('logo', logoFile)
 
-        const uploadResponse = await fetch('/api/admin/sponsors/upload', {
+        const uploadResponse = await fetch('/api/admin/member-spotlight/upload', {
           method: 'POST',
           body: uploadFormData,
           credentials: 'include'
@@ -120,19 +117,19 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
         setIsUploading(false)
       }
 
-      // Create sponsor
-      const sponsorData = {
+      // Create member spotlight entry
+      const memberData = {
         ...formData,
         logoUrl: logoUrl || null,
         website: formData.website.trim() || null
       }
 
-      const response = await fetch('/api/admin/sponsors', {
+      const response = await fetch('/api/admin/member-spotlight', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(sponsorData),
+        body: JSON.stringify(memberData),
         credentials: 'include'
       })
 
@@ -140,16 +137,15 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
 
       if (data.success) {
         toast({
-          title: "Sponsor added",
-          description: `${formData.name} has been added successfully.`
+          title: "Member added to spotlight",
+          description: `${formData.name} has been added to Member Spotlight successfully.`
         })
         
         // Reset form
         setFormData({
           name: '',
           description: '',
-          website: '',
-          tier: 'BRONZE'
+          website: ''
         })
         setLogoFile(null)
         setLogoPreview(null)
@@ -158,12 +154,12 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
         // Refresh data
         onRefresh()
       } else {
-        throw new Error(data.message || 'Failed to add sponsor')
+        throw new Error(data.message || 'Failed to add member to spotlight')
       }
     } catch (error) {
-      console.error('Add sponsor failed:', error)
+      console.error('Add member to spotlight failed:', error)
       toast({
-        title: "Failed to add sponsor",
+        title: "Failed to add member to spotlight",
         description: error instanceof Error ? error.message : "Please try again.",
         variant: "destructive"
       })
@@ -173,13 +169,13 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
     }
   }
 
-  const handleDelete = async (sponsor: Sponsor) => {
-    if (!confirm(`Are you sure you want to delete sponsor "${sponsor.name}"?\n\nThis action cannot be undone.`)) {
+  const handleDelete = async (member: Member) => {
+    if (!confirm(`Are you sure you want to remove "${member.name}" from Member Spotlight?\n\nThis action cannot be undone.`)) {
       return
     }
 
     try {
-      const response = await fetch(`/api/admin/sponsors/${sponsor.id}/delete`, {
+      const response = await fetch(`/api/admin/member-spotlight/${member.id}/delete`, {
         method: 'DELETE',
         credentials: 'include'
       })
@@ -188,32 +184,23 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
 
       if (data.success) {
         toast({
-          title: "Sponsor deleted",
-          description: `${sponsor.name} has been deleted successfully.`
+          title: "Member removed from spotlight",
+          description: `${member.name} has been removed from Member Spotlight successfully.`
         })
         onRefresh()
       } else {
-        throw new Error(data.message || 'Failed to delete sponsor')
+        throw new Error(data.message || 'Failed to remove member from spotlight')
       }
     } catch (error) {
-      console.error('Delete sponsor failed:', error)
+      console.error('Delete member spotlight failed:', error)
       toast({
-        title: "Failed to delete sponsor",
+        title: "Failed to remove member from spotlight",
         description: "Please try again.",
         variant: "destructive"
       })
     }
   }
 
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case 'PLATINUM': return 'bg-gray-100 text-gray-800 border-gray-300'
-      case 'GOLD': return 'bg-yellow-100 text-yellow-800 border-yellow-300'
-      case 'SILVER': return 'bg-gray-50 text-gray-700 border-gray-200'
-      case 'BRONZE': return 'bg-orange-100 text-orange-800 border-orange-300'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -230,7 +217,7 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-blue-600" />
-              Sponsors ({sponsors.length})
+              Member Spotlight ({members.length})
             </div>
             <Button
               onClick={() => setShowAddForm(true)}
@@ -238,26 +225,26 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
               size="sm"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Sponsor
+              Add Member
             </Button>
           </CardTitle>
           <CardDescription>
-            Manage sponsor organizations that support the IMAN Professional Network
+            Highlight community members and organizations that support the IMAN Professional Network
           </CardDescription>
         </CardHeader>
         <CardContent>
           {showAddForm && (
             <div className="mb-6 p-6 bg-blue-50 rounded-lg border border-blue-200">
-              <h3 className="text-lg font-medium text-blue-900 mb-4">Add New Sponsor</h3>
+              <h3 className="text-lg font-medium text-blue-900 mb-4">Add to Member Spotlight</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Sponsor Name *</Label>
+                    <Label htmlFor="name">Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Microsoft, Amazon"
+                      placeholder="e.g., Dr. Ahmad Khan, TechCorp Inc."
                       required
                     />
                   </div>
@@ -279,62 +266,45 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
                     id="description"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Brief description of the sponsor and their support"
+                    placeholder="Brief description of their contribution to the community"
                     rows={3}
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="tier">Sponsorship Tier</Label>
-                    <select
-                      id="tier"
-                      value={formData.tier}
-                      onChange={(e) => setFormData({ ...formData, tier: e.target.value as 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE' })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <div>
+                  <Label htmlFor="logo">Logo Image</Label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      id="logo"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
                     >
-                      <option value="BRONZE">Bronze</option>
-                      <option value="SILVER">Silver</option>
-                      <option value="GOLD">Gold</option>
-                      <option value="PLATINUM">Platinum</option>
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="logo">Logo Image</Label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        id="logo"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Choose File
-                      </Button>
-                      {logoFile && (
-                        <span className="text-sm text-gray-600">{logoFile.name}</span>
-                      )}
-                    </div>
-                    {logoPreview && (
-                      <div className="mt-2">
-                        <img
-                          src={logoPreview}
-                          alt="Logo preview"
-                          className="h-16 w-auto object-contain border border-gray-200 rounded"
-                        />
-                      </div>
+                      <Upload className="w-4 h-4 mr-2" />
+                      Choose File
+                    </Button>
+                    {logoFile && (
+                      <span className="text-sm text-gray-600">{logoFile.name}</span>
                     )}
                   </div>
+                  {logoPreview && (
+                    <div className="mt-2">
+                      <img
+                        src={logoPreview}
+                        alt="Logo preview"
+                        className="h-16 w-auto object-contain border border-gray-200 rounded"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3 pt-2">
@@ -343,14 +313,14 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
                     disabled={isSubmitting || isUploading}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
-                    {isUploading ? 'Uploading...' : isSubmitting ? 'Adding...' : 'Add Sponsor'}
+                    {isUploading ? 'Uploading...' : isSubmitting ? 'Adding...' : 'Add to Spotlight'}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => {
                       setShowAddForm(false)
-                      setFormData({ name: '', description: '', website: '', tier: 'BRONZE' })
+                      setFormData({ name: '', description: '', website: '' })
                       setLogoFile(null)
                       setLogoPreview(null)
                     }}
@@ -363,15 +333,15 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
           )}
 
           <div className="space-y-6">
-            {sponsors.map((sponsor) => (
-              <div key={sponsor.id} className="p-6 bg-white rounded-lg border border-gray-200 space-y-4">
+            {members.map((member) => (
+              <div key={member.id} className="p-6 bg-white rounded-lg border border-gray-200 space-y-4">
                 {/* Header */}
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4">
-                    {sponsor.logoUrl ? (
+                    {member.logoUrl ? (
                       <img
-                        src={sponsor.logoUrl}
-                        alt={`${sponsor.name} logo`}
+                        src={member.logoUrl}
+                        alt={`${member.name} logo`}
                         className="h-16 w-16 object-contain border border-gray-200 rounded"
                       />
                     ) : (
@@ -380,13 +350,10 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
                       </div>
                     )}
                     <div>
-                      <h3 className="font-semibold text-xl text-gray-900">{sponsor.name}</h3>
+                      <h3 className="font-semibold text-xl text-gray-900">{member.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <Badge className={getTierColor(sponsor.tier)}>
-                          {sponsor.tier}
-                        </Badge>
-                        <Badge variant={sponsor.active ? "default" : "secondary"}>
-                          {sponsor.active ? "Active" : "Inactive"}
+                        <Badge variant={member.active ? "default" : "secondary"}>
+                          {member.active ? "Active" : "Inactive"}
                         </Badge>
                       </div>
                     </div>
@@ -394,7 +361,7 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleDelete(sponsor)}
+                    onClick={() => handleDelete(member)}
                     className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -403,16 +370,16 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
 
                 {/* Description */}
                 <div>
-                  <p className="text-gray-700">{sponsor.description}</p>
+                  <p className="text-gray-700">{member.description}</p>
                 </div>
 
                 {/* Footer */}
                 <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                   <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span>Added: {formatDate(sponsor.createdAt)}</span>
-                    {sponsor.website && (
+                    <span>Added: {formatDate(member.createdAt)}</span>
+                    {member.website && (
                       <a
-                        href={sponsor.website}
+                        href={member.website}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
@@ -423,23 +390,23 @@ export default function SponsorsTab({ sponsors, onRefresh }: SponsorsTabProps) {
                     )}
                   </div>
                   <div className="text-xs text-gray-500">
-                    ID: {sponsor.id}
+                    ID: {member.id}
                   </div>
                 </div>
               </div>
             ))}
 
-            {sponsors.length === 0 && !showAddForm && (
+            {members.length === 0 && !showAddForm && (
               <div className="text-center py-12">
                 <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">No sponsors yet</p>
-                <p className="text-sm text-gray-400 mb-4">Add your first sponsor to get started</p>
+                <p className="text-gray-500 text-lg">No members in spotlight yet</p>
+                <p className="text-sm text-gray-400 mb-4">Add your first member to get started</p>
                 <Button
                   onClick={() => setShowAddForm(true)}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add First Sponsor
+                  Add First Member
                 </Button>
               </div>
             )}

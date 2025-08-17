@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
-import SponsorsTab from "@/components/admin/SponsorsTab"
+import MemberSpotlightTab from "@/components/admin/SponsorsTab"
 
 type Member = {
   id: string
@@ -54,13 +54,12 @@ type Application = {
   linkedin?: string
 }
 
-type Sponsor = {
+type SpotlightMember = {
   id: string
   name: string
   description: string
   website?: string
   logoUrl?: string
-  tier: 'PLATINUM' | 'GOLD' | 'SILVER' | 'BRONZE'
   active: boolean
   createdAt: string
   updatedAt: string
@@ -69,7 +68,7 @@ type Sponsor = {
 export default function AdminPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [applications, setApplications] = useState<Application[]>([])
-  const [sponsors, setSponsors] = useState<Sponsor[]>([])
+  const [spotlightMembers, setSpotlightMembers] = useState<SpotlightMember[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -128,18 +127,18 @@ export default function AdminPage() {
       
       const appsData = await appsRes.json()
       
-      // Fetch sponsors
-      const sponsorsRes = await fetch('/api/admin/sponsors', {
+      // Fetch member spotlight entries
+      const spotlightRes = await fetch('/api/admin/member-spotlight', {
         credentials: 'include' // Include cookies for authentication
       })
       
-      if (sponsorsRes.status === 401) {
+      if (spotlightRes.status === 401) {
         // Session expired, redirect to login
         router.push('/admin/login')
         return
       }
       
-      const sponsorsData = await sponsorsRes.json()
+      const spotlightData = await spotlightRes.json()
       
       if (membersData.success) {
         setMembers(membersData.sponsors)
@@ -155,11 +154,11 @@ export default function AdminPage() {
         setError('Failed to load application data')
       }
       
-      if (sponsorsData.success) {
-        setSponsors(sponsorsData.sponsors)
+      if (spotlightData.success) {
+        setSpotlightMembers(spotlightData.sponsors)
       } else {
-        console.error('Failed to fetch sponsors:', sponsorsData.message)
-        setError('Failed to load sponsors data')
+        console.error('Failed to fetch member spotlight:', spotlightData.message)
+        setError('Failed to load member spotlight data')
       }
       
     } catch (err) {
@@ -339,9 +338,9 @@ export default function AdminPage() {
               <FileText className="w-4 h-4" />
               Pending Applications ({pendingApplications.length})
             </TabsTrigger>
-            <TabsTrigger value="sponsors" className="flex items-center gap-2">
+            <TabsTrigger value="member-spotlight" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
-              Sponsors ({sponsors.length})
+              Member Spotlight ({spotlightMembers.length})
             </TabsTrigger>
           </TabsList>
 
@@ -624,8 +623,8 @@ export default function AdminPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="sponsors" className="space-y-4">
-            <SponsorsTab sponsors={sponsors} onRefresh={fetchData} />
+          <TabsContent value="member-spotlight" className="space-y-4">
+            <MemberSpotlightTab members={spotlightMembers} onRefresh={fetchData} />
           </TabsContent>
         </Tabs>
 

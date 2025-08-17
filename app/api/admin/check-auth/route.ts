@@ -1,27 +1,23 @@
-import { NextRequest, NextResponse } from "next/server"
-import { validateAdminRequest } from "@/lib/admin-auth"
+import { NextResponse } from "next/server"
+import { requireAdmin } from "@/lib/auth-utils"
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = validateAdminRequest(request)
+    const user = await requireAdmin()
     
-    if (session) {
-      return NextResponse.json({
-        authenticated: true,
-        user: {
-          username: session.username,
-          loginTime: session.loginTime
-        }
-      })
-    } else {
-      return NextResponse.json({
-        authenticated: false
-      })
-    }
+    return NextResponse.json({
+      authenticated: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    })
   } catch (error) {
     console.error("Auth check error:", error)
     return NextResponse.json({
       authenticated: false
-    })
+    }, { status: 401 })
   }
 }
