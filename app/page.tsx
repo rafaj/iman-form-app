@@ -12,18 +12,18 @@ export default async function HomePage() {
   if (session?.user?.id) {
     try {
       // Allow admin users to see member content in development
-      if (session.user.email === process.env.ADMIN_EMAIL) {
+      if (session.user?.email === process.env.ADMIN_EMAIL) {
         isMember = true
       } else {
         const member = await prisma.member.findUnique({
-          where: { userId: session.user.id }
+          where: { userId: session.user?.id || '' }
         })
         isMember = !!member
       }
     } catch (error) {
       console.error("Error checking member status:", error)
       // Fallback for admin in case of database issues
-      if (session.user.email === process.env.ADMIN_EMAIL) {
+      if (session.user?.email === process.env.ADMIN_EMAIL) {
         isMember = true
       }
     }
@@ -183,7 +183,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-2xl md:text-3xl font-bold text-emerald-900 mb-2">
-                Welcome back, {session.user?.name}!
+                Welcome back, {session?.user?.name}!
               </h1>
               <p className="text-emerald-700">
                 Stay connected with your professional community
