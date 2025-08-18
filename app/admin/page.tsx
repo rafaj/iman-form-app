@@ -7,7 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2 } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import MemberSpotlightTab from "@/components/admin/SponsorsTab"
@@ -73,6 +77,21 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [checkingAuth, setCheckingAuth] = useState(true)
+  const [showAddMemberDialog, setShowAddMemberDialog] = useState(false)
+  const [addMemberForm, setAddMemberForm] = useState({
+    name: '',
+    email: '',
+    streetAddress: '',
+    city: '',
+    state: '',
+    zip: '',
+    professionalQualification: '',
+    interest: '',
+    contribution: '',
+    employer: '',
+    linkedin: ''
+  })
+  const [addingMember, setAddingMember] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
 
@@ -199,6 +218,73 @@ export default function AdminPage() {
         description: "There was an error logging out. Please try again.",
         variant: "destructive"
       })
+    }
+  }
+
+  async function addMemberManually() {
+    if (!addMemberForm.name.trim() || !addMemberForm.email.trim()) {
+      toast({
+        title: "Missing required fields",
+        description: "Name and email are required.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      setAddingMember(true)
+      
+      const response = await fetch('/api/admin/members/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(addMemberForm)
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast({
+          title: "Member added",
+          description: `${addMemberForm.name} has been added successfully.`,
+        })
+        
+        // Reset form and close dialog
+        setAddMemberForm({
+          name: '',
+          email: '',
+          streetAddress: '',
+          city: '',
+          state: '',
+          zip: '',
+          professionalQualification: '',
+          interest: '',
+          contribution: '',
+          employer: '',
+          linkedin: ''
+        })
+        setShowAddMemberDialog(false)
+        
+        // Refresh the data to show new member
+        fetchData()
+      } else {
+        toast({
+          title: "Add member failed",
+          description: data.message || "Failed to add member.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Add member failed:', error)
+      toast({
+        title: "Add member failed",
+        description: "There was an error adding the member. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setAddingMember(false)
     }
   }
 
@@ -347,13 +433,182 @@ export default function AdminPage() {
           <TabsContent value="members" className="space-y-4">
             <Card className="border-emerald-100">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-emerald-600" />
-                  Active Members ({members.length})
-                </CardTitle>
-                <CardDescription>
-                  Members who can sponsor new applications with their detailed profiles
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-emerald-600" />
+                      Active Members ({members.length})
+                    </CardTitle>
+                    <CardDescription>
+                      Members who can sponsor new applications with their detailed profiles
+                    </CardDescription>
+                  </div>
+                  <Dialog open={showAddMemberDialog} onOpenChange={setShowAddMemberDialog}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-emerald-600 hover:bg-emerald-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Member
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle>Add New Member</DialogTitle>
+                        <DialogDescription>
+                          Manually add a new member to the IMAN Professional Network
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="space-y-6 py-4">
+                        {/* Basic Information */}
+                        <div className="space-y-4">
+                          <h3 className="font-semibold text-emerald-900">Basic Information</h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="name">Full Name *</Label>
+                              <Input
+                                id="name"
+                                value={addMemberForm.name}
+                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, name: e.target.value }))}
+                                placeholder="Enter full name"
+                                required
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="email">Email Address *</Label>
+                              <Input
+                                id="email"
+                                type="email"
+                                value={addMemberForm.email}
+                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, email: e.target.value }))}
+                                placeholder="Enter email address"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Address Information */}
+                        <div className="space-y-4">
+                          <h3 className="font-semibold text-emerald-900">Address Information</h3>
+                          <div className="space-y-2">
+                            <Label htmlFor="streetAddress">Street Address</Label>
+                            <Input
+                              id="streetAddress"
+                              value={addMemberForm.streetAddress}
+                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, streetAddress: e.target.value }))}
+                              placeholder="Enter street address"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="city">City</Label>
+                              <Input
+                                id="city"
+                                value={addMemberForm.city}
+                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, city: e.target.value }))}
+                                placeholder="Enter city"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="state">State</Label>
+                              <Input
+                                id="state"
+                                value={addMemberForm.state}
+                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, state: e.target.value }))}
+                                placeholder="Enter state"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="zip">ZIP Code</Label>
+                              <Input
+                                id="zip"
+                                value={addMemberForm.zip}
+                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, zip: e.target.value }))}
+                                placeholder="Enter ZIP code"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Professional Information */}
+                        <div className="space-y-4">
+                          <h3 className="font-semibold text-emerald-900">Professional Information</h3>
+                          <div className="space-y-2">
+                            <Label htmlFor="professionalQualification">Professional Qualification</Label>
+                            <Textarea
+                              id="professionalQualification"
+                              value={addMemberForm.professionalQualification}
+                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, professionalQualification: e.target.value }))}
+                              placeholder="Describe professional background and qualifications"
+                              rows={3}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="employer">Current Employer</Label>
+                            <Input
+                              id="employer"
+                              value={addMemberForm.employer}
+                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, employer: e.target.value }))}
+                              placeholder="Enter current employer"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="linkedin">LinkedIn Profile</Label>
+                            <Input
+                              id="linkedin"
+                              type="url"
+                              value={addMemberForm.linkedin}
+                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, linkedin: e.target.value }))}
+                              placeholder="https://linkedin.com/in/username"
+                            />
+                          </div>
+                        </div>
+
+                        {/* IMAN Network Involvement */}
+                        <div className="space-y-4">
+                          <h3 className="font-semibold text-emerald-900">IMAN Network Involvement</h3>
+                          <div className="space-y-2">
+                            <Label htmlFor="interest">Interest in IMAN</Label>
+                            <Textarea
+                              id="interest"
+                              value={addMemberForm.interest}
+                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, interest: e.target.value }))}
+                              placeholder="Describe interest in joining IMAN Professional Network"
+                              rows={3}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="contribution">How They Contribute</Label>
+                            <Textarea
+                              id="contribution"
+                              value={addMemberForm.contribution}
+                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, contribution: e.target.value }))}
+                              placeholder="Describe how they contribute to the network"
+                              rows={3}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowAddMemberDialog(false)}
+                          disabled={addingMember}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={addMemberManually}
+                          disabled={addingMember}
+                          className="bg-emerald-600 hover:bg-emerald-700"
+                        >
+                          {addingMember ? "Adding..." : "Add Member"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
