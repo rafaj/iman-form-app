@@ -277,26 +277,26 @@ export default function ProfilePage() {
                     />
                   </div>
 
-                  {/* Interest in IMAN */}
+                  {/* Professional Interests */}
                   <div className="space-y-2">
-                    <Label htmlFor="interest">Interest in IMAN</Label>
+                    <Label htmlFor="interest">Professional Interests</Label>
                     <Textarea
                       id="interest"
                       value={formData.interest}
                       onChange={(e) => setFormData(prev => ({ ...prev, interest: e.target.value }))}
-                      placeholder="Why are you interested in joining the IMAN Professional Network? What drew you to our community?"
+                      placeholder="What are your professional interests and areas of expertise?"
                       rows={3}
                     />
                   </div>
 
-                  {/* How They Contribute */}
+                  {/* How I can help IMAN */}
                   <div className="space-y-2">
-                    <Label htmlFor="contribution">How You Contribute</Label>
+                    <Label htmlFor="contribution">How I can help IMAN?</Label>
                     <Textarea
                       id="contribution"
                       value={formData.contribution}
                       onChange={(e) => setFormData(prev => ({ ...prev, contribution: e.target.value }))}
-                      placeholder="How do you contribute or plan to contribute to the IMAN Professional Network?"
+                      placeholder="How can you contribute to the IMAN Professional Network?"
                       rows={3}
                     />
                   </div>
@@ -362,20 +362,20 @@ export default function ProfilePage() {
                     </div>
                   )}
 
-                  {/* Interest in IMAN */}
+                  {/* Professional Interests */}
                   {profile?.interest && (
                     <div className="space-y-2">
-                      <h4 className="font-medium text-emerald-900">Interest in IMAN</h4>
+                      <h4 className="font-medium text-emerald-900">Professional Interests</h4>
                       <div className="bg-white p-4 rounded-lg border border-emerald-200">
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">{profile.interest}</p>
                       </div>
                     </div>
                   )}
 
-                  {/* How They Contribute */}
+                  {/* How I can help IMAN */}
                   {profile?.contribution && (
                     <div className="space-y-2">
-                      <h4 className="font-medium text-emerald-900">How You Contribute</h4>
+                      <h4 className="font-medium text-emerald-900">How I can help IMAN?</h4>
                       <div className="bg-white p-4 rounded-lg border border-emerald-200">
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">{profile.contribution}</p>
                       </div>

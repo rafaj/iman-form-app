@@ -6,6 +6,7 @@ import Link from "next/link"
 import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
+import MobileNavigation from "@/components/mobile-navigation"
 
 type Event = IMANEvent
 
@@ -72,6 +73,7 @@ export default async function EventsPage() {
                 <p className="text-sm text-emerald-600">Events - Every Thursday at the IMAN Center</p>
               </div>
             </div>
+            {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8 items-center">
               {session ? (
                 <>
@@ -115,6 +117,9 @@ export default async function EventsPage() {
                 </>
               )}
             </nav>
+
+            {/* Mobile Navigation */}
+            <MobileNavigation session={session} isMember={isMember} />
           </div>
         </div>
       </header>

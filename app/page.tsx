@@ -4,6 +4,7 @@ import Link from "next/link"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
 import { getUpcomingEvents } from "@/lib/eventbrite"
+import MobileNavigation from "@/components/mobile-navigation"
 
 export default async function HomePage() {
   const session = await auth()
@@ -67,10 +68,14 @@ export default async function HomePage() {
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
-                <p className="text-sm text-emerald-600">Connecting Professionals in the Seattle Metro</p>
+                <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                <p className="text-xs md:text-sm text-emerald-600">
+                  {isMember && session ? `Welcome back, ${session.user?.name}!` : "Connecting Professionals in the Seattle Metro"}
+                </p>
               </div>
             </div>
+            
+            {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8 items-center">
               {session ? (
                 <>
@@ -114,6 +119,9 @@ export default async function HomePage() {
                 </>
               )}
             </nav>
+
+            {/* Mobile Navigation */}
+            <MobileNavigation session={session} isMember={isMember} />
           </div>
         </div>
       </header>
@@ -148,21 +156,6 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Welcome Section - For members only */}
-      {isMember && (
-        <section className="relative py-6">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <h1 className="text-2xl md:text-3xl font-bold text-emerald-900 mb-2">
-                Welcome back, {session?.user?.name}!
-              </h1>
-              <p className="text-emerald-700">
-                Stay connected with your professional community
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
 
       {/* Mission Section - Only show for non-members */}
       {!isMember && (
