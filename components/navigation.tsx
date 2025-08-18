@@ -3,7 +3,7 @@
 import { signOut, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { LogOut } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 
@@ -55,6 +55,9 @@ export default function Navigation() {
               <Link href="/apply" className="text-gray-600 hover:text-emerald-700 transition-colors">
                 Apply
               </Link>
+              <Link href="/directory" className="text-gray-600 hover:text-emerald-700 transition-colors">
+                Directory
+              </Link>
               {isAdmin && (
                 <Link href="/admin" className="text-gray-600 hover:text-emerald-700 transition-colors">
                   Admin
@@ -66,17 +69,19 @@ export default function Navigation() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               {session.user?.image && (
-                <img 
-                  src={session.user.image} 
-                  alt={session.user.name || "User"} 
-                  className="w-8 h-8 rounded-full"
-                />
+                <Link href="/profile/edit">
+                  <img 
+                    src={session.user.image} 
+                    alt={session.user.name || "User"} 
+                    className="w-8 h-8 rounded-full cursor-pointer"
+                  />
+                </Link>
               )}
               <div className="hidden md:block">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-700">
+                  <Link href="/profile/edit" className="text-sm font-medium text-gray-700 hover:text-emerald-700">
                     {session.user?.name}
-                  </span>
+                  </Link>
                   <Badge variant={isAdmin ? "default" : "secondary"} className="text-xs">
                     {isAdmin ? "Admin" : "Member"}
                   </Badge>
@@ -97,6 +102,14 @@ export default function Navigation() {
               <span className="hidden md:inline">Sign Out</span>
             </Button>
           </div>
+        </div>
+        <div className="md:hidden flex justify-around py-2 border-t">
+          <Link href="/" className="text-gray-600 hover:text-emerald-700 transition-colors">Home</Link>
+          <Link href="/apply" className="text-gray-600 hover:text-emerald-700 transition-colors">Apply</Link>
+          <Link href="/directory" className="text-gray-600 hover:text-emerald-700 transition-colors">Directory</Link>
+          {isAdmin && (
+            <Link href="/admin" className="text-gray-600 hover:text-emerald-700 transition-colors">Admin</Link>
+          )}
         </div>
       </div>
     </nav>
