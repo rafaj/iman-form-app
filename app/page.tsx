@@ -93,7 +93,10 @@ export default async function HomePage() {
                 <>
                   <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
                   {isMember && (
-                    <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                    <>
+                      <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
+                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                    </>
                   )}
                   {session.user?.role === 'ADMIN' && (
                     <Link href="/admin" className="text-emerald-700 hover:text-emerald-900 font-medium">Admin</Link>
@@ -379,7 +382,10 @@ export default async function HomePage() {
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/" className="hover:text-white">Home</Link></li>
                 {session && isMember && (
-                  <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                  <>
+                    <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
+                    <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                  </>
                 )}
                 {!session && (
                   <>

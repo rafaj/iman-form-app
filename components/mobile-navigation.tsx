@@ -66,13 +66,22 @@ export default function MobileNavigation({ session, isMember }: MobileNavigation
                     Home
                   </Link>
                   {isMember && (
-                    <Link 
-                      href="/events" 
-                      className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
-                      onClick={toggleMenu}
-                    >
-                      Events
-                    </Link>
+                    <>
+                      <Link 
+                        href="/directory" 
+                        className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
+                        onClick={toggleMenu}
+                      >
+                        Directory
+                      </Link>
+                      <Link 
+                        href="/events" 
+                        className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
+                        onClick={toggleMenu}
+                      >
+                        Events
+                      </Link>
+                    </>
                   )}
                   <Link 
                     href="/profile" 
