@@ -366,7 +366,14 @@ export default async function HomePage() {
             <div>
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
-                <li><a href="#about" className="hover:text-white">About</a></li>
+                <li><Link href="/" className="hover:text-white">Home</Link></li>
+                <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                {!session && (
+                  <>
+                    <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Member Sign In</Link></li>
+                  </>
+                )}
               </ul>
             </div>
             <div>
