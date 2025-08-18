@@ -37,9 +37,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       if (!approvedApplication && !existingMember) {
         // No approved application or existing member found
+        console.log(`❌ Access denied for ${user.email}: No approved application or active membership found`)
         return false
       }
 
+      console.log(`✅ Access granted for ${user.email}: ${approvedApplication ? 'Approved application' : 'Active member'} found`)
       return true
     },
     async jwt({ token, user, account }) {
