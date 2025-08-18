@@ -12,7 +12,6 @@ async function getMemberProfile(userId: string) {
     where: { userId },
     select: {
       name: true,
-      linkedin: true,
       professionalQualification: true,
       interest: true,
       contribution: true,
@@ -44,10 +43,6 @@ export default async function EditProfilePage() {
               <div>
                 <Label htmlFor="name">Name</Label>
                 <Input id="name" name="name" defaultValue={member?.name || ''} />
-              </div>
-              <div>
-                <Label htmlFor="linkedin">LinkedIn Profile</Label>
-                <Input id="linkedin" name="linkedin" defaultValue={member?.linkedin || ''} />
               </div>
               <div className="md:col-span-2">
                 <Label htmlFor="professionalQualification">Professional Qualification</Label>

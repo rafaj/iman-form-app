@@ -5,7 +5,6 @@ async function getMembers() {
   const members = await prisma.member.findMany({
     select: {
       name: true,
-      linkedin: true,
       professionalQualification: true,
       interest: true,
       contribution: true,
@@ -35,11 +34,6 @@ export default async function DirectoryPage() {
               <div className="mt-4">
                 <h4 className="font-semibold">How they want to contribute:</h4>
                 <p className="text-sm">{member.contribution}</p>
-              </div>
-              <div className="mt-4">
-                <a href={member.linkedin || '#'} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-500 hover:underline">
-                  LinkedIn Profile
-                </a>
               </div>
             </CardContent>
           </Card>
