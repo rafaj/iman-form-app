@@ -21,9 +21,21 @@ export default async function EventsPage() {
       if (session.user.email === process.env.ADMIN_EMAIL) {
         isMember = true
       } else {
-        const member = await prisma.member.findUnique({
+        // First try to find by userId, then by email as fallback
+        let member = await prisma.member.findUnique({
           where: { userId: session.user.id }
         })
+        
+        // If no member found by userId, try by email (for users created via approved applications)
+        if (!member) {
+          member = await prisma.member.findUnique({
+            where: { 
+              email: session.user.email || '',
+              active: true 
+            }
+          })
+        }
+        
         isMember = !!member
       }
     } catch (error) {
