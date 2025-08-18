@@ -79,7 +79,6 @@ export default async function EventsPage() {
                   {isMember && (
                     <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Events</Link>
                   )}
-                  <Link href="/apply" className="text-emerald-700 hover:text-emerald-900 font-medium">Apply</Link>
                   {session.user?.role === 'ADMIN' && (
                     <Link href="/admin" className="text-emerald-700 hover:text-emerald-900 font-medium">Admin</Link>
                   )}
@@ -91,7 +90,9 @@ export default async function EventsPage() {
                         className="w-8 h-8 rounded-full"
                       />
                     )}
-                    <span className="text-sm font-medium text-emerald-700">{session.user?.name}</span>
+                    <Link href="/profile" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors">
+                      {session.user?.name}
+                    </Link>
                   </div>
                   <form action={async () => { "use server"; await signOut() }}>
                     <Button type="submit" variant="outline" size="sm" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
