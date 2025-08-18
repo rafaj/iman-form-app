@@ -13,6 +13,7 @@ export async function GET() {
     const members = await prisma.member.findMany({
       select: {
         name: true,
+        linkedin: true,
         professionalQualification: true,
         interest: true,
         contribution: true,

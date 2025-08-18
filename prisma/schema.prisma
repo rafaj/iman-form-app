@@ -21,6 +21,7 @@ model Member {
   updatedAt           DateTime      @updatedAt
 
   // Profile fields
+  linkedin                 String?
   professionalQualification String?
   interest                 String?
   contribution             String?

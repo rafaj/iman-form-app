@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
 
   const profileData = {
     name: data.get('name') as string,
+    linkedin: data.get('linkedin') as string,
     professionalQualification: data.get('professionalQualification') as string,
     interest: data.get('interest') as string,
     contribution: data.get('contribution') as string,
