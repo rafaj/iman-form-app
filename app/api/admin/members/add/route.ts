@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { prisma } from "@/lib/database"
-import { auth } from "@/auth"
+import { requireAdmin } from "@/lib/auth-utils"
 
 const AddMemberSchema = z.object({
   name: z.string().min(2).max(100),
@@ -12,13 +12,7 @@ const AddMemberSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and admin role
-    const session = await auth()
-    if (!session?.user?.email || session.user.email !== process.env.ADMIN_EMAIL) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      )
-    }
+    const user = await requireAdmin()
 
     const body = await request.json()
     const validatedData = AddMemberSchema.parse(body)
@@ -54,7 +48,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Log the action (AuditLog is for applications only, so we use console logging)
-    console.log(`✅ Admin manually added member: ${newMember.name} (${newMember.email}) by ${session.user.email}`)
+    console.log(`✅ Admin manually added member: ${newMember.name} (${newMember.email}) by ${user.email}`)
 
     return NextResponse.json({
       success: true,
@@ -69,6 +63,14 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
+    // Handle authentication/authorization errors
+    if (error instanceof Error && (error.message === "Authentication required" || error.message === "Admin access required")) {
+      return NextResponse.json(
+        { success: false, message: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { 
