@@ -7,6 +7,7 @@ import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
 import MobileNavigation from "@/components/mobile-navigation"
+import { redirect } from "next/navigation"
 
 type Event = IMANEvent
 
@@ -44,6 +45,16 @@ export default async function EventsPage() {
         isMember = true
       }
     }
+  }
+
+  // Redirect non-authenticated users to sign in
+  if (!session) {
+    redirect("/auth/signin")
+  }
+
+  // Redirect authenticated users who are not members
+  if (!isMember) {
+    redirect("/auth/signin")
   }
 
   const events = await getUpcomingEvents(16)
@@ -236,7 +247,9 @@ export default async function EventsPage() {
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/" className="hover:text-white">Home</Link></li>
-                <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                {session && isMember && (
+                  <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                )}
                 {!session && (
                   <>
                     <li><Link href="/apply" className="hover:text-white">Apply</Link></li>

@@ -119,7 +119,6 @@ export default async function HomePage() {
               ) : (
                 <>
                   <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
-                  <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
                     Member Sign In
                   </Link>
@@ -373,7 +372,9 @@ export default async function HomePage() {
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/" className="hover:text-white">Home</Link></li>
-                <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                {session && isMember && (
+                  <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                )}
                 {!session && (
                   <>
                     <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
