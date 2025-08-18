@@ -19,13 +19,6 @@ model Member {
   lastApprovalAt      DateTime?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
-
-  // Profile fields
-  linkedin                 String?
-  professionalQualification String?
-  interest                 String?
-  contribution             String?
-  isMentor            Boolean       @default(false)
   
   // Link to User account (OAuth)
   userId              String?       @unique
