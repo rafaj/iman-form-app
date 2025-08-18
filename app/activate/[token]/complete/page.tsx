@@ -59,17 +59,29 @@ export default async function CompleteActivation({ params }: CompleteActivationP
   }
 
   try {
-    // Create or find the member record
+    // Create or find the member record with professional information
     const member = await prisma.member.upsert({
       where: { email: application.applicantEmail },
       update: {
         name: application.applicantName,
-        userId: session.user.id
+        userId: session.user.id,
+        // Copy professional information from application
+        professionalQualification: application.professionalQualification,
+        interest: application.interest,
+        contribution: application.contribution,
+        employer: application.employer,
+        linkedin: application.linkedin
       },
       create: {
         name: application.applicantName,
         email: application.applicantEmail,
-        userId: session.user.id
+        userId: session.user.id,
+        // Copy professional information from application
+        professionalQualification: application.professionalQualification,
+        interest: application.interest,
+        contribution: application.contribution,
+        employer: application.employer,
+        linkedin: application.linkedin
       }
     })
 

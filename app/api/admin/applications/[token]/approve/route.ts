@@ -95,17 +95,29 @@ export async function POST(
       }
     })
 
-    // Create member record
+    // Create member record with professional information
     const newMember = await prisma.member.upsert({
       where: { email: application.applicantEmail },
       update: {
         active: true,
-        name: application.applicantName
+        name: application.applicantName,
+        // Copy professional information from application
+        professionalQualification: application.professionalQualification,
+        interest: application.interest,
+        contribution: application.contribution,
+        employer: application.employer,
+        linkedin: application.linkedin
       },
       create: {
         name: application.applicantName,
         email: application.applicantEmail,
-        active: true
+        active: true,
+        // Copy professional information from application
+        professionalQualification: application.professionalQualification,
+        interest: application.interest,
+        contribution: application.contribution,
+        employer: application.employer,
+        linkedin: application.linkedin
       }
     })
 
