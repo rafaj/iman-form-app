@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, MapPin, Clock, ExternalLink } from "lucide-react"
+import { MapPin, Clock, ExternalLink, Mail, Phone } from "lucide-react"
 import Link from "next/link"
 import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 import { auth, signOut } from "@/auth"
@@ -219,33 +219,57 @@ export default async function EventsPage() {
           })}
         </div>
 
-        {/* Call to Action */}
-        <div className="mt-12 text-center bg-white rounded-lg p-8 shadow-sm">
-          <h3 className="text-2xl font-bold text-emerald-900 mb-4">Ready to Join Us?</h3>
-          <p className="text-emerald-700 mb-6">
-            Become a member of the IMAN Professional Network and get access to all our events, 
-            networking opportunities, and professional development resources.
-          </p>
-          <Link href="/apply">
-            <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
-              <Users className="h-5 w-5 mr-2" />
-              Become a Member Today
-            </Button>
-          </Link>
-        </div>
       </main>
 
       {/* Footer */}
-      <footer className="bg-emerald-900 text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="mb-4">
-            <h4 className="text-lg font-semibold mb-2">IMAN Center</h4>
-            <p className="text-emerald-200">515 State St. S, Kirkland, WA 98033</p>
-            <p className="text-emerald-200">(206) 202-IMAN (4626)</p>
+      <footer className="bg-emerald-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">IMAN Professional Network</h4>
+              <p className="text-emerald-200">
+                Connecting Muslim professionals in the Seattle Metro through 
+                networking, professional development, and community service.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-emerald-200">
+                <li><Link href="/" className="hover:text-white">Home</Link></li>
+                <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                {!session && (
+                  <>
+                    <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Member Sign In</Link></li>
+                  </>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold mb-4">Contact</h4>
+              <div className="space-y-2 text-emerald-200">
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span>info@iman-wa.org</span>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  <span>(206) 202-IMAN (4626)</span>
+                </div>
+                <div className="flex items-start">
+                  <MapPin className="h-4 w-4 mr-2 mt-1" />
+                  <div>
+                    <div>IMAN Center</div>
+                    <div>515 State St. S</div>
+                    <div>Kirkland, WA 98033</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="text-emerald-200 text-sm">
-            &copy; 2025 IMAN Professional Network. All rights reserved.
-          </p>
+          <div className="border-t border-emerald-800 mt-8 pt-8 text-center text-emerald-200">
+            <p>&copy; 2025 IMAN Professional Network. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
