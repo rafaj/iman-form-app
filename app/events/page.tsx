@@ -33,64 +33,7 @@ export default async function EventsPage() {
     }
   }
 
-  // Try to get real events from Eventbrite, fall back to mock data
-  let events: Event[] = []
-  
-  try {
-    events = await getUpcomingEvents(16)
-  } catch {
-    console.log('Eventbrite API not available, using mock data')
-    // Generate mock events for demo
-    events = generateMockEvents()
-  }
-
-  // If no events from API, show mock data
-  if (events.length === 0) {
-    events = generateMockEvents()
-  }
-
-function generateMockEvents(): Event[] {
-  const mockEvents = []
-  const today = new Date()
-  const currentDate = new Date(today)
-  
-  // Find next Thursday
-  const daysUntilThursday = (4 - currentDate.getDay() + 7) % 7
-  if (daysUntilThursday === 0 && currentDate.getHours() >= 18) {
-    currentDate.setDate(currentDate.getDate() + 7)
-  } else {
-    currentDate.setDate(currentDate.getDate() + daysUntilThursday)
-  }
-
-  const eventTypes = [
-    { type: 'networking', title: 'Weekly Networking Mixer', description: 'Join fellow professionals for networking and refreshments. Connect with like-minded individuals and expand your professional network.' },
-    { type: 'workshop', title: 'Professional Development Workshop', description: 'Skills development for career advancement. Learn new techniques and strategies to excel in your professional journey.' },
-    { type: 'social', title: 'Community Social Hour', description: 'Casual gathering for community building. Relax and connect with community members in a friendly, informal setting.' },
-    { type: 'networking', title: 'Industry Meetup', description: 'Connect with professionals in your field. Share experiences, discuss industry trends, and build meaningful connections.' },
-    { type: 'workshop', title: 'Leadership Skills Workshop', description: 'Develop your leadership capabilities. Learn essential leadership skills and techniques for managing teams effectively.' },
-    { type: 'social', title: 'Family Social Event', description: 'Bring your family for a community gathering. Enjoy activities for all ages while building community connections.' }
-  ] as const
-
-  for (let i = 0; i < 16; i++) {
-    const eventTemplate = eventTypes[i % eventTypes.length]
-    const eventDate = new Date(currentDate)
-    eventDate.setDate(currentDate.getDate() + (i * 7))
-
-    mockEvents.push({
-      id: (i + 1).toString(),
-      title: eventTemplate.title,
-      description: eventTemplate.description,
-      date: eventDate.toISOString().split('T')[0],
-      time: '6:00 PM - 8:00 PM',
-      location: 'IMAN Center, Kirkland',
-      type: eventTemplate.type,
-      registrationUrl: `https://eventbrite.com/e/iman-${i + 1}`,
-      hasAvailableTickets: true
-    })
-  }
-
-  return mockEvents
-}
+  const events = await getUpcomingEvents(16)
 
   const getEventTypeColor = (type: Event['type']) => {
     switch (type) {
