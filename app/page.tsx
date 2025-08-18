@@ -291,9 +291,15 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <p className="text-emerald-700 text-sm mb-4">{event.description}</p>
-                  <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700">
-                    Learn More
-                  </Button>
+                  <a 
+                    href={event.registrationUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Button size="sm" className="w-full bg-emerald-600 hover:bg-emerald-700">
+                      Learn More
+                    </Button>
+                  </a>
                 </div>
               ))}
             </div>
