@@ -3,6 +3,7 @@ import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar } from "luc
 import Link from "next/link"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
+import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 
 export default async function HomePage() {
   const session = await auth()
@@ -29,38 +30,7 @@ export default async function HomePage() {
     }
   }
 
-  // Generate mock events
-  function generateMockEvents() {
-    const events = [
-      {
-        id: 1,
-        title: "Professional Networking Mixer",
-        date: "2025-01-25",
-        time: "6:00 PM - 8:00 PM",
-        location: "IMAN Center",
-        description: "Join fellow professionals for an evening of networking and meaningful connections."
-      },
-      {
-        id: 2,
-        title: "Career Development Workshop",
-        date: "2025-02-08",
-        time: "10:00 AM - 12:00 PM",
-        location: "Virtual",
-        description: "Learn strategies for advancing your career while maintaining your values."
-      },
-      {
-        id: 3,
-        title: "Community Service Project",
-        date: "2025-02-15",
-        time: "9:00 AM - 3:00 PM",
-        location: "Local Community Center",
-        description: "Give back to the community through volunteer work and service."
-      }
-    ]
-    return events
-  }
-
-  const events = generateMockEvents()
+  const events = await getUpcomingEvents(3)
 
   // Fetch community spotlight data from database
   let communitySpotlight: Array<{
