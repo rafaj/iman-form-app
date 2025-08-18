@@ -1,6 +1,6 @@
 "use client"
 
-// Updated navigation with profile link and removed apply link for members
+// Updated navigation: removed apply link for members, added clickable profile name
 import { signOut, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
