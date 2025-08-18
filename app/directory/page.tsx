@@ -1,14 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Search, Users, Linkedin, Calendar, X } from "lucide-react"
+import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import MobileNavigation from "@/components/mobile-navigation"
 
 type DirectoryMember = {
   id: string
@@ -32,6 +33,7 @@ export default function DirectoryPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedMember, setSelectedMember] = useState<DirectoryMember | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [isMember, setIsMember] = useState(false)
 
   useEffect(() => {
     if (status === "loading") return
@@ -40,8 +42,21 @@ export default function DirectoryPage() {
       redirect("/auth/signin")
     }
     
+    checkMemberStatus()
     fetchMembers()
   }, [session, status])
+
+  const checkMemberStatus = async () => {
+    if (!session?.user?.email) return
+    
+    try {
+      const response = await fetch('/api/auth/check-admin')
+      const data = await response.json()
+      setIsMember(data.isMember || data.isAdmin)
+    } catch (error) {
+      console.error('Error checking member status:', error)
+    }
+  }
 
   useEffect(() => {
     // Filter members based on search term
@@ -93,8 +108,25 @@ export default function DirectoryPage() {
 
   if (status === "loading" || loading) {
     return (
-      <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
-        <section className="mx-auto max-w-6xl px-4 py-10">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-emerald-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                  <p className="text-xs md:text-sm text-emerald-600">Member Directory</p>
+                </div>
+              </div>
+              <div className="animate-pulse">
+                <div className="h-8 bg-gray-300 rounded w-32"></div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-300 rounded w-48 mx-auto mb-4"></div>
@@ -106,15 +138,36 @@ export default function DirectoryPage() {
               </div>
             </div>
           </div>
-        </section>
-      </main>
+        </main>
+      </div>
     )
   }
 
   if (error) {
     return (
-      <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
-        <section className="mx-auto max-w-6xl px-4 py-10">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-emerald-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center py-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                  <p className="text-xs md:text-sm text-emerald-600">Member Directory</p>
+                </div>
+              </div>
+              {session && (
+                <div className="flex items-center space-x-3">
+                  <Link href="/profile" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors">
+                    {session.user?.name}
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-3xl font-semibold tracking-tight text-emerald-900 mb-4">
               Member Directory
@@ -124,14 +177,82 @@ export default function DirectoryPage() {
               Try Again
             </Button>
           </div>
-        </section>
-      </main>
+        </main>
+      </div>
     )
   }
 
   return (
-    <main className="min-h-[100svh] bg-gradient-to-b from-emerald-50 to-white">
-      <section className="mx-auto max-w-6xl px-4 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-emerald-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                <p className="text-xs md:text-sm text-emerald-600">Member Directory</p>
+              </div>
+            </div>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-8 items-center">
+              {session ? (
+                <>
+                  <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
+                  {isMember && (
+                    <>
+                      <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Directory</Link>
+                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                    </>
+                  )}
+                  {session.user?.role === 'ADMIN' && (
+                    <Link href="/admin" className="text-emerald-700 hover:text-emerald-900 font-medium">Admin</Link>
+                  )}
+                  <div className="flex items-center space-x-3">
+                    {session.user?.image && (
+                      <img 
+                        src={session.user.image} 
+                        alt={session.user.name || "User"} 
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <Link href="/profile" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors">
+                      {session.user?.name}
+                    </Link>
+                  </div>
+                  <Button 
+                    onClick={() => signOut()}
+                    variant="outline" 
+                    size="sm" 
+                    className="border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</Link>
+                  <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
+                    Member Sign In
+                  </Link>
+                  <Link href="/apply">
+                    <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                      Become a Member
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </nav>
+
+            {/* Mobile Navigation */}
+            <MobileNavigation session={session} isMember={isMember} />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-8">
           <h1 className="text-3xl font-semibold tracking-tight text-emerald-900">
             Member Directory
@@ -228,18 +349,9 @@ export default function DirectoryPage() {
           <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-xl font-semibold text-emerald-900">
-                    Member Profile
-                  </DialogTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedMember(null)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
+                <DialogTitle className="text-xl font-semibold text-emerald-900">
+                  Member Profile
+                </DialogTitle>
               </DialogHeader>
               
               <div className="space-y-6">
@@ -318,6 +430,12 @@ export default function DirectoryPage() {
                     </div>
                   )}
 
+                  {!selectedMember.professionalQualification && !selectedMember.interest && !selectedMember.contribution && !selectedMember.linkedin && (
+                    <div className="text-center py-6">
+                      <p className="text-gray-500">Professional information not yet provided.</p>
+                    </div>
+                  )}
+
                   <div className="pt-4 border-t border-emerald-200">
                     <div className="flex items-center text-sm text-gray-600">
                       <Calendar className="w-4 h-4 mr-2" />
@@ -342,7 +460,64 @@ export default function DirectoryPage() {
             </Button>
           </Link>
         </div>
-      </section>
-    </main>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-emerald-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">IMAN Professional Network</h4>
+              <p className="text-emerald-200">
+                Connecting Muslim professionals in the Seattle Metro through 
+                networking, professional development, and community service.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-emerald-200">
+                <li><Link href="/" className="hover:text-white">Home</Link></li>
+                {session && isMember && (
+                  <>
+                    <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
+                    <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                  </>
+                )}
+                {!session && (
+                  <>
+                    <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Member Sign In</Link></li>
+                  </>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold mb-4">Contact</h4>
+              <div className="space-y-2 text-emerald-200">
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span>info@iman-wa.org</span>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  <span>(206) 202-IMAN (4626)</span>
+                </div>
+                <div className="flex items-start">
+                  <MapPin className="h-4 w-4 mr-2 mt-1" />
+                  <div>
+                    <div>IMAN Center</div>
+                    <div>515 State St. S</div>
+                    <div>Kirkland, WA 98033</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-emerald-800 mt-8 pt-8 text-center text-emerald-200">
+            <p>&copy; 2025 IMAN Professional Network. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
   )
 }
