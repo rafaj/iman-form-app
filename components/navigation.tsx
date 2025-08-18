@@ -3,7 +3,7 @@
 import { signOut, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { LogOut } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 
