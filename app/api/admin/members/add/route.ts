@@ -6,16 +6,7 @@ import { auth } from "@/auth"
 const AddMemberSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email().max(200),
-  active: z.boolean().optional().default(true),
-  streetAddress: z.string().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
-  zip: z.string().optional(),
-  professionalQualification: z.string().optional(),
-  interest: z.string().optional(),
-  contribution: z.string().optional(),
-  employer: z.string().optional(),
-  linkedin: z.string().optional()
+  active: z.boolean().optional().default(true)
 })
 
 export async function POST(request: NextRequest) {
@@ -58,34 +49,12 @@ export async function POST(request: NextRequest) {
       data: {
         name: validatedData.name,
         email: validatedData.email,
-        active: validatedData.active,
-        streetAddress: validatedData.streetAddress || null,
-        city: validatedData.city || null,
-        state: validatedData.state || null,
-        zip: validatedData.zip || null,
-        professionalQualification: validatedData.professionalQualification || null,
-        interest: validatedData.interest || null,
-        contribution: validatedData.contribution || null,
-        employer: validatedData.employer || null,
-        linkedin: validatedData.linkedin || null
+        active: validatedData.active
       }
     })
 
-    // Create audit log entry
-    await prisma.auditLog.create({
-      data: {
-        event: "MEMBER_ADDED_MANUALLY",
-        performedBy: session.user.email,
-        metadata: {
-          memberId: newMember.id,
-          memberName: newMember.name,
-          memberEmail: newMember.email,
-          addedBy: "admin"
-        }
-      }
-    })
-
-    console.log(`✅ Admin added new member: ${newMember.name} (${newMember.email})`)
+    // Log the action (AuditLog is for applications only, so we use console logging)
+    console.log(`✅ Admin manually added member: ${newMember.name} (${newMember.email}) by ${session.user.email}`)
 
     return NextResponse.json({
       success: true,
