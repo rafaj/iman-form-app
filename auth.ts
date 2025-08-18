@@ -12,37 +12,46 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      if (!user.email) return false
-
-      // Allow admins to sign in
-      if (user.email === process.env.ADMIN_EMAIL) {
-        return true
-      }
-
-      // Check if user has an approved application or is already a member
-      const approvedApplication = await prisma.application.findFirst({
-        where: {
-          applicantEmail: user.email,
-          status: "APPROVED"
-        }
-      })
-
-      // Also check if user is already a member (manually added by admin)
-      const existingMember = await prisma.member.findUnique({
-        where: {
-          email: user.email,
-          active: true
-        }
-      })
-
-      if (!approvedApplication && !existingMember) {
-        // No approved application or existing member found
-        console.log(`❌ Access denied for ${user.email}: No approved application or active membership found`)
+      if (!user.email) {
+        console.log(`❌ Access denied: No email provided`)
         return false
       }
 
-      console.log(`✅ Access granted for ${user.email}: ${approvedApplication ? 'Approved application' : 'Active member'} found`)
-      return true
+      // Allow admins to sign in
+      if (user.email === process.env.ADMIN_EMAIL) {
+        console.log(`✅ Admin access granted for ${user.email}`)
+        return true
+      }
+
+      try {
+        // Check if user has an approved application or is already a member
+        const approvedApplication = await prisma.application.findFirst({
+          where: {
+            applicantEmail: user.email,
+            status: "APPROVED"
+          }
+        })
+
+        // Also check if user is already a member (manually added by admin)
+        const existingMember = await prisma.member.findUnique({
+          where: {
+            email: user.email,
+            active: true
+          }
+        })
+
+        if (!approvedApplication && !existingMember) {
+          // No approved application or existing member found
+          console.log(`❌ Access denied for ${user.email}: No approved application or active membership found`)
+          return false
+        }
+
+        console.log(`✅ Access granted for ${user.email}: ${approvedApplication ? 'Approved application' : 'Active member'} found`)
+        return true
+      } catch (error) {
+        console.error(`❌ Database error during signin for ${user.email}:`, error)
+        return false
+      }
     },
     async jwt({ token, user, account }) {
       if (user) {
@@ -67,6 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   pages: {
+    signIn: "/auth/signin",
     error: "/auth/error",
   },
 })
