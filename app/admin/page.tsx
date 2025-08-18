@@ -10,7 +10,6 @@ import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
@@ -81,15 +80,7 @@ export default function AdminPage() {
   const [addMemberForm, setAddMemberForm] = useState({
     name: '',
     email: '',
-    streetAddress: '',
-    city: '',
-    state: '',
-    zip: '',
-    professionalQualification: '',
-    interest: '',
-    contribution: '',
-    employer: '',
-    linkedin: ''
+    active: true
   })
   const [addingMember, setAddingMember] = useState(false)
   const { toast } = useToast()
@@ -255,15 +246,7 @@ export default function AdminPage() {
         setAddMemberForm({
           name: '',
           email: '',
-          streetAddress: '',
-          city: '',
-          state: '',
-          zip: '',
-          professionalQualification: '',
-          interest: '',
-          contribution: '',
-          employer: '',
-          linkedin: ''
+          active: true
         })
         setShowAddMemberDialog(false)
         
@@ -450,7 +433,7 @@ export default function AdminPage() {
                         Add Member
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-md">
                       <DialogHeader>
                         <DialogTitle>Add New Member</DialogTitle>
                         <DialogDescription>
@@ -458,135 +441,27 @@ export default function AdminPage() {
                         </DialogDescription>
                       </DialogHeader>
                       
-                      <div className="space-y-6 py-4">
-                        {/* Basic Information */}
-                        <div className="space-y-4">
-                          <h3 className="font-semibold text-emerald-900">Basic Information</h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="name">Full Name *</Label>
-                              <Input
-                                id="name"
-                                value={addMemberForm.name}
-                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, name: e.target.value }))}
-                                placeholder="Enter full name"
-                                required
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="email">Email Address *</Label>
-                              <Input
-                                id="email"
-                                type="email"
-                                value={addMemberForm.email}
-                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, email: e.target.value }))}
-                                placeholder="Enter email address"
-                                required
-                              />
-                            </div>
-                          </div>
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name *</Label>
+                          <Input
+                            id="name"
+                            value={addMemberForm.name}
+                            onChange={(e) => setAddMemberForm(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Enter full name"
+                            required
+                          />
                         </div>
-
-                        {/* Address Information */}
-                        <div className="space-y-4">
-                          <h3 className="font-semibold text-emerald-900">Address Information</h3>
-                          <div className="space-y-2">
-                            <Label htmlFor="streetAddress">Street Address</Label>
-                            <Input
-                              id="streetAddress"
-                              value={addMemberForm.streetAddress}
-                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, streetAddress: e.target.value }))}
-                              placeholder="Enter street address"
-                            />
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="city">City</Label>
-                              <Input
-                                id="city"
-                                value={addMemberForm.city}
-                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, city: e.target.value }))}
-                                placeholder="Enter city"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="state">State</Label>
-                              <Input
-                                id="state"
-                                value={addMemberForm.state}
-                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, state: e.target.value }))}
-                                placeholder="Enter state"
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="zip">ZIP Code</Label>
-                              <Input
-                                id="zip"
-                                value={addMemberForm.zip}
-                                onChange={(e) => setAddMemberForm(prev => ({ ...prev, zip: e.target.value }))}
-                                placeholder="Enter ZIP code"
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Professional Information */}
-                        <div className="space-y-4">
-                          <h3 className="font-semibold text-emerald-900">Professional Information</h3>
-                          <div className="space-y-2">
-                            <Label htmlFor="professionalQualification">Professional Qualification</Label>
-                            <Textarea
-                              id="professionalQualification"
-                              value={addMemberForm.professionalQualification}
-                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, professionalQualification: e.target.value }))}
-                              placeholder="Describe professional background and qualifications"
-                              rows={3}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="employer">Current Employer</Label>
-                            <Input
-                              id="employer"
-                              value={addMemberForm.employer}
-                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, employer: e.target.value }))}
-                              placeholder="Enter current employer"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="linkedin">LinkedIn Profile</Label>
-                            <Input
-                              id="linkedin"
-                              type="url"
-                              value={addMemberForm.linkedin}
-                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, linkedin: e.target.value }))}
-                              placeholder="https://linkedin.com/in/username"
-                            />
-                          </div>
-                        </div>
-
-                        {/* IMAN Network Involvement */}
-                        <div className="space-y-4">
-                          <h3 className="font-semibold text-emerald-900">IMAN Network Involvement</h3>
-                          <div className="space-y-2">
-                            <Label htmlFor="interest">Interest in IMAN</Label>
-                            <Textarea
-                              id="interest"
-                              value={addMemberForm.interest}
-                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, interest: e.target.value }))}
-                              placeholder="Describe interest in joining IMAN Professional Network"
-                              rows={3}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="contribution">How They Contribute</Label>
-                            <Textarea
-                              id="contribution"
-                              value={addMemberForm.contribution}
-                              onChange={(e) => setAddMemberForm(prev => ({ ...prev, contribution: e.target.value }))}
-                              placeholder="Describe how they contribute to the network"
-                              rows={3}
-                            />
-                          </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={addMemberForm.email}
+                            onChange={(e) => setAddMemberForm(prev => ({ ...prev, email: e.target.value }))}
+                            placeholder="Enter email address"
+                            required
+                          />
                         </div>
                       </div>
 
