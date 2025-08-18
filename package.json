@@ -16,9 +16,7 @@
     "deploy:setup": "tsx scripts/create-production-members.ts",
     "deploy:verify": "tsx scripts/verify-deployment.ts",
     "deploy:prepare": "npm run db:generate && npm run db:push && npm run deploy:setup",
-    "admin:create": "ts-node --compiler-options {\"module\":\"CommonJS\"} scripts/create-admin-user.ts",
-    "postbuild": "npx prisma migrate deploy",
-    "prebuild": "npx prisma migrate deploy"
+    "admin:create": "tsx scripts/create-admin-user.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
