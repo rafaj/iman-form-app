@@ -52,8 +52,13 @@ export default function Navigation() {
               <Link href="/" className="text-gray-600 hover:text-emerald-700 transition-colors">
                 Home
               </Link>
-              <Link href="/apply" className="text-gray-600 hover:text-emerald-700 transition-colors">
-                Apply
+              {!session && (
+                <Link href="/apply" className="text-gray-600 hover:text-emerald-700 transition-colors">
+                  Apply
+                </Link>
+              )}
+              <Link href="/directory" className="text-gray-600 hover:text-emerald-700 transition-colors">
+                Directory
               </Link>
               {isAdmin && (
                 <Link href="/admin" className="text-gray-600 hover:text-emerald-700 transition-colors">
