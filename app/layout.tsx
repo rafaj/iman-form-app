@@ -6,6 +6,7 @@ import { Plus_Jakarta_Sans } from "next/font/google"
 import AuthProvider from "@/components/auth-provider"
 // import Navigation from "@/components/navigation"
 import { Toaster } from "@/components/ui/toaster"
+import { Analytics } from '@vercel/analytics/react';
 import "./globals.css"
 
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"] })
@@ -36,6 +37,7 @@ html {
           <main>{children}</main>
           <Toaster />
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   )
