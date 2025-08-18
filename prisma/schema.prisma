@@ -24,6 +24,13 @@ model Member {
   userId              String?       @unique
   user                User?         @relation(fields: [userId], references: [id])
   
+  // Professional Information (editable by member)
+  professionalQualification String?
+  interest                 String?
+  contribution             String?
+  employer                 String?
+  linkedin                 String?
+  
   // Relations
   sponsoredApplications Application[] @relation("SponsorApplications")
   approvedApplications  Application[] @relation("ApproverApplications")
