@@ -52,11 +52,6 @@ export default function Navigation() {
               <Link href="/" className="text-gray-600 hover:text-emerald-700 transition-colors">
                 Home
               </Link>
-              {!session && (
-                <Link href="/apply" className="text-gray-600 hover:text-emerald-700 transition-colors">
-                  Apply
-                </Link>
-              )}
               <Link href="/directory" className="text-gray-600 hover:text-emerald-700 transition-colors">
                 Directory
               </Link>
@@ -79,9 +74,9 @@ export default function Navigation() {
               )}
               <div className="hidden md:block">
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-gray-700">
+                  <Link href="/profile" className="text-sm font-medium text-gray-700 hover:text-emerald-700 transition-colors">
                     {session.user?.name}
-                  </span>
+                  </Link>
                   <Badge variant={isAdmin ? "default" : "secondary"} className="text-xs">
                     {isAdmin ? "Admin" : "Member"}
                   </Badge>
