@@ -20,8 +20,23 @@ export async function GET(req: NextRequest) {
       console.error('Prisma migrate deploy stderr:', stderr)
     }
     return NextResponse.json({ message: 'Migrations applied successfully', stdout, stderr }, { status: 200 })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error applying migrations:', error)
-    return NextResponse.json({ message: 'Failed to apply migrations', error: error.message, stdout: error.stdout, stderr: error.stderr }, { status: 500 })
+    let errorMessage = 'Unknown error'
+    let errorStdout = ''
+    let errorStderr = ''
+
+    if (error instanceof Error) {
+      errorMessage = error.message
+      // Check if it's an ExecException from child_process
+      if ('stdout' in error && typeof error.stdout === 'string') {
+        errorStdout = error.stdout
+      }
+      if ('stderr' in error && typeof error.stderr === 'string') {
+        errorStderr = error.stderr
+      }
+    }
+
+    return NextResponse.json({ message: 'Failed to apply migrations', error: errorMessage, stdout: errorStdout, stderr: errorStderr }, { status: 500 })
   }
 }
