@@ -3,7 +3,7 @@ import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar } from "luc
 import Link from "next/link"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
-import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
+import { getUpcomingEvents } from "@/lib/eventbrite"
 
 export default async function HomePage() {
   const session = await auth()
