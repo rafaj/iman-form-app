@@ -8,6 +8,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 
 ### **🎯 Core Functionality**
 - **Professional Application Form** - Clean, user-friendly membership application interface
+- **Google OAuth Authentication** - Secure sign-in with Google for members and admins.
 - **Community Spotlight Integration** - Highlighting key community members and organizations
 - **Automated Email Notifications** - Sponsors receive approval requests via Resend email service
 - **Comprehensive Admin Dashboard** - Full member and application management system
@@ -55,6 +56,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 
 ### **Backend & API**
 - **Next.js API Routes** - Serverless API endpoints with TypeScript
+- **NextAuth.js** - Authentication for Next.js applications
 - **Prisma ORM** - Type-safe database operations and schema management
 - **Zod Validation** - Runtime type validation and data sanitization
 - **Custom Security Middleware** - Rate limiting, authentication, and protection layers
@@ -62,6 +64,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 ### **Database & Storage**
 - **PostgreSQL** - Robust relational database via Neon serverless (development and production)
 - **Prisma Schema** - Type-safe database modeling and automated migrations
+- **Vercel Blob** - For file uploads and storage.
 
 ### **External Services**
 - **Resend** - Professional email delivery service with high deliverability rates
@@ -83,6 +86,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Resend API key** for email delivery service
 - **Eventbrite API Key and Organization ID** for fetching event details
 - **WhatsApp group** for member community invitations
+- **Google OAuth Credentials** for member and admin authentication.
 
 ### **Development Setup**
 ```bash
@@ -97,6 +101,10 @@ npm install
 cp .env.example .env.local
 # Edit .env.local with your Neon PostgreSQL DATABASE_URL and other config
 
+# Use the setup scripts for a streamlined experience
+./github-setup.sh
+./run-after-setup.sh
+
 # Initialize database and generate Prisma client
 npm run db:push
 npm run db:generate
@@ -107,6 +115,9 @@ npm run db:seed
 # Start development server with hot reload
 npm run dev
 ```
+
+### **Google OAuth Authentication**
+This application uses NextAuth.js for authentication, with Google as the primary OAuth provider. To set up Google OAuth, follow the instructions in the `google-oauth-setup.md` file.
 
 ### **Environment Configuration**
 ```bash
@@ -127,6 +138,10 @@ ADMIN_PASSWORD="your_very_secure_password_123!"
 # Next.js Configuration
 NEXTAUTH_SECRET="your_random_32_character_secret_key"
 NEXTAUTH_URL="http://localhost:3000"
+
+# Google OAuth Credentials
+GOOGLE_CLIENT_ID="your_google_client_id"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
 ```
 
 ## 📋 **User Workflows**
@@ -202,6 +217,11 @@ NEXTAUTH_URL="http://localhost:3000"
 - **Application Status Tracking**: Complete history and current status
 - **Bulk Management Tools**: Efficient handling of multiple applications
 
+### **Member Spotlight and Sponsors**
+- **Member Spotlight**: Feature and manage members in a dedicated spotlight section.
+- **Sponsors**: Manage and display sponsors of the organization.
+- **File Uploads**: Upload logos for sponsors and images for member spotlights.
+
 ### **Security Monitoring Dashboard**
 - **Real-Time Security Logs**: Live feed of all security events
 - **Rate Limit Violation Alerts**: Immediate notification of abuse attempts
@@ -257,19 +277,26 @@ iman-form-app/
 - **Events Page** (`app/events/page.tsx`) - Displays upcoming events with images and responsive design
 - **Security Layer** (`lib/security.ts`) - Rate limiting and protection utilities
 - **Email Service** (`lib/email.ts`) - Resend integration with templates
-- **Authentication** (`lib/admin-auth.ts`) - Secure admin session management
+- **Authentication** (`auth.ts`) - NextAuth.js configuration with Google OAuth.
 - **Database Layer** (`lib/database.ts`) - Prisma ORM with type safety
 
 ### **Database Schema Design**
 - **Members Table** - Active members with sponsorship capabilities
 - **Applications Table** - Complete membership applications with full details
 - **Audit Trail** - Comprehensive history of all system actions and changes
+- **Sponsor Table** - Stores information about sponsors and member spotlights.
 
 ### **API Endpoint Architecture**
 - **Public APIs**: Application submission and sponsor approval
 - **Protected APIs**: Admin-only endpoints with authentication
 - **Security APIs**: Authentication, logout, and session management
 - **Data APIs**: Member and application management with proper authorization
+
+### **Environment-Specific Middleware**
+The application uses different middleware for development and production.
+- `middleware.dev.ts`: Used for local development.
+- `middleware.prod.ts`: Used for production deployments.
+The `middleware.ts` file dynamically selects the appropriate middleware based on the `NODE_ENV` environment variable.
 
 ## 🚀 **Production Deployment**
 
@@ -284,6 +311,7 @@ iman-form-app/
 3. **Resend Email Service** - Professional email delivery setup
 4. **WhatsApp Group Integration** - Community group invite configuration
 5. **Admin Security** - Strong credentials and session configuration
+6. **Google OAuth Credentials** - Production Google OAuth credentials.
 
 ### **Automated Deployment Scripts**
 ```bash
@@ -298,6 +326,7 @@ npm run deploy:verify     # Complete deployment configuration verification
 - ✅ **Resend API key** configured and tested
 - ✅ **Admin credentials** changed from defaults
 - ✅ **WhatsApp group link** updated in configuration
+- ✅ **Google OAuth credentials** configured for production.
 - ✅ **HTTPS enabled** for secure cookie operation
 - ✅ **Domain configured** with proper DNS settings
 
@@ -306,6 +335,7 @@ npm run deploy:verify     # Complete deployment configuration verification
 - **DEPLOYMENT_GUIDE.md** - Step-by-step production deployment instructions
 - **SECURITY_ANALYSIS.md** - Complete security features and risk assessment
 - **ADMIN_SECURITY.md** - Admin authentication and session management
+- **google-oauth-setup.md** - Instructions for setting up Google OAuth.
 - **.env.example** - Environment variable template with descriptions
 
 ## 🎯 **System Capabilities**

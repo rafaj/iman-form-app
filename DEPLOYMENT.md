@@ -17,6 +17,22 @@
    npm run db:seed
    ```
 
+## Google OAuth Setup for Production
+
+Follow the instructions in `google-oauth-setup.md` to create Google OAuth credentials. For production, you will need to create a new OAuth 2.0 Client ID with the following authorized redirect URI:
+
+`https://your-domain.com/api/auth/callback/google`
+
+Replace `your-domain.com` with your actual production domain.
+
+## File Uploads with Vercel Blob
+
+This application uses Vercel Blob for file uploads. To set up Vercel Blob, you will need to create a new Blob store in your Vercel project dashboard.
+
+1. Go to the "Storage" tab in your Vercel project.
+2. Create a new Blob store.
+3. Copy the `BLOB_READ_WRITE_TOKEN` and add it to your environment variables.
+
 ## Deploy to Vercel
 
 ### Method 1: Using Vercel CLI
@@ -39,8 +55,11 @@
 4. **Set environment variables in Vercel**:
    ```bash
    vercel env add DATABASE_URL
+   vercel env add GOOGLE_CLIENT_ID
+   vercel env add GOOGLE_CLIENT_SECRET
+   vercel env add BLOB_READ_WRITE_TOKEN
    ```
-   Then paste your production database URL.
+   Then paste your production values.
 
 ### Method 2: Using Vercel Dashboard
 
@@ -56,6 +75,9 @@
 4. **Add environment variables**:
    - Go to Settings > Environment Variables
    - Add `DATABASE_URL` with your production database URL
+   - Add `GOOGLE_CLIENT_ID` with your production Google Client ID
+   - Add `GOOGLE_CLIENT_SECRET` with your production Google Client Secret
+   - Add `BLOB_READ_WRITE_TOKEN` with your Vercel Blob token
 5. **Deploy**
 
 ## Environment Variables for Production
@@ -66,6 +88,9 @@ Make sure to set these in your Vercel project:
 - `NODE_ENV`: Set to "production" (Vercel sets this automatically)
 - `EVENTBRITE_API_KEY`: Your Eventbrite API key for fetching event details
 - `EVENTBRITE_ORGANIZATION_ID`: Your Eventbrite organization ID for fetching event details
+- `GOOGLE_CLIENT_ID`: Your Google OAuth Client ID
+- `GOOGLE_CLIENT_SECRET`: Your Google OAuth Client Secret
+- `BLOB_READ_WRITE_TOKEN`: Your Vercel Blob read-write token.
 
 ## Post-Deployment
 
