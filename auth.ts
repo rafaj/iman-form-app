@@ -27,8 +27,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       })
 
-      if (!approvedApplication) {
-        // No approved application found
+      // Also check if user is already a member (manually added by admin)
+      const existingMember = await prisma.member.findUnique({
+        where: {
+          email: user.email,
+          active: true
+        }
+      })
+
+      if (!approvedApplication && !existingMember) {
+        // No approved application or existing member found
         return false
       }
 
