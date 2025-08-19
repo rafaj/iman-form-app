@@ -68,7 +68,7 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: `Post \"${post.title}\" deleted successfully`,
+      message: `Post "${post.title}" deleted successfully`,
       deletedPost: {
         id: post.id,
         title: post.title,
