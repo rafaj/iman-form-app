@@ -21,22 +21,22 @@ export default function HomePage() {
   const [isMember, setIsMember] = useState(false)
 
   useEffect(() => {
+    const checkMemberStatus = async () => {
+      if (!session?.user?.email) return
+      
+      try {
+        const response = await fetch('/api/auth/check-admin')
+        const data = await response.json()
+        setIsMember(data.isMember || data.isAdmin)
+      } catch (error) {
+        console.error('Error checking member status:', error)
+      }
+    }
+
     if (session?.user?.email) {
       checkMemberStatus()
     }
   }, [session])
-
-  const checkMemberStatus = async () => {
-    if (!session?.user?.email) return
-    
-    try {
-      const response = await fetch('/api/auth/check-admin')
-      const data = await response.json()
-      setIsMember(data.isMember || data.isAdmin)
-    } catch (error) {
-      console.error('Error checking member status:', error)
-    }
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">

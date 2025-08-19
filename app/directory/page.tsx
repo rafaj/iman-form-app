@@ -38,6 +38,18 @@ export default function DirectoryPage() {
   useEffect(() => {
     if (status === "loading") return
     
+    const checkMemberStatus = async () => {
+      if (!session?.user?.email) return
+      
+      try {
+        const response = await fetch('/api/auth/check-admin')
+        const data = await response.json()
+        setIsMember(data.isMember || data.isAdmin)
+      } catch (error) {
+        console.error('Error checking member status:', error)
+      }
+    }
+
     if (!session) {
       redirect("/auth/signin")
     }
@@ -45,18 +57,6 @@ export default function DirectoryPage() {
     checkMemberStatus()
     fetchMembers()
   }, [session, status])
-
-  const checkMemberStatus = async () => {
-    if (!session?.user?.email) return
-    
-    try {
-      const response = await fetch('/api/auth/check-admin')
-      const data = await response.json()
-      setIsMember(data.isMember || data.isAdmin)
-    } catch (error) {
-      console.error('Error checking member status:', error)
-    }
-  }
 
   useEffect(() => {
     // Filter members based on search term

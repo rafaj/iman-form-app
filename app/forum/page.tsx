@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -76,7 +76,7 @@ export default function ForumPage() {
     fetchPosts()
   }, [sortBy, filterType])
 
-  const checkMemberStatus = async () => {
+  const checkMemberStatus = useCallback(async () => {
     if (!session?.user?.email) return
     
     try {
@@ -86,9 +86,9 @@ export default function ForumPage() {
     } catch (error) {
       console.error('Error checking member status:', error)
     }
-  }
+  }, [session])
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -112,7 +112,7 @@ export default function ForumPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [sortBy, filterType, toast, setPosts, setLoading])
 
 
   if (!session) {
