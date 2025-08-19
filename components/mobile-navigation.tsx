@@ -81,6 +81,13 @@ export default function MobileNavigation({ session, isMember }: MobileNavigation
                       >
                         Events
                       </Link>
+                      <Link 
+                        href="/forum" 
+                        className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
+                        onClick={toggleMenu}
+                      >
+                        Forum
+                      </Link>
                     </>
                   )}
                   <Link 

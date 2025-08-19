@@ -96,6 +96,7 @@ export default async function HomePage() {
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
                       <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                      <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
                     </>
                   )}
                   {session.user?.role === 'ADMIN' && (

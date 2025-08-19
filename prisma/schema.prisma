@@ -127,6 +127,18 @@ enum UserRole {
   MEMBER
 }
 
+enum PostType {
+  DISCUSSION
+  ANNOUNCEMENT
+  JOB_POSTING
+  EVENT
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -143,6 +155,12 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  
+  // Forum relations
+  posts         Post[]
+  comments      Comment[]
+  postVotes     PostVote[]
+  commentVotes  CommentVote[]
 
   @@map("users")
 }
@@ -184,4 +202,79 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  content     String?   // Optional for link posts
+  url         String?   // Optional external link
+  type        PostType  @default(DISCUSSION)
+  authorId    String
+  pinned      Boolean   @default(false)
+  locked      Boolean   @default(false)
+  score       Int       @default(0)
+  voteCount   Int       @default(0)
+  commentCount Int      @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  author      User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  votes       PostVote[]
+
+  @@map("posts")
+}
+
+model Comment {
+  id          String    @id @default(cuid())
+  content     String
+  postId      String
+  authorId    String
+  parentId    String?   // For threaded comments
+  score       Int       @default(0)
+  voteCount   Int       @default(0)
+  depth       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  post        Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parent      Comment?     @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[]    @relation("CommentReplies")
+  votes       CommentVote[]
+
+  @@map("comments")
+}
+
+model PostVote {
+  id        String    @id @default(cuid())
+  postId    String
+  userId    String
+  voteType  VoteType
+  createdAt DateTime  @default(now())
+
+  // Relations
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("post_votes")
+}
+
+model CommentVote {
+  id        String    @id @default(cuid())
+  commentId String
+  userId    String
+  voteType  VoteType
+  createdAt DateTime  @default(now())
+
+  // Relations
+  comment   Comment   @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@map("comment_votes")
 }
