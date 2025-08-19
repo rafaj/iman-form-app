@@ -386,6 +386,7 @@ export default async function HomePage() {
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
                     <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                    <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
                   </>
                 )}
                 {!session && (

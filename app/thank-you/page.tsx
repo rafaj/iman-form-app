@@ -52,6 +52,7 @@ export default function ThankYouPage() {
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
                       <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                      <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
                     </>
                   )}
                   {session.user?.role === 'ADMIN' && (
@@ -182,6 +183,7 @@ export default function ThankYouPage() {
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
                     <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                    <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
                   </>
                 )}
                 {!session && (
