@@ -6,7 +6,7 @@ import { checkRateLimit } from "@/lib/security"
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const session = await auth()
