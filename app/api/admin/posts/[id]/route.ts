@@ -36,7 +36,7 @@ export async function DELETE(
       )
     }
 
-    const postId = context.params.id
+    const postId = params.id
 
     // Verify post exists
     const post = await prisma.post.findUnique({
