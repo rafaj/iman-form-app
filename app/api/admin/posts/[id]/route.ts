@@ -7,7 +7,7 @@ import { checkRateLimit } from "@/lib/security"
 
 export async function DELETE(
   _req: NextRequest,
-  { params: { id } }: { params: { id: string } }
+  context: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const session = await auth()
@@ -37,7 +37,7 @@ export async function DELETE(
       )
     }
 
-    const postId = id
+    const postId = context.params.id
 
     // Verify post exists
     const post = await prisma.post.findUnique({
