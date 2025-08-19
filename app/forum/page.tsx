@@ -34,7 +34,7 @@ type Post = {
   title: string
   content?: string
   url?: string
-  type: "DISCUSSION" | "ANNOUNCEMENT" | "JOB_POSTING" | "EVENT"
+  type: "DISCUSSION" | "ANNOUNCEMENT" | "JOB_POSTING"
   pinned: boolean
   locked: boolean
   score: number
@@ -254,7 +254,6 @@ export default function ForumPage() {
               <SelectItem value="DISCUSSION">Discussions</SelectItem>
               <SelectItem value="ANNOUNCEMENT">Announcements</SelectItem>
               <SelectItem value="JOB_POSTING">Job Postings</SelectItem>
-              <SelectItem value="EVENT">Events</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -351,7 +350,6 @@ function PostCard({ post }: { post: Post }) {
     switch (type) {
       case "ANNOUNCEMENT": return "bg-blue-100 text-blue-800"
       case "JOB_POSTING": return "bg-green-100 text-green-800"
-      case "EVENT": return "bg-purple-100 text-purple-800"
       default: return "bg-gray-100 text-gray-800"
     }
   }
@@ -512,7 +510,7 @@ function CreatePostDialog({
         <DialogHeader>
           <DialogTitle>Create New Post</DialogTitle>
           <DialogDescription>
-            Share a discussion, announcement, job posting, or event with the community
+            Share a discussion, announcement, or job posting with the community
           </DialogDescription>
         </DialogHeader>
         
@@ -527,7 +525,6 @@ function CreatePostDialog({
                 <SelectItem value="DISCUSSION">Discussion</SelectItem>
                 <SelectItem value="ANNOUNCEMENT">Announcement</SelectItem>
                 <SelectItem value="JOB_POSTING">Job Posting</SelectItem>
-                <SelectItem value="EVENT">Event</SelectItem>
               </SelectContent>
             </Select>
           </div>
