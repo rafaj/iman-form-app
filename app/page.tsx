@@ -505,7 +505,7 @@ export default async function HomePage() {
             <div className="text-center mb-6">
               <h3 className="text-3xl font-bold text-emerald-900 mb-2">Community Spotlight</h3>
               <p className="text-emerald-700 max-w-2xl mx-auto">
-                Proud to be supported by these outstanding organizations in our community.
+                Grateful to have these amazing individuals as part of our community.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
