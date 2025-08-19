@@ -6,8 +6,8 @@ import { isAdmin } from "@/lib/auth-utils"
 import { checkRateLimit } from "@/lib/security"
 
 export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
+  _req: NextRequest,
+  { params: { id } }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     const session = await auth()
@@ -37,7 +37,7 @@ export async function DELETE(
       )
     }
 
-    const postId = params.id
+    const postId = id
 
     // Verify post exists
     const post = await prisma.post.findUnique({
