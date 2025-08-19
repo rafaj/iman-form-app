@@ -8,16 +8,20 @@ A comprehensive, secure membership application system for the IMAN Professional 
 
 ### **🎯 Core Functionality**
 - **Professional Application Form** - Clean, user-friendly membership application interface
-- **Google OAuth Authentication** - Secure sign-in with Google for members and admins.
+- **Google OAuth Authentication** - Secure sign-in with Google for members and admins
+- **Community Forum System** - Hacker News-style discussion platform with posts, comments, and voting
+- **Advanced Post Management** - Users can create, edit, and delete their own posts with real-time updates
+- **Admin Forum Controls** - Comprehensive forum moderation with bulk post management capabilities
 - **Community Spotlight Integration** - Highlighting key community members and organizations
 - **Automated Email Notifications** - Sponsors receive approval requests via Resend email service
-- **Comprehensive Admin Dashboard** - Full member and application management system
+- **Comprehensive Admin Dashboard** - Full member, application, and forum management system
 - **WhatsApp Integration** - Automatic group invites for approved members
 - **Real-time Status Tracking** - Application status updates and notifications
 
 ### **🔐 Enterprise Security Features**
-- **Multi-Layer Rate Limiting** - IP-based (3/15min), email-based (2/day), admin-specific (10/5min)
+- **Multi-Layer Rate Limiting** - IP-based (3/15min), email-based (2/day), admin-specific (10/5min), forum actions (5 edits/15min, 3 deletes/15min)
 - **Advanced Input Validation** - Comprehensive data validation and sanitization with Zod
+- **Forum Content Protection** - Users can only edit/delete their own posts with permission validation
 - **Suspicious Activity Detection** - Automated pattern recognition and security logging
 - **Session-Based Admin Authentication** - Secure HTTP-only cookies with 24-hour expiration
 - **CSRF Protection** - SameSite cookies and secure session management
@@ -37,6 +41,15 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Complete Application History** - Full audit trail of all membership applications
 - **Multi-Status Management** - Pending, approved, rejected, expired application states
 - **Admin Bulk Operations** - Efficient tools for member and application management
+
+### **💬 Community Forum System**
+- **Hacker News-Style Interface** - Modern discussion platform with voting and threaded comments
+- **Multiple Post Types** - Support for Discussions, Announcements, and Job Postings
+- **User Post Management** - Members can create, edit, and delete their own posts
+- **Admin Moderation Tools** - Complete forum management with bulk post operations
+- **Real-Time Updates** - Live post feeds with engagement metrics and time tracking
+- **Integrated Navigation** - Seamless connection between homepage and forum sections
+- **Mobile-Optimized Design** - Full forum functionality across all devices
 
 ### **📱 WhatsApp Community Integration**
 - **Automatic Group Invites** - Seamless onboarding to IMAN community group
@@ -160,12 +173,20 @@ GOOGLE_CLIENT_SECRET="your_google_client_secret"
 4. **Approve or Decline** - One-click decision with automatic notifications
 5. **Automatic Processing** - Welcome email sent to approved applicants
 
+### **Forum Member Experience**
+1. **Access Community Forum** - Navigate to `/forum` for discussion platform
+2. **Create New Posts** - Submit discussions, announcements, or job postings
+3. **Engage with Content** - Vote on posts and participate in discussions
+4. **Manage Personal Posts** - Edit or delete your own forum contributions
+5. **Browse by Category** - Filter posts by type (Discussion, Announcement, Job Posting)
+
 ### **Administrator Management**
 1. **Secure Admin Access** - Login at `/admin` with session authentication
-2. **Dashboard Overview** - Complete member and application statistics
+2. **Dashboard Overview** - Complete member, application, and forum statistics
 3. **Review Applications** - Detailed applicant profiles and sponsor information
-4. **One-Click Actions** - Approve/reject with automatic email notifications
-5. **Security Monitoring** - Real-time activity logs and suspicious pattern alerts
+4. **Moderate Forum Content** - Manage all forum posts with delete capabilities
+5. **One-Click Actions** - Approve/reject with automatic email notifications
+6. **Security Monitoring** - Real-time activity logs and suspicious pattern alerts
 
 ## 🔐 **Comprehensive Security Features**
 
@@ -216,6 +237,13 @@ GOOGLE_CLIENT_SECRET="your_google_client_secret"
 - **One-Click Approval System**: Instant approve/reject with automatic notifications
 - **Application Status Tracking**: Complete history and current status
 - **Bulk Management Tools**: Efficient handling of multiple applications
+
+### **Forum Management Dashboard**
+- **Complete Post Overview**: View all forum posts with author, type, and engagement metrics
+- **Bulk Moderation Tools**: Delete inappropriate posts with confirmation dialogs
+- **Post Analytics**: Track comment counts, vote scores, and post creation dates
+- **Content Organization**: Filter posts by type (Discussion, Announcement, Job Posting)
+- **Author Management**: View post authors with email addresses and user details
 
 ### **Member Spotlight and Sponsors**
 - **Member Spotlight**: Feature and manage members in a dedicated spotlight section.
@@ -271,14 +299,17 @@ iman-form-app/
 ```
 
 ### **Key System Components**
-- **Application Form** (`app/page.tsx`) - Main membership application interface
-- **Admin Dashboard** (`app/admin/page.tsx`) - Complete management system
+- **Application Form** (`app/page.tsx`) - Main membership application interface with forum integration
+- **Community Forum** (`app/forum/page.tsx`) - Hacker News-style discussion platform
+- **Individual Posts** (`app/forum/posts/[id]/page.tsx`) - Detailed post view with comments and interactions
+- **Admin Dashboard** (`app/admin/page.tsx`) - Complete management system with forum moderation
+- **Forum APIs** (`app/api/posts/`, `app/api/admin/posts/`) - RESTful endpoints for post CRUD operations
 - **Community Spotlight** (`app/page.tsx`) - Highlighting key community members and organizations
 - **Events Page** (`app/events/page.tsx`) - Displays upcoming events with images and responsive design
-- **Security Layer** (`lib/security.ts`) - Rate limiting and protection utilities
+- **Security Layer** (`lib/security.ts`) - Rate limiting and protection utilities with forum-specific controls
 - **Email Service** (`lib/email.ts`) - Resend integration with templates
-- **Authentication** (`auth.ts`) - NextAuth.js configuration with Google OAuth.
-- **Database Layer** (`lib/database.ts`) - Prisma ORM with type safety
+- **Authentication** (`auth.ts`) - NextAuth.js configuration with Google OAuth
+- **Database Layer** (`lib/database.ts`) - Prisma ORM with type safety including forum schema
 
 ### **Database Schema Design**
 - **Members Table** - Active members with sponsorship capabilities

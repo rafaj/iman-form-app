@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus } from "lucide-react"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus, MessageSquare, ArrowRight } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import MemberSpotlightTab from "@/components/admin/SponsorsTab"
@@ -68,10 +68,30 @@ type SpotlightMember = {
   updatedAt: string
 }
 
+type ForumPost = {
+  id: string
+  title: string
+  content?: string
+  url?: string
+  type: string
+  pinned: boolean
+  locked: boolean
+  score: number
+  commentCount: number
+  createdAt: string
+  updatedAt: string
+  author: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
 export default function AdminPage() {
   const [members, setMembers] = useState<Member[]>([])
   const [applications, setApplications] = useState<Application[]>([])
   const [spotlightMembers, setSpotlightMembers] = useState<SpotlightMember[]>([])
+  const [forumPosts, setForumPosts] = useState<ForumPost[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -150,6 +170,19 @@ export default function AdminPage() {
       
       const spotlightData = await spotlightRes.json()
       
+      // Fetch forum posts
+      const postsRes = await fetch('/api/admin/posts', {
+        credentials: 'include' // Include cookies for authentication
+      })
+      
+      if (postsRes.status === 401) {
+        // Session expired, redirect to login
+        router.push('/admin/login')
+        return
+      }
+      
+      const postsData = await postsRes.json()
+      
       if (membersData.success) {
         setMembers(membersData.sponsors)
       } else {
@@ -169,6 +202,13 @@ export default function AdminPage() {
       } else {
         console.error('Failed to fetch member spotlight:', spotlightData.message)
         setError('Failed to load member spotlight data')
+      }
+      
+      if (postsData.success) {
+        setForumPosts(postsData.posts)
+      } else {
+        console.error('Failed to fetch forum posts:', postsData.message)
+        setError('Failed to load forum posts data')
       }
       
     } catch (err) {
@@ -309,6 +349,44 @@ export default function AdminPage() {
     }
   }
 
+  async function deletePost(postId: string, postTitle: string, authorName: string) {
+    // Confirm deletion
+    if (!confirm(`Are you sure you want to delete the post "${postTitle}" by ${authorName}?\n\nThis will also delete all comments and votes and cannot be undone.`)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/admin/posts/${postId}/delete`, {
+        method: 'DELETE',
+        credentials: 'include'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast({
+          title: "Post deleted",
+          description: `Post "${postTitle}" has been deleted successfully.`,
+        })
+        // Refresh the data to show updated list
+        fetchData()
+      } else {
+        toast({
+          title: "Delete failed",
+          description: data.message || "Failed to delete post.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Delete post failed:', error)
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting the post. Please try again.",
+        variant: "destructive"
+      })
+    }
+  }
+
   function getStatusBadge(status: string) {
     switch (status.toLowerCase()) {
       case 'pending':
@@ -398,7 +476,7 @@ export default function AdminPage() {
         )}
 
         <Tabs defaultValue="members" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="members" className="flex items-center gap-2">
               <Users className="w-4 h-4" />
               Members ({members.length})
@@ -406,6 +484,10 @@ export default function AdminPage() {
             <TabsTrigger value="applications" className="flex items-center gap-2">
               <FileText className="w-4 h-4" />
               Pending Applications ({pendingApplications.length})
+            </TabsTrigger>
+            <TabsTrigger value="forum-posts" className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              Forum Posts ({forumPosts.length})
             </TabsTrigger>
             <TabsTrigger value="member-spotlight" className="flex items-center gap-2">
               <Building2 className="w-4 h-4" />
@@ -748,6 +830,119 @@ export default function AdminPage() {
                     </p>
                     <p className="text-sm text-gray-700">Expired</p>
                   </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="forum-posts" className="space-y-4">
+            <Card className="border-emerald-100">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-emerald-600" />
+                  Forum Posts Management ({forumPosts.length})
+                </CardTitle>
+                <CardDescription>
+                  Manage all forum posts, discussions, and announcements
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {forumPosts.map((post) => (
+                    <div key={post.id} className="p-4 border rounded-lg space-y-3 bg-gray-50/30 border-gray-200">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="secondary" className={
+                              post.type === "ANNOUNCEMENT" ? "bg-blue-100 text-blue-800" :
+                              post.type === "JOB_POSTING" ? "bg-green-100 text-green-800" :
+                              "bg-gray-100 text-gray-800"
+                            }>
+                              {post.type.replace('_', ' ')}
+                            </Badge>
+                            {post.pinned && (
+                              <Badge variant="outline" className="text-orange-600 border-orange-300">
+                                Pinned
+                              </Badge>
+                            )}
+                            {post.locked && (
+                              <Badge variant="outline" className="text-red-600 border-red-300">
+                                Locked
+                              </Badge>
+                            )}
+                          </div>
+                          <Link href={`/forum/posts/${post.id}`}>
+                            <h4 className="text-lg font-semibold text-gray-900 hover:text-emerald-700 transition-colors mb-1">
+                              {post.title}
+                            </h4>
+                          </Link>
+                          {post.url && (
+                            <a 
+                              href={post.url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-sm text-blue-600 hover:underline flex items-center gap-1 mb-1"
+                            >
+                              {new URL(post.url).hostname}
+                              <ArrowRight className="w-3 h-3" />
+                            </a>
+                          )}
+                          {post.content && (
+                            <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                              {post.content.length > 150 ? `${post.content.substring(0, 150)}...` : post.content}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => deletePost(post.id, post.title, post.author.name)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            title={`Delete post "${post.title}"`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600 font-medium">Author</p>
+                          <p className="text-gray-900">{post.author.name}</p>
+                          <p className="text-xs text-gray-500">{post.author.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600 font-medium">Comments</p>
+                          <p className="text-gray-900">{post.commentCount}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600 font-medium">Score</p>
+                          <p className="text-gray-900">{post.score}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600 font-medium">Created</p>
+                          <p className="text-gray-900">{formatDate(post.createdAt)}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="text-xs text-gray-500 pt-2 border-t">
+                        Post ID: {post.id}
+                        {post.updatedAt !== post.createdAt && (
+                          <> • Last updated: {formatDate(post.updatedAt)}</>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {forumPosts.length === 0 && (
+                    <div className="text-center py-8">
+                      <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-600 text-lg">No forum posts found</p>
+                      <p className="text-sm text-gray-500">Posts will appear here as users create them</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

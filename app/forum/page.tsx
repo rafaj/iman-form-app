@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { 
   Plus, 
   TrendingUp, 
@@ -23,7 +24,10 @@ import {
   Lock,
   Mail,
   Phone,
-  MapPin
+  MapPin,
+  Edit,
+  Trash2,
+  MoreHorizontal
 } from "lucide-react"
 import Link from "next/link"
 import { useToast } from "@/hooks/use-toast"
@@ -274,7 +278,7 @@ export default function ForumPage() {
             </Card>
           ) : (
             posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} session={session} onPostUpdated={fetchPosts} />
             ))
           )}
         </div>
@@ -331,7 +335,112 @@ export default function ForumPage() {
   )
 }
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({ post, session, onPostUpdated }: { 
+  post: Post
+  session: Session | null
+  onPostUpdated: () => void 
+}) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState(post.title)
+  const [editContent, setEditContent] = useState(post.content || "")
+  const [editUrl, setEditUrl] = useState(post.url || "")
+  const [editType, setEditType] = useState(post.type)
+  const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
+
+  const canEditDelete = session?.user?.id === post.author.id
+
+  const handleDelete = async () => {
+    if (!confirm(`Are you sure you want to delete "${post.title}"?\n\nThis action cannot be undone.`)) {
+      return
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: 'DELETE'
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast({
+          title: "Post deleted",
+          description: "Your post has been deleted successfully."
+        })
+        onPostUpdated()
+      } else {
+        toast({
+          title: "Delete failed",
+          description: data.message || "Failed to delete post.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Delete post error:', error)
+      toast({
+        title: "Delete failed",
+        description: "An error occurred while deleting the post.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEdit = async () => {
+    if (!editTitle.trim()) {
+      toast({
+        title: "Title required",
+        description: "Please enter a title for your post.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: editTitle,
+          content: editContent,
+          url: editUrl,
+          type: editType
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast({
+          title: "Post updated",
+          description: "Your post has been updated successfully."
+        })
+        setIsEditing(false)
+        onPostUpdated()
+      } else {
+        toast({
+          title: "Update failed",
+          description: data.message || "Failed to update post.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Update post error:', error)
+      toast({
+        title: "Update failed",
+        description: "An error occurred while updating the post.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString)
     const now = new Date()
@@ -355,78 +464,171 @@ function PostCard({ post }: { post: Post }) {
   }
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex gap-4">
-          {/* Vote Column */}
-          <div className="flex flex-col items-center space-y-1 min-w-[40px]">
-            <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-              <ArrowUp className="w-4 h-4" />
-            </Button>
-            <span className="text-sm font-medium">{post.score}</span>
-            <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-              <ArrowDown className="w-4 h-4" />
-            </Button>
-          </div>
+    <>
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-6">
+          <div className="flex gap-4">
+            {/* Vote Column */}
+            <div className="flex flex-col items-center space-y-1 min-w-[40px]">
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+                <ArrowUp className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-medium">{post.score}</span>
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
+                <ArrowDown className="w-4 h-4" />
+              </Button>
+            </div>
 
-          {/* Content */}
-          <div className="flex-1">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  {post.pinned && <Pin className="w-4 h-4 text-emerald-600" />}
-                  {post.locked && <Lock className="w-4 h-4 text-gray-500" />}
-                  <Badge variant="secondary" className={getPostTypeColor(post.type)}>
-                    {post.type.replace('_', ' ')}
-                  </Badge>
+            {/* Content */}
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    {post.pinned && <Pin className="w-4 h-4 text-emerald-600" />}
+                    {post.locked && <Lock className="w-4 h-4 text-gray-500" />}
+                    <Badge variant="secondary" className={getPostTypeColor(post.type)}>
+                      {post.type.replace('_', ' ')}
+                    </Badge>
+                  </div>
                 </div>
                 
-                <Link href={`/forum/posts/${post.id}`}>
-                  <h3 className="text-lg font-semibold text-gray-900 hover:text-emerald-700 transition-colors">
-                    {post.title}
-                  </h3>
-                </Link>
-                
-                {post.url && (
-                  <a 
-                    href={post.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline flex items-center gap-1 mt-1"
-                  >
-                    {new URL(post.url).hostname}
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
-                
-                {post.content && (
-                  <p className="text-gray-600 mt-2 line-clamp-3">
-                    {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
-                  </p>
+                {/* Edit/Delete Menu for Post Owner */}
+                {canEditDelete && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setIsEditing(true)} disabled={loading}>
+                        <Edit className="mr-2 h-4 w-4" />
+                        Edit Post
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleDelete} disabled={loading} className="text-red-600">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete Post
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 )}
               </div>
-            </div>
 
-            <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
-              <div className="flex items-center space-x-4">
-                <span>by {post.author.name}</span>
-                <span>{formatTimeAgo(post.createdAt)}</span>
-              </div>
+              <Link href={`/forum/posts/${post.id}`}>
+                <h3 className="text-lg font-semibold text-gray-900 hover:text-emerald-700 transition-colors">
+                  {post.title}
+                </h3>
+              </Link>
               
-              <div className="flex items-center space-x-4">
-                <Link 
-                  href={`/forum/posts/${post.id}`}
-                  className="flex items-center gap-1 hover:text-emerald-600"
+              {post.url && (
+                <a 
+                  href={post.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 hover:underline flex items-center gap-1 mt-1"
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  {post.commentCount} comments
-                </Link>
+                  {new URL(post.url).hostname}
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+              
+              {post.content && (
+                <p className="text-gray-600 mt-2 line-clamp-3">
+                  {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+                </p>
+              )}
+
+              <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
+                <div className="flex items-center space-x-4">
+                  <span>by {post.author.name}</span>
+                  <span>{formatTimeAgo(post.createdAt)}</span>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <Link 
+                    href={`/forum/posts/${post.id}`}
+                    className="flex items-center gap-1 hover:text-emerald-600"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    {post.commentCount} comments
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      {/* Edit Post Dialog */}
+      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Post</DialogTitle>
+            <DialogDescription>
+              Update your post details below
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-type">Post Type</Label>
+              <Select value={editType} onValueChange={setEditType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select post type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="DISCUSSION">Discussion</SelectItem>
+                  <SelectItem value="ANNOUNCEMENT">Announcement</SelectItem>
+                  <SelectItem value="JOB_POSTING">Job Posting</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-title">Title *</Label>
+              <Input
+                id="edit-title"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                placeholder="Enter post title"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-url">URL (optional)</Label>
+              <Input
+                id="edit-url"
+                type="url"
+                value={editUrl}
+                onChange={(e) => setEditUrl(e.target.value)}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-content">Content (optional)</Label>
+              <Textarea
+                id="edit-content"
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                placeholder="Write your post content here..."
+                rows={6}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditing(false)} disabled={loading}>
+              Cancel
+            </Button>
+            <Button onClick={handleEdit} disabled={loading}>
+              {loading ? "Updating..." : "Update Post"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
