@@ -5,9 +5,9 @@ import { isAdmin } from "@/lib/auth-utils"
 import { checkRateLimit } from "@/lib/security"
 
 export async function DELETE(
-  request: NextRequest,
+  req: Request,
   { params }: { params: { id: string } }
-) {
+): Promise<NextResponse> {
   try {
     const session = await auth()
     
