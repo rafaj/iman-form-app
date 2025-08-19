@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/database"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(prisma),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -53,27 +54,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return false
       }
     },
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.userId = user.id
-        token.email = user.email
-        token.name = user.name
-        token.role = user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "MEMBER"
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.userId as string
-        session.user.role = token.role as "ADMIN" | "MEMBER"
-        session.user.email = token.email as string
-        session.user.name = token.name as string
+    async session({ session, user }) {
+      if (session.user && user) {
+        session.user.id = user.id
+        session.user.role = user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "MEMBER"
+        session.user.email = user.email
+        session.user.name = user.name
       }
       return session
     },
-  },
-  session: {
-    strategy: "jwt",
   },
   pages: {
     signIn: "/auth/signin",

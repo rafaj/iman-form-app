@@ -19,6 +19,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Ensure user exists in database
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id }
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "User not found in database" },
+        { status: 404 }
+      )
+    }
+
     const body = await request.json()
     const validatedData = createCommentSchema.parse(body)
 
