@@ -4,17 +4,23 @@
 
 1. **Database Setup**: Set up a PostgreSQL database (recommended: Neon.tech)
 2. **Update Environment Variables**: Update `.env` with your actual database URL
-3. **Push Database Schema**: Run the database setup commands
+3. **Push Database Schema**: Run the database setup commands (includes complete forum schema)
+4. **Admin User Setup**: Configure admin user with `ADMIN_EMAIL` environment variable
 
 ## Database Setup Steps
 
 1. **Create your database** (using Neon, Supabase, or Railway)
-2. **Update `.env` file** with your actual DATABASE_URL
-3. **Generate Prisma client and push schema**:
+2. **Update `.env` file** with your actual DATABASE_URL and admin configuration
+3. **Generate Prisma client and push schema** (includes forum tables):
    ```bash
    npm run db:generate
    npm run db:push
    npm run db:seed
+   ```
+4. **Create admin user** for forum moderation:
+   ```bash
+   # Set ADMIN_EMAIL in .env first
+   npm run admin:create
    ```
 
 ## Google OAuth Setup for Production
@@ -86,17 +92,48 @@ Make sure to set these in your Vercel project:
 
 - `DATABASE_URL`: Your PostgreSQL connection string
 - `NODE_ENV`: Set to "production" (Vercel sets this automatically)
+- `NEXTAUTH_SECRET`: Your NextAuth.js secret for session management
+- `NEXTAUTH_URL`: Your production domain URL
+- `ADMIN_EMAIL`: Email address for the admin user (for forum moderation)
 - `EVENTBRITE_API_KEY`: Your Eventbrite API key for fetching event details
 - `EVENTBRITE_ORGANIZATION_ID`: Your Eventbrite organization ID for fetching event details
 - `GOOGLE_CLIENT_ID`: Your Google OAuth Client ID
 - `GOOGLE_CLIENT_SECRET`: Your Google OAuth Client Secret
-- `BLOB_READ_WRITE_TOKEN`: Your Vercel Blob read-write token.
+- `BLOB_READ_WRITE_TOKEN`: Your Vercel Blob read-write token
+- `RESEND_API_KEY`: Your Resend API key for email notifications
 
 ## Post-Deployment
 
 1. **Verify database connection**: Check that your app can connect to the database
-2. **Test the form**: Submit a test application
-3. **Check logs**: Monitor Vercel function logs for any issues
+2. **Test authentication**: Ensure Google OAuth login works correctly
+3. **Create admin user**: Run the admin creation script to set up forum moderation
+4. **Test forum functionality**: Create, edit, and delete test posts to verify forum operations
+5. **Test the application form**: Submit a test membership application
+6. **Verify admin dashboard**: Access `/admin` and test all management features including forum moderation
+7. **Check logs**: Monitor Vercel function logs for any issues
+
+## Forum System Features
+
+The deployment includes a comprehensive forum system with the following capabilities:
+
+### **User Forum Features**
+- **Post Creation**: Users can create discussions, announcements, and job postings
+- **Post Management**: Users can edit and delete their own posts
+- **Content Types**: Support for text posts, external links, and mixed content
+- **Real-time Updates**: Live post feeds with engagement tracking
+
+### **Admin Forum Management**
+- **Content Moderation**: Delete any post with comprehensive audit logging
+- **User Management**: View post authors and engagement metrics
+- **Bulk Operations**: Efficient management of multiple posts
+- **Security Monitoring**: Track all forum activities for security purposes
+
+### **Database Schema**
+The forum system uses the following database tables:
+- `Post` - Forum posts with voting, comments, and author relationships
+- `Comment` - Threaded comment system (future implementation)
+- `PostVote` - Voting system for posts (future implementation)
+- `CommentVote` - Voting system for comments (future implementation)
 
 ## Alternative Deployment Options
 

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/database"
@@ -7,9 +6,10 @@ import { checkRateLimit } from "@/lib/security"
 
 export async function DELETE(
   _req: NextRequest,
-  context
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
+    const { id: postId } = await params
     const session = await auth()
     
     if (!session?.user?.email) {
@@ -36,8 +36,6 @@ export async function DELETE(
         { status: 429 }
       )
     }
-
-    const postId = context.params.id
 
     // Verify post exists
     const post = await prisma.post.findUnique({

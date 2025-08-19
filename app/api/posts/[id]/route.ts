@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/database"
-
+import { checkRateLimit } from "@/lib/security"
 import { z } from "zod"
 
 const updatePostSchema = z.object({
@@ -13,9 +13,10 @@ const updatePostSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: postId } = await params
     const session = await auth()
     
     if (!session?.user?.id) {
@@ -34,7 +35,6 @@ export async function PATCH(
       )
     }
 
-    const postId = params.id
     const body = await request.json()
 
     // Validate input
@@ -112,9 +112,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id: postId } = await params
     const session = await auth()
     
     if (!session?.user?.id) {
@@ -132,8 +133,6 @@ export async function DELETE(
         { status: 429 }
       )
     }
-
-    const postId = params.id
 
     // Verify post exists and user owns it
     const post = await prisma.post.findUnique({

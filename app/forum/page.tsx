@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import { useSession, signOut } from "next-auth/react"
+import type { Session } from "next-auth"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -572,7 +573,7 @@ function PostCard({ post, session, onPostUpdated }: {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="edit-type">Post Type</Label>
-              <Select value={editType} onValueChange={setEditType}>
+              <Select value={editType} onValueChange={(value) => setEditType(value as "DISCUSSION" | "ANNOUNCEMENT" | "JOB_POSTING")}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select post type" />
                 </SelectTrigger>
