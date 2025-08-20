@@ -403,12 +403,12 @@ function ApplyCard() {
                     className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
                   />
                   <Label htmlFor="availableAsMentor" className="text-sm font-medium">
-                    I'm interested in being a mentor
+                    I&apos;m interested in being a mentor
                   </Label>
                 </div>
                 <div className="ml-6 space-y-2">
                   <Label htmlFor="mentorProfile" className="text-sm">
-                    What areas can you mentor in? (e.g., "Data Science, Career Transitions, Leadership")
+                    What areas can you mentor in? (e.g., &quot;Data Science, Career Transitions, Leadership&quot;)
                   </Label>
                   <Textarea
                     id="mentorProfile"
@@ -429,12 +429,12 @@ function ApplyCard() {
                     className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
                   />
                   <Label htmlFor="seekingMentor" className="text-sm font-medium">
-                    I'm seeking mentorship
+                    I&apos;m seeking mentorship
                   </Label>
                 </div>
                 <div className="ml-6 space-y-2">
                   <Label htmlFor="menteeProfile" className="text-sm">
-                    What would you like guidance on? (e.g., "Breaking into Tech, MBA Applications, Entrepreneurship")
+                    What would you like guidance on? (e.g., &quot;Breaking into Tech, MBA Applications, Entrepreneurship&quot;)
                   </Label>
                   <Textarea
                     id="menteeProfile"

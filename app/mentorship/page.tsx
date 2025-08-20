@@ -48,8 +48,8 @@ export default function MentorshipPage() {
       const response = await fetch('/api/auth/check-admin')
       const data = await response.json()
       setIsMember(data.isMember || data.isAdmin)
-    } catch (error) {
-      console.error('Error checking member status:', error)
+    } catch (err) {
+      console.error('Error checking member status:', err)
     }
   }
 
@@ -60,8 +60,8 @@ export default function MentorshipPage() {
         const data = await response.json()
         setMembers(data.members || [])
       }
-    } catch (error) {
-      console.error('Error fetching members:', error)
+    } catch (err) {
+      console.error('Error fetching members:', err)
     } finally {
       setLoading(false)
     }
@@ -102,7 +102,8 @@ export default function MentorshipPage() {
           variant: "destructive"
         })
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Error connecting:', err)
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
