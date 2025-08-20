@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
+
 import Link from "next/link"
-import { Search, Users, UserCheck, MessageCircle, Mail, Phone, MapPin } from "lucide-react"
+import { Search, Users, UserCheck, Mail, Phone, MapPin } from "lucide-react" 
 import MobileNavigation from "@/components/mobile-navigation"
 
 interface Member {
@@ -32,7 +32,7 @@ export default function MentorshipPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [isMember, setIsMember] = useState(false)
-  const { toast } = useToast()
+  
 
   useEffect(() => {
     if (session?.user) {
@@ -81,36 +81,7 @@ export default function MentorshipPage() {
      member.professionalQualification?.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
-  const handleConnect = async (targetMemberId: string, type: 'mentor' | 'mentee') => {
-    try {
-      const response = await fetch('/api/mentorship/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetMemberId, type })
-      })
-
-      if (response.ok) {
-        toast({
-          title: "Connection request sent!",
-          description: "We've notified them of your interest in connecting."
-        })
-      } else {
-        const error = await response.json()
-        toast({
-          title: "Error",
-          description: error.message || "Failed to send connection request",
-          variant: "destructive"
-        })
-      }
-    } catch (err) {
-      console.error('Error connecting:', err)
-      toast({
-        title: "Error",
-        description: "Something went wrong. Please try again.",
-        variant: "destructive"
-      })
-    }
-  }
+  
 
   if (loading) {
     return (
