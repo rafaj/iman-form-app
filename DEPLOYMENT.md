@@ -135,6 +135,18 @@ The forum system uses the following database tables:
 - `PostVote` - Voting system for posts (future implementation)
 - `CommentVote` - Voting system for comments (future implementation)
 
+## Mentorship System Features
+
+The deployment includes a mentorship system with the following capabilities:
+
+- **Browse Mentors and Mentees**: Users can browse a directory of members who are available to mentor or are seeking mentorship.
+- **Search and Filter**: Users can search for members by name, professional qualification, or mentorship interests.
+- **Member Profiles**: Each member has a profile with their mentorship information.
+
+### **Database Schema**
+The mentorship system uses the following database tables:
+- `User` - The `availableAsMentor`, `mentorProfile`, `seekingMentor`, and `menteeProfile` fields have been added to the User model.
+
 ## Alternative Deployment Options
 
 ### Railway

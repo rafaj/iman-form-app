@@ -17,6 +17,7 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Comprehensive Admin Dashboard** - Full member, application, and forum management system
 - **WhatsApp Integration** - Automatic group invites for approved members
 - **Real-time Status Tracking** - Application status updates and notifications
+- **Mentorship Matching** - Connect with mentors and mentees within the community
 
 ### **🔐 Enterprise Security Features**
 - **Multi-Layer Rate Limiting** - IP-based (3/15min), email-based (2/day), admin-specific (10/5min), forum actions (5 edits/15min, 3 deletes/15min)
@@ -56,6 +57,11 @@ A comprehensive, secure membership application system for the IMAN Professional 
 - **Professional Welcome Messages** - Branded email templates with group access links
 - **Configurable Group Management** - Easy invite link updates and administration
 - **Community Onboarding** - Streamlined process from approval to group membership
+
+### **🤝 Mentorship System**
+- **Find Mentors & Mentees** - Browse profiles of members available for mentorship or seeking guidance.
+- **Detailed Profiles** - Members can specify their mentorship offerings and needs in their profiles.
+- **Facilitated Connections** - While direct connection buttons have been removed to encourage more thoughtful interactions, users can easily access member profiles and contact information to connect.
 
 ## 🛠️ **Technology Stack**
 
@@ -179,6 +185,12 @@ GOOGLE_CLIENT_SECRET="your_google_client_secret"
 3. **Engage with Content** - Vote on posts and participate in discussions
 4. **Manage Personal Posts** - Edit or delete your own forum contributions
 5. **Browse by Category** - Filter posts by type (Discussion, Announcement, Job Posting)
+
+### **Mentorship Journey**
+1. **Discover Mentors/Mentees** - Navigate to the `/mentorship` page to browse member profiles.
+2. **Filter and Search** - Find suitable mentors or mentees based on professional qualifications, industry, or mentorship goals.
+3. **Review Profiles** - View detailed profiles to learn more about a member's experience and what they're looking for in a mentorship relationship.
+4. **Initiate Contact** - Reach out to potential mentors or mentees using the contact information on their profile.
 
 ### **Administrator Management**
 1. **Secure Admin Access** - Login at `/admin` with session authentication
