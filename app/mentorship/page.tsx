@@ -249,14 +249,7 @@ export default function MentorshipPage() {
                     )}
                     
                     <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleConnect(mentor.id, 'mentor')}
-                        className="bg-emerald-600 hover:bg-emerald-700 flex-1"
-                      >
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        Connect
-                      </Button>
+                      
                       {mentor.linkedin && (
                         <Button 
                           size="sm" 
@@ -311,14 +304,7 @@ export default function MentorshipPage() {
                     )}
                     
                     <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleConnect(mentee.id, 'mentee')}
-                        className="bg-emerald-600 hover:bg-emerald-700 flex-1"
-                      >
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        Offer Mentorship
-                      </Button>
+                      
                       {mentee.linkedin && (
                         <Button 
                           size="sm" 
