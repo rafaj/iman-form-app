@@ -23,6 +23,11 @@ export type CreateApplicationInput = {
   contribution: string
   employer?: string
   linkedin?: string
+  // Mentorship fields
+  availableAsMentor?: boolean
+  mentorProfile?: string
+  seekingMentor?: boolean
+  menteeProfile?: string
 }
 
 export type ApproveApplicationInput = {
@@ -79,6 +84,11 @@ export async function createApplication(input: CreateApplicationInput): Promise<
       contribution: input.contribution,
       employer: input.employer,
       linkedin: input.linkedin,
+      // Mentorship fields
+      availableAsMentor: input.availableAsMentor || false,
+      mentorProfile: input.mentorProfile,
+      seekingMentor: input.seekingMentor || false,
+      menteeProfile: input.menteeProfile,
       expiresAt,
       verificationCode: generateCode(),
       auditLogs: {

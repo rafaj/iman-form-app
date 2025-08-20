@@ -32,6 +32,12 @@ const CreateSchema = z.object({
 
   employer: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
   linkedin: z.preprocess(emptyToUndefined, z.string().url().max(300).optional()),
+
+  // Mentorship fields (optional)
+  availableAsMentor: z.boolean().default(false),
+  mentorProfile: z.preprocess(emptyToUndefined, z.string().max(1000).optional()),
+  seekingMentor: z.boolean().default(false),
+  menteeProfile: z.preprocess(emptyToUndefined, z.string().max(1000).optional()),
 })
 
 export async function POST(req: NextRequest) {
@@ -129,6 +135,12 @@ export async function POST(req: NextRequest) {
       contribution: body.contribution,
       employer: body.employer,
       linkedin: body.linkedin,
+
+      // Mentorship fields
+      availableAsMentor: body.availableAsMentor,
+      mentorProfile: body.mentorProfile,
+      seekingMentor: body.seekingMentor,
+      menteeProfile: body.menteeProfile,
     })
 
     const origin = req.headers.get("origin") || req.nextUrl.origin

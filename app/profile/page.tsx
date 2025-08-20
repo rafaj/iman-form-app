@@ -23,6 +23,10 @@ type MemberProfile = {
   contribution?: string
   employer?: string
   linkedin?: string
+  availableAsMentor: boolean
+  mentorProfile?: string
+  seekingMentor: boolean
+  menteeProfile?: string
   createdAt: string
   updatedAt: string
 }
@@ -40,6 +44,10 @@ export default function ProfilePage() {
     contribution: "",
     employer: "",
     linkedin: "",
+    availableAsMentor: false,
+    mentorProfile: "",
+    seekingMentor: false,
+    menteeProfile: "",
   })
   const { toast } = useToast()
 
@@ -76,6 +84,10 @@ export default function ProfilePage() {
           contribution: data.member.contribution || "",
           employer: data.member.employer || "",
           linkedin: data.member.linkedin || "",
+          availableAsMentor: data.member.availableAsMentor || false,
+          mentorProfile: data.member.mentorProfile || "",
+          seekingMentor: data.member.seekingMentor || false,
+          menteeProfile: data.member.menteeProfile || "",
         })
       } else {
         toast({
@@ -143,6 +155,10 @@ export default function ProfilePage() {
         contribution: profile.contribution || "",
         employer: profile.employer || "",
         linkedin: profile.linkedin || "",
+        availableAsMentor: profile.availableAsMentor || false,
+        mentorProfile: profile.mentorProfile || "",
+        seekingMentor: profile.seekingMentor || false,
+        menteeProfile: profile.menteeProfile || "",
       })
     }
     setEditing(false)
@@ -184,6 +200,8 @@ export default function ProfilePage() {
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
                       <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                      <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
+                      <Link href="/mentorship" className="text-emerald-700 hover:text-emerald-900 font-medium">Mentorship</Link>
                     </>
                   )}
                   {session.user?.role === 'ADMIN' && (
@@ -384,6 +402,76 @@ export default function ProfilePage() {
                     />
                   </div>
 
+                  {/* Mentorship Section */}
+                  <div className="pt-6 border-t border-emerald-200">
+                    <h3 className="text-lg font-semibold text-emerald-900 mb-4">Professional Development</h3>
+                    <p className="text-sm text-muted-foreground mb-6">
+                      IMAN connects members for mentorship and professional growth. Update your preferences below.
+                    </p>
+                    
+                    <div className="space-y-6">
+                      {/* Available as Mentor */}
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="availableAsMentor"
+                            checked={formData.availableAsMentor}
+                            onChange={(e) => setFormData(prev => ({ ...prev, availableAsMentor: e.target.checked }))}
+                            className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <Label htmlFor="availableAsMentor" className="text-sm font-medium">
+                            I'm available as a mentor
+                          </Label>
+                        </div>
+                        {formData.availableAsMentor && (
+                          <div className="ml-6 space-y-2">
+                            <Label htmlFor="mentorProfile" className="text-sm">
+                              What areas can you mentor in? (e.g., "Data Science, Career Transitions, Leadership")
+                            </Label>
+                            <Textarea
+                              id="mentorProfile"
+                              value={formData.mentorProfile}
+                              onChange={(e) => setFormData(prev => ({ ...prev, mentorProfile: e.target.value }))}
+                              placeholder="Share your expertise and what you'd enjoy mentoring others in..."
+                              rows={2}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Seeking Mentor */}
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="seekingMentor"
+                            checked={formData.seekingMentor}
+                            onChange={(e) => setFormData(prev => ({ ...prev, seekingMentor: e.target.checked }))}
+                            className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <Label htmlFor="seekingMentor" className="text-sm font-medium">
+                            I'm seeking mentorship
+                          </Label>
+                        </div>
+                        {formData.seekingMentor && (
+                          <div className="ml-6 space-y-2">
+                            <Label htmlFor="menteeProfile" className="text-sm">
+                              What would you like guidance on? (e.g., "Breaking into Tech, MBA Applications, Entrepreneurship")
+                            </Label>
+                            <Textarea
+                              id="menteeProfile"
+                              value={formData.menteeProfile}
+                              onChange={(e) => setFormData(prev => ({ ...prev, menteeProfile: e.target.value }))}
+                              placeholder="Share what you'd like to learn or get guidance on..."
+                              rows={2}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Action Buttons */}
                   <div className="flex gap-3 pt-4 border-t border-emerald-200">
                     <Button
@@ -462,6 +550,39 @@ export default function ProfilePage() {
                       <div className="bg-white p-4 rounded-lg border border-emerald-200">
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">{profile.contribution}</p>
                       </div>
+                    </div>
+                  )}
+
+                  {/* Mentorship Information */}
+                  {(profile?.availableAsMentor || profile?.seekingMentor) && (
+                    <div className="space-y-4 pt-6 border-t border-emerald-200">
+                      <h4 className="font-medium text-emerald-900">Professional Development</h4>
+                      
+                      {profile.availableAsMentor && (
+                        <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+                              Available as Mentor
+                            </Badge>
+                          </div>
+                          {profile.mentorProfile && (
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{profile.mentorProfile}</p>
+                          )}
+                        </div>
+                      )}
+                      
+                      {profile.seekingMentor && (
+                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                              Seeking Mentorship
+                            </Badge>
+                          </div>
+                          {profile.menteeProfile && (
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{profile.menteeProfile}</p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -555,6 +676,8 @@ export default function ProfilePage() {
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
                     <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                    <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
+                    <li><Link href="/mentorship" className="hover:text-white">Mentorship</Link></li>
                   </>
                 )}
                 {!session && (

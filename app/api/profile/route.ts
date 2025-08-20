@@ -9,6 +9,10 @@ const UpdateProfileSchema = z.object({
   contribution: z.string().optional(),
   employer: z.string().optional(),
   linkedin: z.string().url().optional().or(z.literal("")),
+  availableAsMentor: z.boolean().optional(),
+  mentorProfile: z.string().optional(),
+  seekingMentor: z.boolean().optional(),
+  menteeProfile: z.string().optional(),
 })
 
 export async function GET() {
@@ -46,6 +50,10 @@ export async function GET() {
         contribution: member.contribution,
         employer: member.employer,
         linkedin: member.linkedin,
+        availableAsMentor: member.availableAsMentor,
+        mentorProfile: member.mentorProfile,
+        seekingMentor: member.seekingMentor,
+        menteeProfile: member.menteeProfile,
         createdAt: member.createdAt,
         updatedAt: member.updatedAt,
       }
@@ -108,6 +116,10 @@ export async function PUT(request: NextRequest) {
         contribution: validatedData.contribution || null,
         employer: validatedData.employer || null,
         linkedin: linkedinUrl,
+        availableAsMentor: validatedData.availableAsMentor ?? false,
+        mentorProfile: validatedData.mentorProfile || null,
+        seekingMentor: validatedData.seekingMentor ?? false,
+        menteeProfile: validatedData.menteeProfile || null,
       }
     })
 
@@ -125,6 +137,10 @@ export async function PUT(request: NextRequest) {
         contribution: updatedMember.contribution,
         employer: updatedMember.employer,
         linkedin: updatedMember.linkedin,
+        availableAsMentor: updatedMember.availableAsMentor,
+        mentorProfile: updatedMember.mentorProfile,
+        seekingMentor: updatedMember.seekingMentor,
+        menteeProfile: updatedMember.menteeProfile,
         updatedAt: updatedMember.updatedAt,
       }
     })

@@ -31,9 +31,17 @@ model Member {
   employer                 String?
   linkedin                 String?
   
+  // Mentorship Information
+  availableAsMentor        Boolean   @default(false)
+  mentorProfile            String?   // What they can mentor in
+  seekingMentor            Boolean   @default(false)
+  menteeProfile            String?   // What they want to learn
+  
   // Relations
   sponsoredApplications Application[] @relation("SponsorApplications")
   approvedApplications  Application[] @relation("ApproverApplications")
+  mentorConnections     MentorConnection[] @relation("MentorConnections")
+  menteeConnections     MentorConnection[] @relation("MenteeConnections")
 
   @@map("members")
 }
@@ -58,6 +66,12 @@ model Application {
   contribution             String
   employer                 String?
   linkedin                 String?
+  
+  // Mentorship fields (optional)
+  availableAsMentor        Boolean   @default(false)
+  mentorProfile            String?   // What they can mentor in
+  seekingMentor            Boolean   @default(false)
+  menteeProfile            String?   // What they want to learn
   
   status                   ApplicationStatus @default(PENDING)
   createdAt                DateTime          @default(now())
@@ -277,4 +291,28 @@ model CommentVote {
 
   @@unique([commentId, userId])
   @@map("comment_votes")
+}
+
+model MentorConnection {
+  id          String              @id @default(cuid())
+  mentorId    String
+  menteeId    String
+  status      ConnectionStatus    @default(PENDING)
+  message     String?             // Optional message when requesting connection
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  
+  // Relations
+  mentor      Member              @relation("MentorConnections", fields: [mentorId], references: [id], onDelete: Cascade)
+  mentee      Member              @relation("MenteeConnections", fields: [menteeId], references: [id], onDelete: Cascade)
+  
+  @@unique([mentorId, menteeId])
+  @@map("mentor_connections")
+}
+
+enum ConnectionStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  ENDED
 }

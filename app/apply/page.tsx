@@ -205,11 +205,18 @@ function ApplyCard() {
       contribution: String(formData.get("contribution") || "").trim(),
       employer: String(formData.get("employer") || "").trim(),
       linkedin: String(formData.get("linkedin") || "").trim(),
+      // Mentorship fields
+      availableAsMentor: Boolean(formData.get("availableAsMentor")),
+      mentorProfile: String(formData.get("mentorProfile") || "").trim(),
+      seekingMentor: Boolean(formData.get("seekingMentor")),
+      menteeProfile: String(formData.get("menteeProfile") || "").trim(),
     }
 
     // Remove optional empties so zod optional passes cleanly
     if (!payload.employer) delete (payload as Record<string, unknown>).employer
     if (!payload.linkedin) delete (payload as Record<string, unknown>).linkedin
+    if (!payload.mentorProfile) delete (payload as Record<string, unknown>).mentorProfile
+    if (!payload.menteeProfile) delete (payload as Record<string, unknown>).menteeProfile
 
     setServerError(null)
     setLoading(true)
@@ -372,6 +379,72 @@ function ApplyCard() {
                 required
                 className={inputClass}
               />
+            </div>
+          </div>
+
+          <Separator />
+          
+          {/* Mentorship Section */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-emerald-900 mb-2">Professional Development (Optional)</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                IMAN connects members for mentorship and professional growth. Help us match you with the right opportunities.
+              </p>
+            </div>
+            
+            <div className="grid gap-4">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="availableAsMentor"
+                    name="availableAsMentor"
+                    className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <Label htmlFor="availableAsMentor" className="text-sm font-medium">
+                    I'm interested in being a mentor
+                  </Label>
+                </div>
+                <div className="ml-6 space-y-2">
+                  <Label htmlFor="mentorProfile" className="text-sm">
+                    What areas can you mentor in? (e.g., "Data Science, Career Transitions, Leadership")
+                  </Label>
+                  <Textarea
+                    id="mentorProfile"
+                    name="mentorProfile"
+                    placeholder="Share your expertise and what you'd enjoy mentoring others in..."
+                    className={inputClass}
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="seekingMentor"
+                    name="seekingMentor"
+                    className="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <Label htmlFor="seekingMentor" className="text-sm font-medium">
+                    I'm seeking mentorship
+                  </Label>
+                </div>
+                <div className="ml-6 space-y-2">
+                  <Label htmlFor="menteeProfile" className="text-sm">
+                    What would you like guidance on? (e.g., "Breaking into Tech, MBA Applications, Entrepreneurship")
+                  </Label>
+                  <Textarea
+                    id="menteeProfile"
+                    name="menteeProfile"
+                    placeholder="Share what you'd like to learn or get guidance on..."
+                    className={inputClass}
+                    rows={2}
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
