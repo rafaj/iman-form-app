@@ -24,6 +24,7 @@ interface Member {
   mentorProfile?: string
   seekingMentor: boolean
   menteeProfile?: string
+  isCurrentUser?: boolean
 }
 
 export default function MentorshipPage() {
@@ -201,10 +202,22 @@ export default function MentorshipPage() {
                 <Card key={mentor.id} className="border-emerald-100">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      <span className="text-lg">{mentor.name}</span>
-                      <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
-                        Mentor
-                      </Badge>
+                      <span className="text-lg">
+                        {mentor.name}
+                        {mentor.isCurrentUser && (
+                          <span className="text-sm font-normal text-emerald-600 ml-2">(You)</span>
+                        )}
+                      </span>
+                      <div className="flex gap-2">
+                        {mentor.isCurrentUser && (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300">
+                            Your Profile
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+                          Mentor
+                        </Badge>
+                      </div>
                     </CardTitle>
                     <CardDescription>
                       {mentor.professionalQualification}
@@ -220,18 +233,30 @@ export default function MentorshipPage() {
                     )}
                     
                     <div className="flex gap-2">
-                      
-                      {mentor.linkedin && (
+                      {mentor.isCurrentUser ? (
                         <Button 
                           size="sm" 
                           variant="outline"
                           asChild
-                          className="border-emerald-300"
+                          className="border-emerald-300 text-emerald-700"
                         >
-                          <a href={mentor.linkedin} target="_blank" rel="noopener noreferrer">
-                            LinkedIn
-                          </a>
+                          <Link href="/profile">
+                            Edit Profile
+                          </Link>
                         </Button>
+                      ) : (
+                        mentor.linkedin && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            asChild
+                            className="border-emerald-300"
+                          >
+                            <a href={mentor.linkedin} target="_blank" rel="noopener noreferrer">
+                              LinkedIn
+                            </a>
+                          </Button>
+                        )
                       )}
                     </div>
                   </CardContent>
@@ -256,10 +281,22 @@ export default function MentorshipPage() {
                 <Card key={mentee.id} className="border-emerald-100">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between">
-                      <span className="text-lg">{mentee.name}</span>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                        Seeking Mentor
-                      </Badge>
+                      <span className="text-lg">
+                        {mentee.name}
+                        {mentee.isCurrentUser && (
+                          <span className="text-sm font-normal text-emerald-600 ml-2">(You)</span>
+                        )}
+                      </span>
+                      <div className="flex gap-2">
+                        {mentee.isCurrentUser && (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-300">
+                            Your Profile
+                          </Badge>
+                        )}
+                        <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                          Seeking Mentor
+                        </Badge>
+                      </div>
                     </CardTitle>
                     <CardDescription>
                       {mentee.professionalQualification}
@@ -275,18 +312,30 @@ export default function MentorshipPage() {
                     )}
                     
                     <div className="flex gap-2">
-                      
-                      {mentee.linkedin && (
+                      {mentee.isCurrentUser ? (
                         <Button 
                           size="sm" 
                           variant="outline"
                           asChild
-                          className="border-emerald-300"
+                          className="border-emerald-300 text-emerald-700"
                         >
-                          <a href={mentee.linkedin} target="_blank" rel="noopener noreferrer">
-                            LinkedIn
-                          </a>
+                          <Link href="/profile">
+                            Edit Profile
+                          </Link>
                         </Button>
+                      ) : (
+                        mentee.linkedin && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            asChild
+                            className="border-emerald-300"
+                          >
+                            <a href={mentee.linkedin} target="_blank" rel="noopener noreferrer">
+                              LinkedIn
+                            </a>
+                          </Button>
+                        )
                       )}
                     </div>
                   </CardContent>

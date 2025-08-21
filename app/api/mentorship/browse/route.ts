@@ -10,13 +10,10 @@ export async function GET() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 
-    // Get all active members with mentorship info, excluding the current user
+    // Get all active members with mentorship info, including the current user
     const members = await prisma.member.findMany({
       where: {
         active: true,
-        email: {
-          not: session.user.email
-        },
         OR: [
           { availableAsMentor: true },
           { seekingMentor: true }
@@ -39,10 +36,11 @@ export async function GET() {
       }
     })
 
-    // Mask email addresses for privacy
+    // Mask email addresses for privacy, except for the current user
     const maskedMembers = members.map(member => ({
       ...member,
-      email: maskEmail(member.email)
+      email: member.email === session.user.email ? member.email : maskEmail(member.email),
+      isCurrentUser: member.email === session.user.email
     }))
 
     return NextResponse.json({ members: maskedMembers })
