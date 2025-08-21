@@ -70,7 +70,12 @@ export default async function CompleteActivation({ params }: CompleteActivationP
         interest: application.interest,
         contribution: application.contribution,
         employer: application.employer,
-        linkedin: application.linkedin
+        linkedin: application.linkedin,
+        // Copy mentorship information from application
+        availableAsMentor: application.availableAsMentor,
+        mentorProfile: application.mentorProfile,
+        seekingMentor: application.seekingMentor,
+        menteeProfile: application.menteeProfile
       },
       create: {
         name: application.applicantName,
@@ -81,7 +86,12 @@ export default async function CompleteActivation({ params }: CompleteActivationP
         interest: application.interest,
         contribution: application.contribution,
         employer: application.employer,
-        linkedin: application.linkedin
+        linkedin: application.linkedin,
+        // Copy mentorship information from application
+        availableAsMentor: application.availableAsMentor,
+        mentorProfile: application.mentorProfile,
+        seekingMentor: application.seekingMentor,
+        menteeProfile: application.menteeProfile
       }
     })
 
