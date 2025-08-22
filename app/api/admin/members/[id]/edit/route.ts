@@ -32,7 +32,7 @@ export async function GET(
     const params = await context.params
     const { id } = params
 
-    // Get member details
+    // Get member details - single source of truth
     const member = await prisma.member.findUnique({
       where: { id },
       select: {
@@ -41,7 +41,13 @@ export async function GET(
         email: true,
         active: true,
         createdAt: true,
-        updatedAt: true
+        updatedAt: true,
+        // Professional data from member table (always current)
+        professionalQualification: true,
+        interest: true,
+        contribution: true,
+        employer: true,
+        linkedin: true
       }
     })
 
@@ -52,34 +58,16 @@ export async function GET(
       )
     }
 
-    // Get member's application data (if exists)
-    const application = await prisma.application.findFirst({
-      where: {
-        applicantEmail: member.email,
-        status: 'APPROVED'
-      },
-      select: {
-        professionalQualification: true,
-        interest: true,
-        contribution: true,
-        employer: true,
-        linkedin: true
-      },
-      orderBy: {
-        approvedAt: 'desc'
-      }
-    })
-
     return NextResponse.json({
       success: true,
       member: {
         ...member,
-        // Include professional data only - address hidden for privacy
-        professionalQualification: application?.professionalQualification || "",
-        interest: application?.interest || "",
-        contribution: application?.contribution || "",
-        employer: application?.employer || "",
-        linkedin: application?.linkedin || ""
+        // Professional data comes directly from member table
+        professionalQualification: member.professionalQualification || "",
+        interest: member.interest || "",
+        contribution: member.contribution || "",
+        employer: member.employer || "",
+        linkedin: member.linkedin || ""
       }
     })
 
@@ -142,54 +130,28 @@ export async function PUT(
       }
     }
 
-    // Update member basic info
+    // Update member - single source of truth for all editable data
     const updatedMember = await prisma.member.update({
       where: { id },
       data: {
         name: validatedData.name,
         email: validatedData.email,
-        active: validatedData.active
+        active: validatedData.active,
+        // Professional data updated directly in member table
+        professionalQualification: validatedData.professionalQualification || "",
+        interest: validatedData.interest || "",
+        contribution: validatedData.contribution || "",
+        employer: validatedData.employer || "",
+        linkedin: validatedData.linkedin || ""
       }
     })
-
-    // Update professional data only - address fields hidden for privacy
-    const applicationData = {
-      professionalQualification: validatedData.professionalQualification || "",
-      interest: validatedData.interest || "",
-      contribution: validatedData.contribution || "",
-      employer: validatedData.employer || "",
-      linkedin: validatedData.linkedin || ""
-    }
-
-    // Check if member has an approved application
-    const existingApplication = await prisma.application.findFirst({
-      where: {
-        applicantEmail: existingMember.email,
-        status: 'APPROVED'
-      }
-    })
-
-    if (existingApplication) {
-      // Update existing application
-      await prisma.application.update({
-        where: { id: existingApplication.id },
-        data: {
-          applicantName: validatedData.name,
-          applicantEmail: validatedData.email,
-          ...applicationData
-        }
-      })
-    }
 
     console.log(`✅ Admin updated member: ${updatedMember.name} (${updatedMember.email})`)
 
     return NextResponse.json({
       success: true,
       message: `Member ${updatedMember.name} updated successfully`,
-      member: {
-        ...updatedMember,
-        ...applicationData
-      }
+      member: updatedMember
     })
 
   } catch (error) {

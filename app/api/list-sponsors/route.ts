@@ -23,34 +23,29 @@ export async function GET(request: NextRequest) {
         active: true,
         createdAt: true,
         approvalsInWindow: true,
-        lastApprovalAt: true
+        lastApprovalAt: true,
+        // Professional info from member table (single source of truth)
+        professionalQualification: true,
+        interest: true,
+        contribution: true,
+        employer: true,
+        linkedin: true
       },
       orderBy: {
         createdAt: 'desc'  // Show newest members first
       }
     })
     
-    // For each member, find their approved application by matching email
+    // Get sponsor information from applications (for those who came through application process)
     const membersWithDetails = await Promise.all(
       activeMembers.map(async (member) => {
-        // Find the approved application for this member
+        // Find their approved application only for sponsor info
         const approvedApplication = await prisma.application.findFirst({
           where: {
             applicantEmail: member.email,
             status: 'APPROVED'
           },
           select: {
-            applicantName: true,
-            applicantEmail: true,
-            streetAddress: true,
-            city: true,
-            state: true,
-            zip: true,
-            professionalQualification: true,
-            interest: true,
-            contribution: true,
-            employer: true,
-            linkedin: true,
             createdAt: true,
             approvedAt: true,
             sponsorEmail: true,
@@ -74,19 +69,16 @@ export async function GET(request: NextRequest) {
           createdAt: member.createdAt,
           approvalsInWindow: member.approvalsInWindow,
           lastApprovalAt: member.lastApprovalAt,
-          // Application details (if available)
-          streetAddress: approvedApplication?.streetAddress || null,
-          city: approvedApplication?.city || null,
-          state: approvedApplication?.state || null,
-          zip: approvedApplication?.zip || null,
-          professionalQualification: approvedApplication?.professionalQualification || null,
-          interest: approvedApplication?.interest || null,
-          contribution: approvedApplication?.contribution || null,
-          employer: approvedApplication?.employer || null,
-          linkedin: approvedApplication?.linkedin || null,
+          // Professional info from member table (always current)
+          professionalQualification: member.professionalQualification,
+          interest: member.interest,
+          contribution: member.contribution,
+          employer: member.employer,
+          linkedin: member.linkedin,
+          // Application timeline info
           applicationDate: approvedApplication?.createdAt || null,
           approvedDate: approvedApplication?.approvedAt || null,
-          // Sponsor information
+          // Sponsor information (from application only)
           sponsorEmail: approvedApplication?.sponsorEmail || null,
           sponsorName: approvedApplication?.sponsor?.name || null
         }
