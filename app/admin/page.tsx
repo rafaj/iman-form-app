@@ -35,6 +35,9 @@ type Member = {
   linkedin: string | null
   applicationDate: string | null
   approvedDate: string | null
+  // Sponsor information
+  sponsorEmail: string | null
+  sponsorName: string | null
 }
 
 type Application = {
@@ -646,6 +649,17 @@ export default function AdminPage() {
                                 <p className="text-sm font-medium text-emerald-800">Email</p>
                                 <p className="text-sm text-emerald-700">{member.email}</p>
                               </div>
+
+                              {/* Sponsor Information */}
+                              {member.sponsorName && (
+                                <div className="space-y-1">
+                                  <p className="text-sm font-medium text-emerald-800">Sponsored By</p>
+                                  <p className="text-sm text-emerald-700">{member.sponsorName}</p>
+                                  {member.sponsorEmail && (
+                                    <p className="text-xs text-emerald-600">{member.sponsorEmail}</p>
+                                  )}
+                                </div>
+                              )}
 
                               {/* Professional Info */}
                               {member.professionalQualification && (

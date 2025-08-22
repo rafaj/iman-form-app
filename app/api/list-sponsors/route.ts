@@ -52,7 +52,14 @@ export async function GET(request: NextRequest) {
             employer: true,
             linkedin: true,
             createdAt: true,
-            approvedAt: true
+            approvedAt: true,
+            sponsorEmail: true,
+            sponsor: {
+              select: {
+                name: true,
+                email: true
+              }
+            }
           },
           orderBy: {
             approvedAt: 'desc'
@@ -78,7 +85,10 @@ export async function GET(request: NextRequest) {
           employer: approvedApplication?.employer || null,
           linkedin: approvedApplication?.linkedin || null,
           applicationDate: approvedApplication?.createdAt || null,
-          approvedDate: approvedApplication?.approvedAt || null
+          approvedDate: approvedApplication?.approvedAt || null,
+          // Sponsor information
+          sponsorEmail: approvedApplication?.sponsorEmail || null,
+          sponsorName: approvedApplication?.sponsor?.name || null
         }
       })
     )
