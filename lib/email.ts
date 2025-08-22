@@ -1,5 +1,4 @@
 import { Resend } from 'resend'
-import { WHATSAPP_GROUP } from './whatsapp'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -112,27 +111,23 @@ export async function sendApprovalNotificationEmail({
           <p>We're excited to welcome you to the IMAN Professional Network community! Your application has been reviewed and approved.</p>
           
           <div style="background-color: #f0fdf4; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #059669;">
-            <h3 style="margin-top: 0; color: #059669;">📱 Join Our WhatsApp Community</h3>
-            <p style="margin-bottom: 20px;">Connect with fellow IMAN members in our WhatsApp group:</p>
+            <h3 style="margin-top: 0; color: #059669;">🎯 Get Started with IMAN</h3>
+            <p style="margin-bottom: 20px;">You now have access to all member benefits and our professional community. Start connecting with fellow members and exploring opportunities.</p>
             
             <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #d1fae5; text-align: center;">
-              <h4 style="margin: 0 0 10px 0; color: #059669; font-size: 18px;">${WHATSAPP_GROUP.name}</h4>
-              <p style="margin: 0 0 20px 0; color: #6b7280; font-size: 14px;">${WHATSAPP_GROUP.description}</p>
-              <a href="${WHATSAPP_GROUP.inviteLink}" 
-                 style="background-color: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block;">
-                📱 Join WhatsApp Group
-              </a>
+              <h4 style="margin: 0 0 10px 0; color: #059669; font-size: 18px;">Member Benefits</h4>
+              <p style="margin: 0 0 20px 0; color: #6b7280; font-size: 14px;">Access exclusive events, networking opportunities, and community resources</p>
             </div>
           </div>
           
           <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h3 style="margin-top: 0; color: #d97706;">📋 Next Steps</h3>
             <ol style="margin: 0; padding-left: 20px; color: #92400e;">
-              <li>Join the WhatsApp group using the button above</li>
-              <li>Introduce yourself to the community</li>
+              <li>Log in to the IMAN platform to explore member features</li>
               <li>Update your LinkedIn to mention IMAN membership</li>
               <li>Start connecting with fellow members</li>
               <li>Share opportunities and insights</li>
+              <li>Participate in community events and discussions</li>
             </ol>
           </div>
           
