@@ -56,6 +56,44 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       return NextResponse.json({ message: ok.message }, { status: ok.status })
     }
 
+    // Create member record with application data (same as admin approval)
+    const newMember = await prisma.member.upsert({
+      where: { email: app.applicantEmail },
+      update: {
+        active: true,
+        name: app.applicantName,
+        // Copy professional information from application
+        professionalQualification: app.professionalQualification,
+        interest: app.interest,
+        contribution: app.contribution,
+        employer: app.employer,
+        linkedin: app.linkedin,
+        // Copy mentorship info if provided
+        availableAsMentor: app.availableAsMentor,
+        mentorProfile: app.mentorProfile,
+        seekingMentor: app.seekingMentor,
+        menteeProfile: app.menteeProfile
+      },
+      create: {
+        name: app.applicantName,
+        email: app.applicantEmail,
+        active: true,
+        // Copy professional information from application
+        professionalQualification: app.professionalQualification,
+        interest: app.interest,
+        contribution: app.contribution,
+        employer: app.employer,
+        linkedin: app.linkedin,
+        // Copy mentorship info if provided
+        availableAsMentor: app.availableAsMentor,
+        mentorProfile: app.mentorProfile,
+        seekingMentor: app.seekingMentor,
+        menteeProfile: app.menteeProfile
+      }
+    })
+
+    console.log(`✅ Created member record for ${newMember.name} (${newMember.email})`)
+
     // Generate activation token for account creation
     const activationToken = randomBytes(32).toString('hex')
     

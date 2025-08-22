@@ -106,7 +106,12 @@ export async function POST(
         interest: application.interest,
         contribution: application.contribution,
         employer: application.employer,
-        linkedin: application.linkedin
+        linkedin: application.linkedin,
+        // Copy mentorship info if provided
+        availableAsMentor: application.availableAsMentor,
+        mentorProfile: application.mentorProfile,
+        seekingMentor: application.seekingMentor,
+        menteeProfile: application.menteeProfile
       },
       create: {
         name: application.applicantName,
@@ -117,7 +122,12 @@ export async function POST(
         interest: application.interest,
         contribution: application.contribution,
         employer: application.employer,
-        linkedin: application.linkedin
+        linkedin: application.linkedin,
+        // Copy mentorship info if provided
+        availableAsMentor: application.availableAsMentor,
+        mentorProfile: application.mentorProfile,
+        seekingMentor: application.seekingMentor,
+        menteeProfile: application.menteeProfile
       }
     })
 
