@@ -18,7 +18,6 @@ import {
   AlertCircle,
   User,
   Mail,
-  MapPin,
   Building,
   Linkedin,
   FileText,
