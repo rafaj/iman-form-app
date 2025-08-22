@@ -776,7 +776,7 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <p className="text-muted-foreground font-medium">Location</p>
-                          <p>{app.city}, {app.state}</p>
+                          <p>Hidden for privacy</p>
                         </div>
                         <div>
                           <p className="text-muted-foreground font-medium">Submitted</p>

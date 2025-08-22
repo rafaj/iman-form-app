@@ -272,21 +272,8 @@ export default function ApplicationReviewPage() {
             </CardContent>
           </Card>
 
-          {/* Address Information */}
-          <Card className="border-emerald-100">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-emerald-600" />
-                Address Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <p className="font-medium">{application.streetAddress}</p>
-                <p>{application.city}, {application.state} {application.zip}</p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Address Information - Hidden for Privacy */}
+          {/* Address information is hidden to protect applicant privacy */}
 
           {/* Professional Information */}
           <Card className="border-emerald-100">
