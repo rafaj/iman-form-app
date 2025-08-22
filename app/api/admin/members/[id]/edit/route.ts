@@ -7,12 +7,7 @@ const EditMemberSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email().max(200),
   active: z.boolean().optional().default(true),
-  // Address fields
-  streetAddress: z.string().max(200).optional(),
-  city: z.string().max(100).optional(),
-  state: z.string().max(50).optional(),
-  zip: z.string().max(20).optional(),
-  // Professional fields
+  // Professional fields only - address fields hidden for privacy
   professionalQualification: z.string().max(500).optional(),
   interest: z.string().max(1000).optional(),
   contribution: z.string().max(1000).optional(),
@@ -64,10 +59,6 @@ export async function GET(
         status: 'APPROVED'
       },
       select: {
-        streetAddress: true,
-        city: true,
-        state: true,
-        zip: true,
         professionalQualification: true,
         interest: true,
         contribution: true,
@@ -83,11 +74,7 @@ export async function GET(
       success: true,
       member: {
         ...member,
-        // Include application data if available
-        streetAddress: application?.streetAddress || "",
-        city: application?.city || "",
-        state: application?.state || "",
-        zip: application?.zip || "",
+        // Include professional data only - address hidden for privacy
         professionalQualification: application?.professionalQualification || "",
         interest: application?.interest || "",
         contribution: application?.contribution || "",
@@ -165,12 +152,8 @@ export async function PUT(
       }
     })
 
-    // Update or create application data if provided
+    // Update professional data only - address fields hidden for privacy
     const applicationData = {
-      streetAddress: validatedData.streetAddress || "",
-      city: validatedData.city || "",
-      state: validatedData.state || "",
-      zip: validatedData.zip || "",
       professionalQualification: validatedData.professionalQualification || "",
       interest: validatedData.interest || "",
       contribution: validatedData.contribution || "",
