@@ -24,10 +24,10 @@ type Member = {
   approvalsInWindow: number
   lastApprovalAt: string | null
   // Application details
-  streetAddress: string | null
-  city: string | null
-  state: string | null
-  zip: string | null
+  streetAddress?: string | null
+  city?: string | null
+  state?: string | null
+  zip?: string | null
   professionalQualification: string | null
   interest: string | null
   contribution: string | null
@@ -38,6 +38,9 @@ type Member = {
   // Sponsor information
   sponsorEmail: string | null
   sponsorName: string | null
+  // Admin info
+  userRole?: string
+  isAdminSponsor?: boolean
 }
 
 type Application = {
@@ -153,8 +156,8 @@ export default function AdminPage() {
       setLoading(true)
       setError(null)
       
-      // Fetch members
-      const membersRes = await fetch('/api/list-sponsors', {
+      // Fetch all members for admin panel
+      const membersRes = await fetch('/api/admin/members', {
         credentials: 'include' // Include cookies for authentication
       })
       
@@ -165,6 +168,10 @@ export default function AdminPage() {
       }
       
       const membersData = await membersRes.json()
+      
+      if (membersData.success) {
+        setMembers(membersData.members || [])
+      }
       
       // Fetch applications
       const appsRes = await fetch('/api/list-applications', {
@@ -205,12 +212,7 @@ export default function AdminPage() {
       
       const postsData = await postsRes.json()
       
-      if (membersData.success) {
-        setMembers(membersData.sponsors)
-      } else {
-        console.error('Failed to fetch members:', membersData.message)
-        setError('Failed to load member data')
-      }
+      // Members already set above
       
       if (appsData.success) {
         setApplications(appsData.applications)
