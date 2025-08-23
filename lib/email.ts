@@ -19,7 +19,7 @@ export async function sendSponsorNotificationEmail({
 }) {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'IMAN Professional Network <onboarding@resend.dev>',
+      from: 'IMAN Professional Network <admin@iman-wa.pro>',
       to: [sponsorEmail],
       subject: `New Membership Application - ${applicantName}`,
       html: `
@@ -96,7 +96,7 @@ export async function sendApprovalNotificationEmail({
 }) {
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'IMAN Professional Network <onboarding@resend.dev>',
+      from: 'IMAN Professional Network <admin@iman-wa.pro>',
       to: [applicantEmail],
       subject: '🎉 Welcome to IMAN Professional Network!',
       html: `
