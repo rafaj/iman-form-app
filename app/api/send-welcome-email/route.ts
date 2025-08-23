@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { sendActivationEmail, sendApprovalNotificationEmail } from "@/lib/email"
+import { sendApprovalNotificationEmail } from "@/lib/email"
 import { Resend } from "resend"
-import crypto from "crypto"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -21,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     if (type === 'activation') {
       // Send a welcome email with login link for members added directly
-      const { data, error } = await resend.emails.send({
+      const { error } = await resend.emails.send({
         from: 'IMAN Professional Network <admin@iman-wa.pro>',
         to: [applicantEmail],
         subject: '🎉 Welcome to IMAN Professional Network!',
