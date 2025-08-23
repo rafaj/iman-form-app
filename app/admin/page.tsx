@@ -745,6 +745,12 @@ export default function AdminPage() {
                             <Badge variant={member.active ? "default" : "secondary"} className="text-xs">
                               {member.active ? "Active" : "Inactive"}
                             </Badge>
+                            {member.isAdminSponsor && (
+                              <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                                <Shield className="w-3 h-3 mr-1" />
+                                Admin
+                              </Badge>
+                            )}
                             {member.active && (
                               <Button
                                 variant="outline"
@@ -792,6 +798,30 @@ export default function AdminPage() {
                               <div className="space-y-1">
                                 <p className="text-sm font-medium text-emerald-800">Email</p>
                                 <p className="text-sm text-emerald-700">{member.email}</p>
+                              </div>
+
+                              {/* User Role & Account Status */}
+                              <div className="space-y-1">
+                                <p className="text-sm font-medium text-emerald-800">Account Role</p>
+                                <div className="flex items-center gap-2">
+                                  {member.userRole === 'ADMIN' ? (
+                                    <div className="flex items-center gap-1">
+                                      <Shield className="w-3 h-3 text-blue-600" />
+                                      <span className="text-sm text-blue-700 font-medium">Admin</span>
+                                      <span className="text-xs text-blue-600">(Can approve applications)</span>
+                                    </div>
+                                  ) : member.userRole === 'MEMBER' ? (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-sm text-emerald-700">Member</span>
+                                      <span className="text-xs text-emerald-600">(Regular access)</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-sm text-gray-600">No Account</span>
+                                      <span className="text-xs text-gray-500">(Needs to sign in)</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
 
                               {/* Sponsor Information */}
