@@ -19,9 +19,6 @@ export async function GET(request: NextRequest) {
           role: 'ADMIN'
         }
       },
-      include: {
-        user: true
-      },
       select: {
         id: true,
         name: true,
@@ -35,7 +32,12 @@ export async function GET(request: NextRequest) {
         interest: true,
         contribution: true,
         employer: true,
-        linkedin: true
+        linkedin: true,
+        user: {
+          select: {
+            role: true
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'  // Show newest members first

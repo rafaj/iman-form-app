@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { approveApplication, expireOldApplications, findMemberByEmail, getApplicationByToken } from "@/lib/database"
+import { approveApplication, expireOldApplications, getApplicationByToken } from "@/lib/database"
 import { sendActivationEmail } from "@/lib/email"
 import { ApplicationStatus } from "@prisma/client"
 import { prisma } from "@/lib/database"

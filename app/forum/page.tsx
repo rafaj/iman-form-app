@@ -58,9 +58,8 @@ type Post = {
 }
 
 export default function ForumPage() {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const [isMember, setIsMember] = useState(false)
-  const [membershipChecked, setMembershipChecked] = useState(false)
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState("hot")
@@ -87,8 +86,6 @@ export default function ForumPage() {
       setIsMember(data.isMember || data.isAdmin)
     } catch (error) {
       console.error('Error checking member status:', error)
-    } finally {
-      setMembershipChecked(true)
     }
   }, [session])
 
