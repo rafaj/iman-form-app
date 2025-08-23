@@ -574,22 +574,34 @@ export default function AdminPage() {
         )}
 
         <Tabs defaultValue="members" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="members" className="flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Members ({members.length})
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1 md:gap-0 h-auto">
+            <TabsTrigger value="members" className="flex flex-col sm:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <div className="flex items-center gap-1">
+                <Users className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Members</span>
+              </div>
+              <span className="text-xs">({members.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="applications" className="flex items-center gap-2">
-              <FileText className="w-4 h-4" />
-              Pending Applications ({pendingApplications.length})
+            <TabsTrigger value="applications" className="flex flex-col sm:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <div className="flex items-center gap-1">
+                <FileText className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Apps</span>
+              </div>
+              <span className="text-xs">({pendingApplications.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="forum-posts" className="flex items-center gap-2">
-              <MessageSquare className="w-4 h-4" />
-              Forum Posts ({forumPosts.length})
+            <TabsTrigger value="forum-posts" className="flex flex-col sm:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <div className="flex items-center gap-1">
+                <MessageSquare className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Posts</span>
+              </div>
+              <span className="text-xs">({forumPosts.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="member-spotlight" className="flex items-center gap-2">
-              <Building2 className="w-4 h-4" />
-              Member Spotlight ({spotlightMembers.length})
+            <TabsTrigger value="member-spotlight" className="flex flex-col sm:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm p-2 md:p-3">
+              <div className="flex items-center gap-1">
+                <Building2 className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="hidden sm:inline">Spot</span>
+              </div>
+              <span className="text-xs">({spotlightMembers.length})</span>
             </TabsTrigger>
           </TabsList>
 
