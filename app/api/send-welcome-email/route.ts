@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       }
     } else {
       // Send approval notification
-      const result = await sendApprovalNotificationEmail({
+      await sendApprovalNotificationEmail({
         applicantName: applicantName,
         applicantEmail: applicantEmail
       })
