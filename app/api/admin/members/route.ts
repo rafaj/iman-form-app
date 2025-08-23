@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
         linkedin: true,
         user: {
           select: {
+            id: true,
             role: true
           }
         }
@@ -68,6 +69,29 @@ export async function GET(request: NextRequest) {
           }
         })
         
+        // Get last login information from most recent session
+        let lastSignedIn = null
+        if (member.user) {
+          const recentSession = await prisma.session.findFirst({
+            where: {
+              userId: member.user.id
+            },
+            orderBy: {
+              expires: 'desc'
+            },
+            select: {
+              expires: true
+            }
+          })
+          
+          // For active sessions, we estimate last login as session creation time
+          // (expires - 30 days for NextAuth default)
+          if (recentSession) {
+            const sessionDuration = 30 * 24 * 60 * 60 * 1000 // 30 days in ms
+            lastSignedIn = new Date(recentSession.expires.getTime() - sessionDuration)
+          }
+        }
+        
         return {
           id: member.id,
           name: member.name,
@@ -91,7 +115,9 @@ export async function GET(request: NextRequest) {
           approvedDate: approvedApplication?.approvedAt || null,
           // Sponsor information (from application only)
           sponsorEmail: approvedApplication?.sponsorEmail || null,
-          sponsorName: approvedApplication?.sponsor?.name || null
+          sponsorName: approvedApplication?.sponsor?.name || null,
+          // Login activity info
+          lastSignedIn: lastSignedIn
         }
       })
     )

@@ -43,6 +43,8 @@ type Member = {
   // Admin info
   userRole?: string
   isAdminSponsor?: boolean
+  // Login activity
+  lastSignedIn?: string | null
 }
 
 type Application = {
@@ -751,6 +753,14 @@ export default function AdminPage() {
                             <div>
                               <h3 className="font-semibold text-lg text-emerald-900">{member.name}</h3>
                               <p className="text-sm text-emerald-600">{maskEmail(member.email)}</p>
+                              {member.lastSignedIn && (
+                                <p className="text-xs text-gray-500">
+                                  Last active: {new Date(member.lastSignedIn).toLocaleDateString('en-US', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                              )}
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -832,6 +842,28 @@ export default function AdminPage() {
                                       <span className="text-sm text-gray-600">No Account</span>
                                       <span className="text-xs text-gray-500">(Needs to sign in)</span>
                                     </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Last Login Activity */}
+                              <div className="space-y-1">
+                                <p className="text-sm font-medium text-emerald-800">Last Login</p>
+                                <div className="flex items-center gap-2">
+                                  {member.lastSignedIn ? (
+                                    <span className="text-sm text-emerald-700">
+                                      {new Date(member.lastSignedIn).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                      })}
+                                    </span>
+                                  ) : member.userRole === 'No Account' ? (
+                                    <span className="text-sm text-gray-500">Never signed in</span>
+                                  ) : (
+                                    <span className="text-sm text-yellow-600">No recent sessions</span>
                                   )}
                                 </div>
                               </div>
