@@ -10,7 +10,8 @@ import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus, MessageSquare, ArrowRight, ChevronDown, ChevronRight } from "lucide-react"
+import { Textarea } from "@/components/ui/textarea"
+import { Users, FileText, Clock, CheckCircle, XCircle, AlertCircle, Eye, Linkedin, LogOut, Shield, Trash2, Edit, Building2, Plus, MessageSquare, ArrowRight, ChevronDown, ChevronRight, Mail } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
 import MemberSpotlightTab from "@/components/admin/SponsorsTab"
@@ -19,6 +20,7 @@ type Member = {
   id: string
   name: string
   email: string
+  realEmail?: string
   active: boolean
   createdAt: string
   approvalsInWindow: number
@@ -110,6 +112,14 @@ export default function AdminPage() {
     active: true
   })
   const [addingMember, setAddingMember] = useState(false)
+  const [showEmailDialog, setShowEmailDialog] = useState(false)
+  const [emailForm, setEmailForm] = useState({
+    memberName: '',
+    memberEmail: '',
+    subject: '',
+    message: ''
+  })
+  const [sendingEmail, setSendingEmail] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
 
@@ -436,6 +446,70 @@ export default function AdminPage() {
     })
   }
 
+  function openEmailDialog(member: Member) {
+    setEmailForm({
+      memberName: member.name,
+      memberEmail: member.realEmail || member.email, // Use real email if available
+      subject: '',
+      message: ''
+    })
+    setShowEmailDialog(true)
+  }
+
+  async function sendEmail() {
+    if (!emailForm.subject.trim() || !emailForm.message.trim()) {
+      toast({
+        title: "Email incomplete",
+        description: "Please provide both subject and message.",
+        variant: "destructive"
+      })
+      return
+    }
+
+    setSendingEmail(true)
+    try {
+      const response = await fetch('/api/admin/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          to: emailForm.memberEmail,
+          toName: emailForm.memberName,
+          subject: emailForm.subject,
+          message: emailForm.message
+        })
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        toast({
+          title: "Email sent",
+          description: `Email sent successfully to ${emailForm.memberName}.`
+        })
+        setShowEmailDialog(false)
+        setEmailForm({ memberName: '', memberEmail: '', subject: '', message: '' })
+      } else {
+        toast({
+          title: "Email failed",
+          description: data.message || "Failed to send email.",
+          variant: "destructive"
+        })
+      }
+    } catch (error) {
+      console.error('Send email failed:', error)
+      toast({
+        title: "Email failed",
+        description: "There was an error sending the email. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setSendingEmail(false)
+    }
+  }
+
   // Filter applications by status
   const pendingApplications = applications.filter(app => app.status.toLowerCase() === 'pending')
 
@@ -589,6 +663,60 @@ export default function AdminPage() {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
+                  
+                  {/* Email Modal */}
+                  <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Send Email</DialogTitle>
+                        <DialogDescription>
+                          Send an email to {emailForm.memberName}
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="email-subject">Subject *</Label>
+                          <Input
+                            id="email-subject"
+                            value={emailForm.subject}
+                            onChange={(e) => setEmailForm(prev => ({ ...prev, subject: e.target.value }))}
+                            placeholder="Enter email subject"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email-message">Message *</Label>
+                          <Textarea
+                            id="email-message"
+                            value={emailForm.message}
+                            onChange={(e) => setEmailForm(prev => ({ ...prev, message: e.target.value }))}
+                            placeholder="Enter your message..."
+                            rows={6}
+                            required
+                          />
+                        </div>
+                      </div>
+                      
+                      <DialogFooter>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowEmailDialog(false)}
+                          disabled={sendingEmail}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={sendEmail}
+                          disabled={sendingEmail}
+                          className="bg-emerald-600 hover:bg-emerald-700"
+                        >
+                          <Mail className="w-4 h-4 mr-2" />
+                          {sendingEmail ? "Sending..." : "Send Email"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent>
@@ -617,6 +745,20 @@ export default function AdminPage() {
                             <Badge variant={member.active ? "default" : "secondary"} className="text-xs">
                               {member.active ? "Active" : "Inactive"}
                             </Badge>
+                            {member.active && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openEmailDialog(member)
+                                }}
+                                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                                title={`Send email to ${member.name}`}
+                              >
+                                <Mail className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Link href={`/admin/members/${member.id}/edit`} onClick={(e) => e.stopPropagation()}>
                               <Button
                                 variant="outline"

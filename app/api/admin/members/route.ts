@@ -72,6 +72,7 @@ export async function GET(request: NextRequest) {
           id: member.id,
           name: member.name,
           email: maskEmail(member.email),
+          realEmail: member.email, // Unmasked email for admin use
           active: member.active,
           createdAt: member.createdAt,
           approvalsInWindow: member.approvalsInWindow,
