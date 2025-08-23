@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { to, toName, subject, message } = SendEmailSchema.parse(body)
 
-    // Use Resend's verified default domain for reliable delivery
-    const emailFrom = 'onboarding@resend.dev'
+    // Use your verified domain now that it's set up in Resend
+    const emailFrom = 'admin@iman-wa.pro'
 
     // Create HTML email content
     const htmlContent = `
