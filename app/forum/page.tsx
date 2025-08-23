@@ -220,7 +220,7 @@ export default function ForumPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight text-emerald-900">
+            <h1 className="text-xl font-bold text-emerald-800">
               Community Forum
             </h1>
             <p className="mt-2 text-muted-foreground">

@@ -169,7 +169,7 @@ export default function DirectoryPage() {
 
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-3xl font-semibold tracking-tight text-emerald-900 mb-4">
+            <h1 className="text-xl font-bold text-emerald-800 mb-4">
               Member Directory
             </h1>
             <div className="text-red-600 mb-4">{error}</div>
@@ -256,7 +256,7 @@ export default function DirectoryPage() {
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-emerald-900">
+          <h1 className="text-xl font-bold text-emerald-800">
             Member Directory
           </h1>
           <p className="mt-2 text-muted-foreground">

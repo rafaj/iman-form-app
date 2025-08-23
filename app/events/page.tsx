@@ -155,7 +155,7 @@ export default async function EventsPage() {
       {/* Events List */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-emerald-900 mb-4">Upcoming Events</h2>
+          <h2 className="text-xl font-bold text-emerald-800 mb-4">Upcoming Events</h2>
           <p className="text-emerald-700">
             Join us every Thursday for networking, professional development, and community building at the IMAN Center in Kirkland.
           </p>

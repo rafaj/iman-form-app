@@ -165,7 +165,7 @@ export default function MentorshipPage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-8">
-          <h1 className="text-3xl font-semibold tracking-tight text-emerald-900">Professional Mentorship</h1>
+          <h1 className="text-xl font-bold text-emerald-800">Professional Mentorship</h1>
           <p className="mt-2 text-muted-foreground">
             Connect with mentors and mentees in our community for professional growth and development.
           </p>

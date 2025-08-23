@@ -331,7 +331,7 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-3xl font-bold text-emerald-900 mb-6">Our Mission</h2>
+                <h2 className="text-xl font-bold text-emerald-800 mb-6">Our Mission</h2>
                 <p className="text-emerald-700 mb-6 text-lg">
                   The IMAN Professional Network is a vibrant community of Muslim professionals 
                   in the Seattle Metro, dedicated to fostering career growth, meaningful 
@@ -380,7 +380,7 @@ export default async function HomePage() {
         <section className="py-20 bg-emerald-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-emerald-900 mb-4">Our Values</h2>
+              <h2 className="text-xl font-bold text-emerald-800 mb-4">Our Values</h2>
               <p className="text-emerald-700 max-w-2xl mx-auto">
                 We believe in building a community that reflects our shared values and commitments.
               </p>
@@ -422,8 +422,8 @@ export default async function HomePage() {
       {isMember && (
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6">
-              <h3 className="text-3xl font-bold text-emerald-900 mb-2">Upcoming Events</h3>
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-emerald-800 mb-2">Upcoming Events</h3>
               <p className="text-emerald-700 mb-4">Join us for weekly networking and professional development</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
@@ -476,9 +476,9 @@ export default async function HomePage() {
       {isMember && recentPosts.length > 0 && (
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6">
-              <h3 className="text-3xl font-bold text-emerald-900 mb-2">Latest Forum Discussions</h3>
-              <p className="text-emerald-700 max-w-2xl mx-auto">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-emerald-800 mb-2">Latest Forum Discussions</h3>
+              <p className="text-emerald-700">
                 Stay connected with the latest conversations in our community forum.
               </p>
             </div>
@@ -503,9 +503,9 @@ export default async function HomePage() {
       {isMember && (
         <section className="py-8 bg-emerald-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6">
-              <h3 className="text-3xl font-bold text-emerald-900 mb-2">Community Spotlight</h3>
-              <p className="text-emerald-700 max-w-2xl mx-auto">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-emerald-800 mb-2">Community Spotlight</h3>
+              <p className="text-emerald-700">
                 Grateful to have these amazing individuals as part of our community.
               </p>
             </div>
