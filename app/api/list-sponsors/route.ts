@@ -14,7 +14,13 @@ export async function GET(request: NextRequest) {
     }
     const activeMembers = await prisma.member.findMany({
       where: {
-        active: true
+        active: true,
+        user: {
+          role: 'ADMIN'
+        }
+      },
+      include: {
+        user: true
       },
       select: {
         id: true,
@@ -91,7 +97,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ 
       success: true, 
       sponsors: membersWithDetails,
-      count: membersWithDetails.length
+      count: membersWithDetails.length,
+      message: "Only admin members can approve applications"
     })
   } catch (error) {
     console.error("Error fetching sponsors:", error)

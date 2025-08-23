@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { createApplication, findMemberByEmail } from "@/lib/database"
+import { createApplication, findAdminMemberByEmail } from "@/lib/database"
 import { sendSponsorNotificationEmail } from "@/lib/email"
 import { 
   checkRateLimit, 
@@ -92,10 +92,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Ensure sponsor exists and is active
-    const sponsor = await findMemberByEmail(body.sponsorEmail)
+    // Ensure sponsor exists, is active, and has admin role
+    const sponsor = await findAdminMemberByEmail(body.sponsorEmail)
     if (!sponsor || !sponsor.active) {
       return NextResponse.json({ message: "Sponsor must be an active existing member." }, { status: 400 })
+    }
+    
+    if (!sponsor.user || sponsor.user.role !== 'ADMIN') {
+      return NextResponse.json({ message: "Only admin members can sponsor applications." }, { status: 400 })
     }
 
     // Security analysis

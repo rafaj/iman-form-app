@@ -45,6 +45,17 @@ export async function findMemberByEmail(email: string): Promise<Member | null> {
   })
 }
 
+export async function findAdminMemberByEmail(email: string) {
+  return await prisma.member.findUnique({
+    where: {
+      email: email.toLowerCase()
+    },
+    include: {
+      user: true
+    }
+  })
+}
+
 export async function createApplication(input: CreateApplicationInput): Promise<Application> {
   // Check for existing pending application
   const existing = await prisma.application.findFirst({

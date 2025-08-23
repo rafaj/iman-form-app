@@ -29,10 +29,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       return NextResponse.json({ message: "This application is not pending." }, { status: 400 })
     }
 
-    // Verify sponsor identity
-    const member = await findMemberByEmail(payload.memberEmail)
+    // Verify sponsor identity and admin role
+    const member = await prisma.member.findUnique({
+      where: { email: payload.memberEmail },
+      include: { user: true }
+    })
+    
     if (!member || !member.active || member.id !== payload.memberId) {
       return NextResponse.json({ message: "Member verification failed." }, { status: 401 })
+    }
+    
+    // Check if member has admin role
+    if (!member.user || member.user.role !== 'ADMIN') {
+      return NextResponse.json({ message: "Only admin members can approve applications." }, { status: 403 })
     }
 
     // The sponsor must match the application

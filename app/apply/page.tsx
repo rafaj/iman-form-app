@@ -257,7 +257,7 @@ function ApplyCard() {
       <CardHeader>
         <CardTitle>Apply for membership</CardTitle>
         <CardDescription>
-          Takes a few minutes. Your sponsor must be an existing member.
+          Takes a few minutes. Your sponsor must be an existing admin member.
           <br />
           <strong>Note:</strong> You&apos;ll need a Google account to sign in after approval.
         </CardDescription>
@@ -289,15 +289,16 @@ function ApplyCard() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="sponsorEmail">Sponsor&apos;s email</Label>
+              <Label htmlFor="sponsorEmail">Admin Sponsor&apos;s email</Label>
               <Input
                 id="sponsorEmail"
                 name="sponsorEmail"
                 type="email"
-                placeholder="member@iman.org"
+                placeholder="admin@iman.org"
                 required
                 className={inputClass}
               />
+              <p className="text-xs text-muted-foreground">Must be an existing admin member who can approve applications</p>
             </div>
           </div>
 
