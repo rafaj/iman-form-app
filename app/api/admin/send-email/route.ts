@@ -26,7 +26,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { to, toName, subject, message } = SendEmailSchema.parse(body)
 
-    const emailFrom = process.env.EMAIL_FROM || 'admin@iman-wa.pro'
+    // Use Resend's verified default domain for reliable delivery
+    const emailFrom = 'onboarding@resend.dev'
 
     // Create HTML email content
     const htmlContent = `
@@ -88,11 +89,11 @@ export async function POST(request: NextRequest) {
 
     // Send email using Resend
     const { data, error } = await resend.emails.send({
-      from: `IMAN Admin <${emailFrom}>`,
+      from: emailFrom.includes('@resend.dev') ? `IMAN Admin <${emailFrom}>` : `IMAN Admin <${emailFrom}>`,
       to: [to],
       subject: subject,
       html: htmlContent,
-      replyTo: emailFrom
+      replyTo: process.env.EMAIL_FROM || 'info@iman-wa.org' // Set reply-to to your actual email
     })
 
     if (error) {
