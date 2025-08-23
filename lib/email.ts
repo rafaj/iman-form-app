@@ -185,7 +185,7 @@ export async function sendActivationEmail({
   
   try {
     const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "IMAN Professional Network <onboarding@resend.dev>",
+      from: 'IMAN Professional Network <admin@iman-wa.pro>',
       to,
       subject: "🎉 Your IMAN Professional Network Application Has Been Approved!",
       html: `
