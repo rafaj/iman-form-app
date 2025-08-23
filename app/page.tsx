@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar, MessageSquare, Clock } from "lucide-react"
+import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar, MessageSquare, Clock, Heart } from "lucide-react"
 import Link from "next/link"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
@@ -605,6 +605,19 @@ export default async function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Donation Button */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <a
+          href="https://www.paypal.com/donate?token=ZbSkOutRn5Z-02hQ8AtywO2xaESEi6H6B5ZeF6cqrMFDv-fGPghFIRjriJEmia9Jk3fVW0GYZYzZfu1z"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
+        >
+          <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          <span className="hidden sm:inline text-sm font-medium">Donate</span>
+        </a>
+      </div>
     </div>
   )
 }
