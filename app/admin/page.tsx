@@ -742,15 +742,15 @@ export default function AdminPage() {
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge variant={member.active ? "default" : "secondary"} className="text-xs">
-                              {member.active ? "Active" : "Inactive"}
-                            </Badge>
                             {member.isAdminSponsor && (
                               <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
                                 <Shield className="w-3 h-3 mr-1" />
                                 Admin
                               </Badge>
                             )}
+                            <Badge variant={member.active ? "default" : "secondary"} className="text-xs">
+                              {member.active ? "Active" : "Inactive"}
+                            </Badge>
                             {member.active && (
                               <Button
                                 variant="outline"
