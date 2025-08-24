@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
+import Resend from "next-auth/providers/resend"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/database"
 
@@ -9,6 +10,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    Resend({
+      apiKey: process.env.RESEND_API_KEY!,
+      from: "IMAN Professional Network <noreply@iman-wa.org>",
     }),
   ],
   callbacks: {
