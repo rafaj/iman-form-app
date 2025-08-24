@@ -5,6 +5,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -69,10 +70,12 @@ export default function HomePage() {
                   )}
                   <div className="flex items-center space-x-3">
                     {session.user?.image && (
-                      <img 
+                      <Image 
                         src={session.user.image} 
                         alt={session.user.name || "User"} 
                         className="w-8 h-8 rounded-full"
+                        width={32}
+                        height={32}
                       />
                     )}
                     <Link href="/profile" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors">

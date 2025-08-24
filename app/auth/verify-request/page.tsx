@@ -8,13 +8,13 @@ export default function VerifyRequest() {
           </div>
           <h1 className="text-2xl font-bold text-emerald-900 mb-2">Check your email</h1>
           <p className="text-gray-600">
-            We've sent you a secure sign-in link. Click the link in your email to access your IMAN Professional Network account.
+            We&apos;ve sent you a secure sign-in link. Click the link in your email to access your IMAN Professional Network account.
           </p>
         </div>
         
         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
           <p className="text-sm text-emerald-700">
-            <strong>Didn't receive the email?</strong> Check your spam folder or try requesting a new link.
+            <strong>Didn&apos;t receive the email?</strong> Check your spam folder or try requesting a new link.
           </p>
         </div>
         
