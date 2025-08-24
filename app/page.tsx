@@ -247,7 +247,7 @@ export default async function HomePage() {
                   {isMember && (
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
-                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Meetups</Link>
                       <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
                       <Link href="/mentorship" className="text-emerald-700 hover:text-emerald-900 font-medium">Mentorship</Link>
                     </>
@@ -338,7 +338,7 @@ export default async function HomePage() {
                   connections, and positive impact in our communities.
                 </p>
                 <p className="text-emerald-700 mb-6">
-                  Through networking events, professional development workshops, and community 
+                  Through networking meetups, professional development workshops, and community 
                   service initiatives, we empower our members to excel in their careers while 
                   staying true to their values and faith.
                 </p>
@@ -423,7 +423,7 @@ export default async function HomePage() {
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-2">Upcoming Events</h3>
+              <h3 className="text-xl font-bold text-emerald-800 mb-2">Upcoming Meetups</h3>
               <p className="text-emerald-700 mb-4">Join us for weekly networking and professional development</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-6">
@@ -464,7 +464,7 @@ export default async function HomePage() {
               <Link href="/events">
                 <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">
                   <Calendar className="h-5 w-5 mr-2" />
-                  View All Events
+                  View All Meetups
                 </Button>
               </Link>
             </div>
@@ -565,7 +565,7 @@ export default async function HomePage() {
                 {session && isMember && (
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
-                    <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                    <li><Link href="/events" className="hover:text-white">Meetups</Link></li>
                     <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
                     <li><Link href="/mentorship" className="hover:text-white">Mentorship</Link></li>
                   </>

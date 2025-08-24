@@ -51,7 +51,7 @@ export default function ThankYouPage() {
                   {isMember && (
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
-                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
+                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Meetups</Link>
                       <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
                       <Link href="/mentorship" className="text-emerald-700 hover:text-emerald-900 font-medium">Mentorship</Link>
                     </>
@@ -183,7 +183,7 @@ export default function ThankYouPage() {
                 {session && isMember && (
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
-                    <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                    <li><Link href="/events" className="hover:text-white">Meetups</Link></li>
                     <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
                     <li><Link href="/mentorship" className="hover:text-white">Mentorship</Link></li>
                   </>
