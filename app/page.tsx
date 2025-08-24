@@ -533,9 +533,9 @@ export default async function HomePage() {
             </div>
             {newMembers.length > 6 && (
               <div className="text-center">
-                <p className="text-sm text-emerald-600">
+                <Link href="/directory?view=recent" className="text-sm text-emerald-600 hover:text-emerald-800 hover:underline">
                   + {newMembers.length - 6} more professionals joined this month
-                </p>
+                </Link>
               </div>
             )}
           </div>

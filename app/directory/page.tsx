@@ -34,8 +34,16 @@ export default function DirectoryPage() {
   const [selectedProfessional, setSelectedProfessional] = useState<DirectoryProfessional | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isProfessional, setIsProfessional] = useState(false)
-  const [viewMode, setViewMode] = useState<'alphabetical' | 'employer'>('alphabetical')
+  const [viewMode, setViewMode] = useState<'alphabetical' | 'employer' | 'recent'>('alphabetical')
   const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Handle URL parameters for initial view mode
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('view') === 'recent') {
+      setViewMode('recent')
+    }
+  }, [])
 
   useEffect(() => {
     if (status === "loading") return
@@ -119,6 +127,11 @@ export default function DirectoryPage() {
   }, {} as Record<string, DirectoryProfessional[]>)
 
   const employerSections = Object.keys(groupedByEmployer).sort()
+
+  // Sort professionals by join date for recent view
+  const professionalsByJoinDate = [...filteredProfessionals].sort((a, b) => 
+    new Date(b.professionalSince).getTime() - new Date(a.professionalSince).getTime()
+  )
 
   if (status === "loading" || loading) {
     return (
@@ -320,6 +333,18 @@ export default function DirectoryPage() {
                 <Building2 className="h-4 w-4 mr-2" />
                 Employers represented at IMAN
               </Button>
+              <Button
+                variant={viewMode === 'recent' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setViewMode('recent')
+                  setSelectedEmployer(null)
+                }}
+                className={viewMode === 'recent' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Recently Joined
+              </Button>
             </div>
             {viewMode === 'employer' && selectedEmployer && (
               <Button
@@ -402,6 +427,70 @@ export default function DirectoryPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )
+        ) : viewMode === 'recent' ? (
+          // Recently Joined View
+          professionalsByJoinDate.length === 0 ? (
+            <div className="text-center py-12">
+              <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No professionals found matching your search.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <h2 className="text-lg font-semibold text-emerald-900 mb-4">
+                Professionals by Join Date ({professionalsByJoinDate.length})
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {professionalsByJoinDate.map(professional => (
+                  <Card 
+                    key={professional.id}
+                    className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
+                    onClick={() => setSelectedProfessional(professional)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          {professional.image ? (
+                            <img
+                              src={professional.image}
+                              alt={professional.displayName}
+                              className="w-12 h-12 rounded-full border-2 border-emerald-200"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
+                              {professional.initials}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-emerald-900 truncate">
+                            {professional.displayName}
+                          </h3>
+                          {professional.employer && (
+                            <p className="text-sm text-emerald-700 truncate mt-1">
+                              {professional.employer}
+                            </p>
+                          )}
+                          <div className="flex items-center mt-2 text-xs text-emerald-600">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            Joined {new Date(professional.professionalSince).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </div>
+                          {professional.professionalQualification && (
+                            <p className="text-xs text-gray-600 line-clamp-2 mt-2">
+                              {professional.professionalQualification}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )
         ) : (
