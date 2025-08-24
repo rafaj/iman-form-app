@@ -22,6 +22,7 @@ type DirectoryProfessional = {
   contribution: string | null
   linkedin: string | null
   professionalSince: string
+  memberSince: string
   initials: string
 }
 
@@ -130,7 +131,7 @@ export default function DirectoryPage() {
 
   // Sort professionals by join date for recent view
   const professionalsByJoinDate = [...filteredProfessionals].sort((a, b) => 
-    new Date(b.professionalSince).getTime() - new Date(a.professionalSince).getTime()
+    new Date(b.memberSince).getTime() - new Date(a.memberSince).getTime()
   )
 
   if (status === "loading" || loading) {
@@ -474,7 +475,7 @@ export default function DirectoryPage() {
                           )}
                           <div className="flex items-center mt-2 text-xs text-emerald-600">
                             <Calendar className="w-3 h-3 mr-1" />
-                            Joined {new Date(professional.professionalSince).toLocaleDateString('en-US', {
+                            Joined {new Date(professional.memberSince).toLocaleDateString('en-US', {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric'

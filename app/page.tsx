@@ -487,34 +487,38 @@ export default async function HomePage() {
                 Help us welcome our newest IMAN network members! Connect with them and help make their first month memorable.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
               {newMembers.slice(0, 6).map((member) => (
-                <div key={member.id} className="bg-emerald-50 rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-shadow">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center space-x-4 flex-1">
+                <Link 
+                  key={member.id}
+                  href="/directory?view=recent"
+                  className="bg-emerald-50 rounded-lg p-3 border border-emerald-200 hover:shadow-md hover:bg-emerald-100 transition-all cursor-pointer block"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <div className="flex-shrink-0">
                         {member.image ? (
                           <img
                             src={member.image}
                             alt={member.displayName}
-                            className="w-12 h-12 rounded-full border-2 border-emerald-300"
+                            className="w-10 h-10 rounded-full border-2 border-emerald-300"
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
+                          <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold text-sm">
                             {member.initials}
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-lg font-semibold text-emerald-900 truncate">
+                        <h4 className="text-base font-semibold text-emerald-900 truncate">
                           {member.displayName}
                         </h4>
                         {member.employer && (
-                          <p className="text-sm text-emerald-700 truncate">
+                          <p className="text-xs text-emerald-700 truncate">
                             {member.employer}
                           </p>
                         )}
-                        <p className="text-xs text-emerald-600 mt-1">
+                        <p className="text-xs text-emerald-600">
                           Joined {new Date(member.createdAt).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric' 
@@ -523,12 +527,12 @@ export default async function HomePage() {
                       </div>
                     </div>
                     <div className="ml-2">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
                         NEW
                       </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             {newMembers.length > 6 && (
