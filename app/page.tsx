@@ -374,7 +374,7 @@ export default async function HomePage() {
                 </Link>
                 <Link href="/auth/signin">
                   <Button variant="outline" size="lg" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-4 text-lg">
-                    Sign In with Google
+                    Professional Sign In
                   </Button>
                 </Link>
               </div>

@@ -79,9 +79,30 @@ export default function SignIn() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* OAuth Buttons */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Quick sign in</h3>
+            <Button
+              onClick={() => signIn("google", { callbackUrl: "/" })}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <Chrome className="w-4 h-4 mr-2" />
+              Continue with Google
+            </Button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or sign in with email</span>
+            </div>
+          </div>
+
           {/* Magic Link Form */}
           <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-3">Sign in with email</h3>
             <form onSubmit={handleMagicLink} className="space-y-3">
               <Input
                 type="email"
@@ -94,33 +115,14 @@ export default function SignIn() {
               <Button 
                 type="submit" 
                 disabled={isLoading || !email}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                variant="outline"
+                className="w-full"
               >
                 <Mail className="w-4 h-4 mr-2" />
                 {isLoading ? "Sending..." : "Send Sign-In Link"}
               </Button>
             </form>
           </div>
-
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          {/* OAuth Buttons */}
-          <Button
-            onClick={() => signIn("google", { callbackUrl: "/" })}
-            variant="outline"
-            className="w-full"
-          >
-            <Chrome className="w-4 h-4 mr-2" />
-            Google
-          </Button>
           
           <p className="text-xs text-gray-600 text-center">
             Only approved professionals can access the network. 
