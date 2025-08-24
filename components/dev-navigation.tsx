@@ -30,7 +30,7 @@ export default function DevNavigation() {
                 Apply
               </Link>
               <Link href="/events" className="text-gray-600 hover:text-emerald-700 transition-colors">
-                Events
+                Meetups
               </Link>
               <Link href="/admin" className="text-gray-600 hover:text-emerald-700 transition-colors">
                 Admin

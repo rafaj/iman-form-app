@@ -79,7 +79,7 @@ export default function MobileNavigation({ session, isProfessional }: MobileNavi
                         className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
                         onClick={toggleMenu}
                       >
-                        Events
+                        Meetups
                       </Link>
                       <Link 
                         href="/forum" 
