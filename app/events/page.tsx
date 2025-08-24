@@ -93,7 +93,7 @@ export default async function EventsPage() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <h1 className="text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
-                <p className="text-sm text-emerald-600">Events - Every Thursday at the IMAN Center</p>
+                <p className="text-sm text-emerald-600">Meetups - Every Thursday at the IMAN Center</p>
               </div>
             </div>
             {/* Desktop Navigation */}
@@ -104,7 +104,7 @@ export default async function EventsPage() {
                   {isMember && (
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
-                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Events</Link>
+                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Meetups</Link>
                       <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
                       <Link href="/mentorship" className="text-emerald-700 hover:text-emerald-900 font-medium">Mentorship</Link>
                     </>
@@ -133,7 +133,7 @@ export default async function EventsPage() {
               ) : (
                 <>
                   <Link href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</Link>
-                  <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Events</Link>
+                  <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Meetups</Link>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
                     Member Sign In
                   </Link>
@@ -155,7 +155,7 @@ export default async function EventsPage() {
       {/* Events List */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-xl font-bold text-emerald-800 mb-4">Upcoming Events</h2>
+          <h2 className="text-xl font-bold text-emerald-800 mb-4">Upcoming Meetups</h2>
           <p className="text-emerald-700">
             Join us every Thursday for networking, professional development, and community building at the IMAN Center in Kirkland.
           </p>
@@ -183,7 +183,7 @@ export default async function EventsPage() {
                     </div>
                   </div>
                   
-                  {/* Event Details */}
+                  {/* Meetup Details */}
                   <div className="flex-1 p-6">
                     <div className="flex justify-between items-start mb-3">
                       <div>
@@ -223,7 +223,7 @@ export default async function EventsPage() {
                         rel="noopener noreferrer"
                       >
                         <Button size="sm" variant="outline">
-                          Event Details
+                          Meetup Details
                           <ExternalLink className="h-3 w-3 ml-2" />
                         </Button>
                       </a>
@@ -255,7 +255,7 @@ export default async function EventsPage() {
                 {session && isMember && (
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
-                    <li><Link href="/events" className="hover:text-white">Events</Link></li>
+                    <li><Link href="/events" className="hover:text-white">Meetups</Link></li>
                     <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
                     <li><Link href="/mentorship" className="hover:text-white">Mentorship</Link></li>
                   </>
