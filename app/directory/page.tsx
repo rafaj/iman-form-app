@@ -418,7 +418,7 @@ export default function DirectoryPage() {
                               )}
                               <div className="flex items-center mt-3 text-xs text-gray-500">
                                 <Calendar className="w-3 h-3 mr-1" />
-                                Professional since {new Date(professional.professionalSince).getFullYear()}
+                                Last seen recently
                               </div>
                             </div>
                           </div>
@@ -546,7 +546,7 @@ export default function DirectoryPage() {
                           )}
                           <div className="flex items-center mt-3 text-xs text-gray-500">
                             <Calendar className="w-3 h-3 mr-1" />
-                            Professional since {new Date(professional.professionalSince).getFullYear()}
+                            Last seen recently
                           </div>
                         </div>
                       </div>
@@ -690,11 +690,7 @@ export default function DirectoryPage() {
                   <div className="pt-4 border-t border-emerald-200">
                     <div className="flex items-center text-sm text-gray-600">
                       <Calendar className="w-4 h-4 mr-2" />
-                      Professional since {new Date(selectedProfessional.professionalSince).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      Last seen recently
                     </div>
                   </div>
                 </div>

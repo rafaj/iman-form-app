@@ -102,29 +102,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       try {
-        // Check if user has an approved application or is already a member
-        const approvedApplication = await prisma.application.findFirst({
-          where: {
-            applicantEmail: user.email,
-            status: "APPROVED"
-          }
-        })
+        // Only run database checks on server side
+        if (typeof window === 'undefined') {
+          // Check if user has an approved application or is already a member
+          const approvedApplication = await prisma.application.findFirst({
+            where: {
+              applicantEmail: user.email,
+              status: "APPROVED"
+            }
+          })
 
-        // Also check if user is already a member (manually added by admin)
-        const existingMember = await prisma.member.findUnique({
-          where: {
-            email: user.email,
-            active: true
-          }
-        })
+          // Also check if user is already a member (manually added by admin)
+          const existingMember = await prisma.member.findUnique({
+            where: {
+              email: user.email,
+              active: true
+            }
+          })
 
-        if (!approvedApplication && !existingMember) {
-          // No approved application or existing member found
-          console.log(`❌ Access denied for ${user.email}: No approved application or active membership found`)
-          return false
+          if (!approvedApplication && !existingMember) {
+            // No approved application or existing member found
+            console.log(`❌ Access denied for ${user.email}: No approved application or active membership found`)
+            return false
+          }
+
+          console.log(`✅ Access granted for ${user.email}: ${approvedApplication ? 'Approved application' : 'Active member'} found`)
         }
-
-        console.log(`✅ Access granted for ${user.email}: ${approvedApplication ? 'Approved application' : 'Active member'} found`)
         return true
       } catch (error) {
         console.error(`❌ Database error during signin for ${user.email}:`, error)
