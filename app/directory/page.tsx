@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin } from "lucide-react"
+import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin, Building2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import MobileNavigation from "@/components/mobile-navigation"
@@ -34,6 +34,8 @@ export default function DirectoryPage() {
   const [selectedProfessional, setSelectedProfessional] = useState<DirectoryProfessional | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isProfessional, setIsProfessional] = useState(false)
+  const [viewMode, setViewMode] = useState<'alphabetical' | 'employer'>('alphabetical')
+  const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === "loading") return
@@ -105,6 +107,18 @@ export default function DirectoryPage() {
   }, {} as Record<string, DirectoryProfessional[]>)
 
   const alphabeticalSections = Object.keys(groupedProfessionals).sort()
+
+  // Group professionals by employer
+  const groupedByEmployer = filteredProfessionals.reduce((groups, professional) => {
+    const employer = professional.employer || 'No employer listed'
+    if (!groups[employer]) {
+      groups[employer] = []
+    }
+    groups[employer].push(professional)
+    return groups
+  }, {} as Record<string, DirectoryProfessional[]>)
+
+  const employerSections = Object.keys(groupedByEmployer).sort()
 
   if (status === "loading" || loading) {
     return (
@@ -191,7 +205,7 @@ export default function DirectoryPage() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
-                <p className="text-xs md:text-sm text-emerald-600">Member Directory</p>
+                <p className="text-xs md:text-sm text-emerald-600">Professional Directory</p>
               </div>
             </div>
             
@@ -257,7 +271,7 @@ export default function DirectoryPage() {
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <header className="mb-8">
           <h1 className="text-xl font-bold text-emerald-800">
-            Member Directory
+            Professional Directory
           </h1>
           <p className="mt-2 text-muted-foreground">
             Connect with {professionals.length} professionals in the IMAN network
@@ -265,7 +279,7 @@ export default function DirectoryPage() {
         </header>
 
         {/* Search Bar */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -278,72 +292,217 @@ export default function DirectoryPage() {
           </div>
         </div>
 
-        {/* Professionals Grid */}
-        {alphabeticalSections.length === 0 ? (
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No professionals found matching your search.</p>
+        {/* View Toggle */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex space-x-2">
+              <Button
+                variant={viewMode === 'alphabetical' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setViewMode('alphabetical')
+                  setSelectedEmployer(null)
+                }}
+                className={viewMode === 'alphabetical' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+              >
+                <Users className="h-4 w-4 mr-2" />
+                Alphabetical
+              </Button>
+              <Button
+                variant={viewMode === 'employer' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setViewMode('employer')
+                  setSelectedEmployer(null)
+                }}
+                className={viewMode === 'employer' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+              >
+                <Building2 className="h-4 w-4 mr-2" />
+                Employers represented at IMAN
+              </Button>
+            </div>
+            {viewMode === 'employer' && selectedEmployer && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedEmployer(null)}
+                className="text-emerald-700 hover:text-emerald-900"
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back to all employers
+              </Button>
+            )}
           </div>
-        ) : (
-          <div className="space-y-8">
-            {alphabeticalSections.map(letter => (
-              <div key={letter}>
-                <div className="flex items-center mb-4">
-                  <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-semibold mr-4">
-                    {letter}
+        </div>
+
+        {/* Content Grid */}
+        {viewMode === 'alphabetical' ? (
+          // Alphabetical View
+          alphabeticalSections.length === 0 ? (
+            <div className="text-center py-12">
+              <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No professionals found matching your search.</p>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {alphabeticalSections.map(letter => (
+                <div key={letter}>
+                  <div className="flex items-center mb-4">
+                    <div className="w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-semibold mr-4">
+                      {letter}
+                    </div>
+                    <div className="flex-1 h-px bg-emerald-200"></div>
                   </div>
-                  <div className="flex-1 h-px bg-emerald-200"></div>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {groupedProfessionals[letter].map(professional => (
-                    <Card 
-                      key={professional.id}
-                      className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
-                      onClick={() => setSelectedProfessional(professional)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0">
-                            {professional.image ? (
-                              <img
-                                src={professional.image}
-                                alt={professional.displayName}
-                                className="w-12 h-12 rounded-full border-2 border-emerald-200"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
-                                {professional.initials}
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {groupedProfessionals[letter].map(professional => (
+                      <Card 
+                        key={professional.id}
+                        className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
+                        onClick={() => setSelectedProfessional(professional)}
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex items-start space-x-4">
+                            <div className="flex-shrink-0">
+                              {professional.image ? (
+                                <img
+                                  src={professional.image}
+                                  alt={professional.displayName}
+                                  className="w-12 h-12 rounded-full border-2 border-emerald-200"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
+                                  {professional.initials}
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-emerald-900 truncate">
+                                {professional.displayName}
+                              </h3>
+                              {professional.employer && (
+                                <p className="text-sm text-emerald-700 truncate mt-1">
+                                  {professional.employer}
+                                </p>
+                              )}
+                              {professional.professionalQualification && (
+                                <p className="text-xs text-gray-600 line-clamp-2 mt-2">
+                                  {professional.professionalQualification}
+                                </p>
+                              )}
+                              <div className="flex items-center mt-3 text-xs text-gray-500">
+                                <Calendar className="w-3 h-3 mr-1" />
+                                Professional since {new Date(professional.professionalSince).getFullYear()}
                               </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-emerald-900 truncate">
-                              {professional.displayName}
-                            </h3>
-                            {professional.employer && (
-                              <p className="text-sm text-emerald-700 truncate mt-1">
-                                {professional.employer}
-                              </p>
-                            )}
-                            {professional.professionalQualification && (
-                              <p className="text-xs text-gray-600 line-clamp-2 mt-2">
-                                {professional.professionalQualification}
-                              </p>
-                            )}
-                            <div className="flex items-center mt-3 text-xs text-gray-500">
-                              <Calendar className="w-3 h-3 mr-1" />
-                              Professional since {new Date(professional.professionalSince).getFullYear()}
                             </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          // Employer View
+          employerSections.length === 0 ? (
+            <div className="text-center py-12">
+              <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No employers found matching your search.</p>
+            </div>
+          ) : selectedEmployer ? (
+            // Show professionals from selected employer
+            <div className="space-y-6">
+              <div className="flex items-center mb-6">
+                <div className="flex items-center">
+                  <Building2 className="w-6 h-6 text-emerald-600 mr-3" />
+                  <h2 className="text-xl font-semibold text-emerald-900">{selectedEmployer}</h2>
+                  <span className="ml-3 text-sm text-gray-600">
+                    ({groupedByEmployer[selectedEmployer]?.length || 0} professional{(groupedByEmployer[selectedEmployer]?.length || 0) !== 1 ? 's' : ''})
+                  </span>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {(groupedByEmployer[selectedEmployer] || []).map(professional => (
+                  <Card 
+                    key={professional.id}
+                    className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
+                    onClick={() => setSelectedProfessional(professional)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          {professional.image ? (
+                            <img
+                              src={professional.image}
+                              alt={professional.displayName}
+                              className="w-12 h-12 rounded-full border-2 border-emerald-200"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
+                              {professional.initials}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-emerald-900 truncate">
+                            {professional.displayName}
+                          </h3>
+                          {professional.professionalQualification && (
+                            <p className="text-xs text-gray-600 line-clamp-2 mt-2">
+                              {professional.professionalQualification}
+                            </p>
+                          )}
+                          <div className="flex items-center mt-3 text-xs text-gray-500">
+                            <Calendar className="w-3 h-3 mr-1" />
+                            Professional since {new Date(professional.professionalSince).getFullYear()}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ) : (
+            // Show list of employers
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-emerald-900 mb-4">
+                Companies and Organizations ({employerSections.length})
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {employerSections.map(employer => (
+                  <Card 
+                    key={employer}
+                    className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100 hover:border-emerald-300"
+                    onClick={() => setSelectedEmployer(employer)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <Building2 className="w-5 h-5 text-emerald-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-emerald-900 truncate">
+                              {employer}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {groupedByEmployer[employer].length} professional{groupedByEmployer[employer].length !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-emerald-600">
+                          <ArrowLeft className="w-4 h-4 transform rotate-180" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )
         )}
 
         {/* Professional Detail Modal */}
