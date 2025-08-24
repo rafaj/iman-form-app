@@ -289,7 +289,7 @@ export default async function HomePage() {
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isMember} />
           </div>
         </div>
       </header>

@@ -157,7 +157,7 @@ export default function MentorshipPage() {
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isMember} />
           </div>
         </div>
       </header>

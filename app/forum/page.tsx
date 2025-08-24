@@ -211,7 +211,7 @@ export default function ForumPage() {
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isMember} />
           </div>
         </div>
       </header>

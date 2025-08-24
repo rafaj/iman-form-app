@@ -147,7 +147,7 @@ export default async function EventsPage() {
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isMember} />
           </div>
         </div>
       </header>
