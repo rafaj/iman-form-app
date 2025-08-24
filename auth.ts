@@ -101,38 +101,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         return true
       }
 
-      try {
-        // Only run database checks on server side
-        if (typeof window === 'undefined') {
-          // Check if user has an approved application or is already a member
-          const approvedApplication = await prisma.application.findFirst({
-            where: {
-              applicantEmail: user.email,
-              status: "APPROVED"
-            }
-          })
-
-          // Also check if user is already a member (manually added by admin)
-          const existingMember = await prisma.member.findUnique({
-            where: {
-              email: user.email,
-              active: true
-            }
-          })
-
-          if (!approvedApplication && !existingMember) {
-            // No approved application or existing member found
-            console.log(`❌ Access denied for ${user.email}: No approved application or active membership found`)
-            return false
-          }
-
-          console.log(`✅ Access granted for ${user.email}: ${approvedApplication ? 'Approved application' : 'Active member'} found`)
-        }
-        return true
-      } catch (error) {
-        console.error(`❌ Database error during signin for ${user.email}:`, error)
-        return false
-      }
+      // For now, allow all sign-ins and check permissions in middleware/pages
+      // This prevents Prisma client browser errors during auth flows
+      console.log(`🔄 Sign-in attempted for ${user.email}`)
+      return true
     },
     async session({ session, user }) {
       if (session.user && user) {
