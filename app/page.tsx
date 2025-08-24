@@ -143,6 +143,65 @@ export default async function HomePage() {
 
   const events = await getUpcomingEvents(3)
 
+  // Fetch recent new members for welcome section
+  let newMembers: Array<{
+    id: string
+    name: string
+    displayName: string
+    image: string | null
+    employer: string | null
+    createdAt: Date
+    initials: string
+  }> = []
+  
+  if (isMember) {
+    try {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      
+      const recentMembers = await prisma.member.findMany({
+        where: {
+          active: true,
+          createdAt: { gte: thirtyDaysAgo }
+        },
+        include: {
+          user: {
+            select: {
+              name: true,
+              image: true
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 20 // Get more than 6 to handle the counter
+      })
+      
+      // Only show if we have at least 3 new members
+      if (recentMembers.length >= 3) {
+        newMembers = recentMembers.map(member => {
+          const displayName = member.user?.name || member.name
+          return {
+            id: member.id,
+            name: member.name,
+            displayName,
+            image: member.user?.image || null,
+            employer: member.employer,
+            createdAt: member.createdAt,
+            initials: displayName
+              .split(' ')
+              .map(n => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)
+          }
+        })
+      }
+    } catch (error) {
+      console.error("Error fetching new members:", error)
+      newMembers = []
+    }
+  }
+
   // Fetch recent forum posts for members
   let recentPosts: Array<{
     id: string
@@ -414,6 +473,71 @@ export default async function HomePage() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Welcome New Professionals Section - Only show for members */}
+      {isMember && newMembers.length > 0 && (
+        <section className="py-8 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-emerald-800 mb-2">Welcome New Professionals</h3>
+              <p className="text-emerald-700">
+                Help us welcome our newest IMAN network members! Connect with them and help make their first month memorable.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+              {newMembers.slice(0, 6).map((member) => (
+                <div key={member.id} className="bg-emerald-50 rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center space-x-4 flex-1">
+                      <div className="flex-shrink-0">
+                        {member.image ? (
+                          <img
+                            src={member.image}
+                            alt={member.displayName}
+                            className="w-12 h-12 rounded-full border-2 border-emerald-300"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
+                            {member.initials}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-lg font-semibold text-emerald-900 truncate">
+                          {member.displayName}
+                        </h4>
+                        {member.employer && (
+                          <p className="text-sm text-emerald-700 truncate">
+                            {member.employer}
+                          </p>
+                        )}
+                        <p className="text-xs text-emerald-600 mt-1">
+                          Joined {new Date(member.createdAt).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric' 
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="ml-2">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                        NEW
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {newMembers.length > 6 && (
+              <div className="text-center">
+                <p className="text-sm text-emerald-600">
+                  + {newMembers.length - 6} more professionals joined this month
+                </p>
+              </div>
+            )}
           </div>
         </section>
       )}
