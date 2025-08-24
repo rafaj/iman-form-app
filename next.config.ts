@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
         '@prisma/client': false,
         'prisma': false,
       };
+      config.externals.push('node_modules/.prisma/client');
     }
     return config;
   },

@@ -1,0 +1,137 @@
+
+> iman-form-app@0.1.1 build
+> next build
+
+   ▲ Next.js 15.2.4
+   - Environments: .env.local, .env.production, .env
+
+   Creating an optimized production build ...
+isServer: true
+isServer: true
+isServer: false
+Excluding prisma from client bundle
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+
+./app/directory/page.tsx
+244:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+394:33  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+456:29  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+527:29  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+612:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/events/page.tsx
+117:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+170:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/forum/page.tsx
+204:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/forum/posts/[id]/page.tsx
+332:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/mentorship/page.tsx
+129:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/page.tsx
+319:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+498:27  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+648:25  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/profile/page.tsx
+212:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+269:19  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./app/thank-you/page.tsx
+64:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/admin/SponsorsTab.tsx
+301:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+342:23  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./components/navigation.tsx
+70:17  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/44) ...
+   Generating static pages (11/44) 
+   Generating static pages (22/44) 
+   Generating static pages (33/44) 
+ ✓ Generating static pages (44/44)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                     Size  First Load JS
+┌ ƒ /                                          146 B         118 kB
+├ ○ /_not-found                                981 B         101 kB
+├ ƒ /activate/[token]                          251 B         101 kB
+├ ƒ /activate/[token]/complete                 251 B         101 kB
+├ ○ /admin                                   12.4 kB         141 kB
+├ ƒ /admin/application/[token]               8.26 kB         120 kB
+├ ○ /admin/login                             1.79 kB         114 kB
+├ ƒ /admin/members/[id]/edit                 2.61 kB         118 kB
+├ ƒ /api/admin/add-jawad                       251 B         101 kB
+├ ƒ /api/admin/add-test-data                   251 B         101 kB
+├ ƒ /api/admin/applications/[token]/approve    251 B         101 kB
+├ ƒ /api/admin/applications/[token]/reject     251 B         101 kB
+├ ƒ /api/admin/check-auth                      251 B         101 kB
+├ ƒ /api/admin/cleanup-database                251 B         101 kB
+├ ƒ /api/admin/login                           251 B         101 kB
+├ ƒ /api/admin/logout                          251 B         101 kB
+├ ƒ /api/admin/member-spotlight                251 B         101 kB
+├ ƒ /api/admin/member-spotlight/[id]/delete    251 B         101 kB
+├ ƒ /api/admin/member-spotlight/upload         251 B         101 kB
+├ ƒ /api/admin/members                         251 B         101 kB
+├ ƒ /api/admin/members/[id]/delete             251 B         101 kB
+├ ƒ /api/admin/members/[id]/edit               251 B         101 kB
+├ ƒ /api/admin/members/add                     251 B         101 kB
+├ ƒ /api/admin/posts                           251 B         101 kB
+├ ƒ /api/admin/posts/[id]                      251 B         101 kB
+├ ƒ /api/admin/send-email                      251 B         101 kB
+├ ƒ /api/admin/sponsors                        251 B         101 kB
+├ ƒ /api/admin/sponsors/[id]/delete            251 B         101 kB
+├ ƒ /api/admin/sponsors/upload                 251 B         101 kB
+├ ƒ /api/applications                          251 B         101 kB
+├ ƒ /api/applications/[token]                  251 B         101 kB
+├ ƒ /api/applications/[token]/approve          251 B         101 kB
+├ ƒ /api/applications/[token]/reject           251 B         101 kB
+├ ƒ /api/auth/[...nextauth]                    251 B         101 kB
+├ ƒ /api/auth/check-admin                      251 B         101 kB
+├ ƒ /api/check-data                            251 B         101 kB
+├ ƒ /api/directory                             251 B         101 kB
+├ ƒ /api/forum/comments                        251 B         101 kB
+├ ƒ /api/forum/comments/[id]                   251 B         101 kB
+├ ƒ /api/forum/posts                           251 B         101 kB
+├ ƒ /api/forum/posts/[id]                      251 B         101 kB
+├ ƒ /api/forum/vote                            251 B         101 kB
+├ ƒ /api/list-applications                     251 B         101 kB
+├ ƒ /api/list-sponsors                         251 B         101 kB
+├ ƒ /api/mentorship/browse                     251 B         101 kB
+├ ƒ /api/mentorship/connect                    251 B         101 kB
+├ ƒ /api/posts/[id]                            251 B         101 kB
+├ ƒ /api/profile                               251 B         101 kB
+├ ƒ /api/send-welcome-email                    251 B         101 kB
+├ ○ /apply                                     14 kB         129 kB
+├ ƒ /approve/[token]                         2.66 kB         115 kB
+├ ƒ /auth/error                                175 B         104 kB
+├ ○ /auth/signin                             4.26 kB         116 kB
+├ ○ /auth/verify-request                       251 B         101 kB
+├ ○ /directory                               7.16 kB         135 kB
+├ ƒ /events                                    146 B         118 kB
+├ ○ /forum                                   31.2 kB         166 kB
+├ ƒ /forum/posts/[id]                        6.66 kB         124 kB
+├ ○ /mentorship                              5.54 kB         127 kB
+├ ○ /profile                                 10.2 kB         125 kB
+└ ○ /thank-you                               5.78 kB         120 kB
++ First Load JS shared by all                 100 kB
+  ├ chunks/1684-53b2fd178462d99c.js          45.3 kB
+  ├ chunks/4bd1b696-5d4d865131cac211.js      53.2 kB
+  └ other shared chunks (total)              1.92 kB
+
+
+ƒ Middleware                                  104 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
