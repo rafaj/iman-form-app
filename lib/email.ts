@@ -253,3 +253,67 @@ export async function sendActivationEmail({
     return { success: false, error }
   }
 }
+
+export async function sendMagicLinkEmail({
+  to,
+  url,
+}: {
+  to: string
+  url: string
+}) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'IMAN Professional Network <admin@iman-wa.pro>',
+      to,
+      subject: "Sign in to IMAN Professional Network",
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+            <h1 style="margin: 0; font-size: 28px;">IMAN Professional Network</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Your Secure Sign-In Link</p>
+          </div>
+          
+          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
+            <p style="font-size: 18px; margin-bottom: 20px;">Hello,</p>
+            
+            <p style="margin-bottom: 25px;">Click the button below to sign in to your IMAN Professional Network account.</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${url}" 
+                 style="background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
+                Sign In
+              </a>
+            </div>
+            
+            <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
+              If the button doesn't work, copy and paste this link into your browser:<br>
+              <a href="${url}" style="color: #10b981; word-break: break-all;">${url}</a>
+            </p>
+            
+            <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px; font-size: 14px; color: #6b7280;">
+              <p>Best regards,<br>The IMAN Professional Network Team</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    })
+    
+    if (error) {
+      console.error("Failed to send magic link email:", error)
+      throw new Error(`Failed to send magic link email: ${error.message}`)
+    }
+    
+    console.log('Magic link email sent successfully:', data)
+    return { success: true, data }
+  } catch (error) {
+    console.error("Failed to send magic link email:", error)
+    return { success: false, error }
+  }
+}
