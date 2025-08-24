@@ -23,66 +23,118 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await resend.emails.send({
           from: "IMAN Professional Network <noreply@iman-wa.pro>",
           to: [email],
-          subject: "Sign in to IMAN Professional Network",
+          subject: "🔑 Your secure access to IMAN Professional Network",
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9fafb;">
-              <!-- Header -->
-              <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 30px 40px; text-align: center;">
-                <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">IMAN Professional Network</h1>
-                <p style="color: #d1fae5; margin: 8px 0 0 0; font-size: 16px;">Connecting Muslim Professionals in Seattle Metro</p>
-              </div>
-              
-              <!-- Main Content -->
-              <div style="background-color: white; padding: 40px;">
-                <h2 style="color: #059669; margin: 0 0 20px 0; font-size: 24px;">Sign in to your account</h2>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>IMAN Professional Network Sign In</title>
+            </head>
+            <body style="margin: 0; padding: 20px; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+              <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);">
                 
-                <p style="color: #374151; font-size: 16px; line-height: 1.5; margin: 0 0 20px 0;">
-                  Click the button below to securely sign in to the IMAN Professional Network platform:
-                </p>
+                <!-- Header -->
+                <div style="background: linear-gradient(135deg, #059669 0%, #10b981 50%, #047857 100%); padding: 40px 30px; text-align: center; position: relative;">
+                  <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"20\" cy=\"20\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.1\"/><circle cx=\"80\" cy=\"40\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.1\"/><circle cx=\"40\" cy=\"80\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.1\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg>') repeat;"></div>
+                  <div style="position: relative; z-index: 1;">
+                    <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">IMAN Professional Network</h1>
+                    <p style="color: #d1fae5; margin: 12px 0 0 0; font-size: 16px; font-weight: 500;">Connecting Muslim Professionals Across Seattle Metro</p>
+                  </div>
+                </div>
+                
+                <!-- Welcome Section -->
+                <div style="padding: 40px 30px 30px; text-align: center; border-bottom: 1px solid #f0f9ff;">
+                  <div style="display: inline-block; background: linear-gradient(135deg, #059669, #10b981); padding: 12px; border-radius: 50%; margin-bottom: 20px;">
+                    <span style="color: white; font-size: 24px; line-height: 1;">🔐</span>
+                  </div>
+                  <h2 style="color: #0f172a; margin: 0 0 16px 0; font-size: 28px; font-weight: 700;">Welcome back!</h2>
+                  <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0; max-width: 400px; margin-left: auto; margin-right: auto;">
+                    You're one click away from accessing your professional community. Secure, simple, and ready for you.
+                  </p>
+                </div>
                 
                 <!-- Sign In Button -->
-                <div style="text-align: center; margin: 30px 0;">
+                <div style="padding: 40px 30px; text-align: center;">
                   <a href="${url}" 
-                     style="background: linear-gradient(135deg, #059669 0%, #047857 100%); 
+                     style="display: inline-block; 
+                            background: linear-gradient(135deg, #059669 0%, #10b981 100%); 
                             color: white; 
-                            padding: 16px 32px; 
+                            padding: 18px 40px; 
                             text-decoration: none; 
-                            border-radius: 8px; 
-                            display: inline-block; 
-                            font-weight: bold; 
+                            border-radius: 12px; 
+                            font-weight: 700; 
                             font-size: 16px;
-                            box-shadow: 0 4px 6px rgba(5, 150, 105, 0.3);">
-                    Sign In to IMAN Platform
+                            letter-spacing: 0.5px;
+                            box-shadow: 0 8px 16px rgba(5, 150, 105, 0.3);
+                            transition: all 0.2s ease;
+                            border: 3px solid transparent;">
+                    ✨ Access Your Account
                   </a>
+                  
+                  <div style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border-radius: 12px; border: 1px solid #bbf7d0;">
+                    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                      <span style="color: #059669; font-size: 18px; margin-right: 8px;">🛡️</span>
+                      <span style="color: #059669; font-weight: 600; font-size: 14px;">SECURE ACCESS</span>
+                    </div>
+                    <p style="color: #065f46; margin: 0; font-size: 14px; line-height: 1.5;">
+                      This magic link expires in <strong>24 hours</strong> and works only once. 
+                      Didn't request this? Simply ignore this email.
+                    </p>
+                  </div>
+                  
+                  <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #e2e8f0;">
+                    <p style="color: #94a3b8; font-size: 13px; line-height: 1.5; margin: 0;">
+                      <strong>Having trouble with the button?</strong><br>
+                      Copy and paste this link: <br>
+                      <span style="color: #059669; word-break: break-all; font-family: monospace; background: #f1f5f9; padding: 2px 4px; border-radius: 4px;">${url}</span>
+                    </p>
+                  </div>
                 </div>
                 
-                <div style="background-color: #ecfdf5; padding: 20px; border-radius: 8px; border-left: 4px solid #059669; margin: 20px 0;">
-                  <p style="color: #065f46; margin: 0; font-size: 14px;">
-                    <strong>Security Notice:</strong> This link will expire in 24 hours and can only be used once. 
-                    If you didn't request this sign-in link, you can safely ignore this email.
-                  </p>
+                <!-- Community Highlights -->
+                <div style="background: linear-gradient(135deg, #fafafa 0%, #f8fafc 100%); padding: 30px; border-top: 1px solid #e2e8f0;">
+                  <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="color: #059669; margin: 0 0 12px 0; font-size: 18px; font-weight: 600;">🌟 What's waiting for you</h3>
+                  </div>
+                  <div style="display: table; width: 100%; margin: 0;">
+                    <div style="display: table-cell; width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
+                      <div style="color: #059669; font-size: 20px; margin-bottom: 8px;">💼</div>
+                      <p style="color: #475569; font-size: 12px; font-weight: 500; margin: 0; line-height: 1.4;">Professional Directory</p>
+                    </div>
+                    <div style="display: table-cell; width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
+                      <div style="color: #059669; font-size: 20px; margin-bottom: 8px;">🤝</div>
+                      <p style="color: #475569; font-size: 12px; font-weight: 500; margin: 0; line-height: 1.4;">Weekly Meetups</p>
+                    </div>
+                    <div style="display: table-cell; width: 33.33%; padding: 0 10px; text-align: center; vertical-align: top;">
+                      <div style="color: #059669; font-size: 20px; margin-bottom: 8px;">💬</div>
+                      <p style="color: #475569; font-size: 12px; font-weight: 500; margin: 0; line-height: 1.4;">Community Forum</p>
+                    </div>
+                  </div>
                 </div>
                 
-                <p style="color: #6b7280; font-size: 14px; line-height: 1.5; margin: 20px 0 0 0;">
-                  If the button doesn't work, copy and paste this link into your browser:<br>
-                  <span style="color: #059669; word-break: break-all;">${url}</span>
-                </p>
+                <!-- Footer -->
+                <div style="background-color: #0f172a; color: white; padding: 35px 30px; text-align: center;">
+                  <div style="margin-bottom: 20px;">
+                    <h4 style="color: #10b981; margin: 0 0 16px 0; font-size: 16px; font-weight: 600;">Stay Connected</h4>
+                    <div style="margin: 0;">
+                      <p style="color: #94a3b8; margin: 4px 0; font-size: 14px;">📧 info@iman-wa.org</p>
+                      <p style="color: #94a3b8; margin: 4px 0; font-size: 14px;">📞 (206) 202-IMAN (4626)</p>
+                      <p style="color: #94a3b8; margin: 4px 0; font-size: 14px;">📍 515 State St. S, Kirkland, WA 98033</p>
+                    </div>
+                  </div>
+                  
+                  <div style="border-top: 1px solid #374151; padding-top: 20px; margin-top: 20px;">
+                    <p style="color: #64748b; margin: 0; font-size: 12px;">
+                      © 2025 IMAN Professional Network. Building bridges in our community.
+                    </p>
+                  </div>
+                </div>
+                
               </div>
-              
-              <!-- Footer -->
-              <div style="background-color: #059669; color: white; padding: 30px 40px; text-align: center;">
-                <h3 style="color: white; margin: 0 0 15px 0; font-size: 18px;">Contact Information</h3>
-                <p style="color: #d1fae5; margin: 5px 0; font-size: 14px;">📧 info@iman-wa.org</p>
-                <p style="color: #d1fae5; margin: 5px 0; font-size: 14px;">📞 (206) 202-IMAN (4626)</p>
-                <p style="color: #d1fae5; margin: 5px 0; font-size: 14px;">📍 515 State St. S, Kirkland, WA 98033</p>
-                
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #047857;">
-                  <p style="color: #d1fae5; margin: 0; font-size: 12px;">
-                    © 2025 IMAN Professional Network. All rights reserved.
-                  </p>
-                </div>
-              </div>
-            </div>
+            </body>
+            </html>
           `
         })
       }
