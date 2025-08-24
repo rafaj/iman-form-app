@@ -58,7 +58,7 @@ type Post = {
 }
 
 export default function ForumPage() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [isMember, setIsMember] = useState(false)
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
@@ -115,6 +115,17 @@ export default function ForumPage() {
     }
   }, [sortBy, filterType, toast, setPosts, setLoading])
 
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <p className="text-emerald-700">Loading...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (!session) {
     return (
