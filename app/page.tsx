@@ -482,10 +482,7 @@ export default async function HomePage() {
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-2">Welcome New Professionals</h3>
-              <p className="text-emerald-700">
-                Help us welcome our newest IMAN network members! Connect with them and help make their first month memorable.
-              </p>
+              <h3 className="text-xl font-bold text-emerald-800 mb-2">Welcome New Professionals at IMAN</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
               {newMembers.slice(0, 6).map((member) => (
