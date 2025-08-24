@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
       to: [to],
       subject: subject,
       html: htmlContent,
-      replyTo: process.env.EMAIL_FROM || 'info@iman-wa.org' // Set reply-to to your actual email
+      replyTo: process.env.EMAIL_FROM || 'info@iman-wa.pro' // Set reply-to to your actual email
     })
 
     if (error) {
