@@ -14,10 +14,10 @@ interface MobileNavigationProps {
       role?: string
     }
   } | null
-  isProfessional: boolean
+  isMember: boolean
 }
 
-export default function MobileNavigation({ session, isProfessional }: MobileNavigationProps) {
+export default function MobileNavigation({ session, isMember }: MobileNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleMenu = () => setIsOpen(!isOpen)
@@ -51,7 +51,7 @@ export default function MobileNavigation({ session, isProfessional }: MobileNavi
               {session ? (
                 <>
                   {/* Welcome message for mobile */}
-                  {isProfessional && (
+                  {isMember && (
                     <div className="pb-4 border-b border-gray-200">
                       <p className="text-sm font-medium text-emerald-900">Welcome back!</p>
                       <p className="text-xs text-emerald-700">{session.user?.name}</p>
@@ -65,7 +65,7 @@ export default function MobileNavigation({ session, isProfessional }: MobileNavi
                   >
                     Home
                   </Link>
-                  {isProfessional && (
+                  {isMember && (
                     <>
                       <Link 
                         href="/directory" 
