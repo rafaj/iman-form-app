@@ -18,23 +18,23 @@ import MobileNavigation from "@/components/mobile-navigation"
 
 export default function HomePage() {
   const { data: session } = useSession()
-  const [isMember, setIsMember] = useState(false)
+  const [isProfessional, setIsProfessional] = useState(false)
 
   useEffect(() => {
-    const checkMemberStatus = async () => {
+    const checkProfessionalStatus = async () => {
       if (!session?.user?.email) return
       
       try {
         const response = await fetch('/api/auth/check-admin')
         const data = await response.json()
-        setIsMember(data.isMember || data.isAdmin)
+        setIsProfessional(data.isMember || data.isAdmin)
       } catch (error) {
-        console.error('Error checking member status:', error)
+        console.error('Error checking professional status:', error)
       }
     }
 
     if (session?.user?.email) {
-      checkMemberStatus()
+      checkProfessionalStatus()
     }
   }, [session])
 
@@ -47,7 +47,7 @@ export default function HomePage() {
             <div className="flex items-center">
               <div className="flex-shrink-0">
                 <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
-                <p className="text-xs md:text-sm text-emerald-600">Membership Application</p>
+                <p className="text-xs md:text-sm text-emerald-600">Professional Membership Application</p>
               </div>
             </div>
             
@@ -56,7 +56,7 @@ export default function HomePage() {
               {session ? (
                 <>
                   <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
-                  {isMember && (
+                  {isProfessional && (
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
                       <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
@@ -93,14 +93,14 @@ export default function HomePage() {
                   <Link href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</Link>
                   <Link href="/apply" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Apply</Link>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
-                    Member Sign In
+                    Professional Sign In
                   </Link>
                 </>
               )}
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isProfessional} />
           </div>
         </div>
       </header>
@@ -135,7 +135,7 @@ export default function HomePage() {
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/" className="hover:text-white">Home</Link></li>
-                {session && isMember && (
+                {session && isProfessional && (
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
                     <li><Link href="/events" className="hover:text-white">Events</Link></li>
@@ -146,7 +146,7 @@ export default function HomePage() {
                 {!session && (
                   <>
                     <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
-                    <li><Link href="/auth/signin" className="hover:text-white">Member Sign In</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Professional Sign In</Link></li>
                   </>
                 )}
               </ul>
@@ -255,9 +255,9 @@ function ApplyCard() {
   return (
     <Card className="border-emerald-100 shadow-sm">
       <CardHeader>
-        <CardTitle>Apply for membership</CardTitle>
+        <CardTitle>Apply for professional membership</CardTitle>
         <CardDescription>
-          Takes a few minutes. Your sponsor must be an existing admin member.
+          Takes a few minutes. Your sponsor must be an existing admin professional.
           <br />
           <strong>Note:</strong> You&apos;ll need a Google account to sign in after approval.
         </CardDescription>
@@ -298,7 +298,7 @@ function ApplyCard() {
                 required
                 className={inputClass}
               />
-              <p className="text-xs text-muted-foreground">Must be an existing admin member who can approve applications</p>
+              <p className="text-xs text-muted-foreground">Must be an existing admin professional who can approve applications</p>
             </div>
           </div>
 
@@ -392,7 +392,7 @@ function ApplyCard() {
             <div>
               <h3 className="text-lg font-semibold text-emerald-900 mb-2">Professional Development (Optional)</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                IMAN connects members for mentorship and professional growth. Help us match you with the right opportunities.
+                IMAN connects professionals for mentorship and professional growth. Help us match you with the right opportunities.
               </p>
             </div>
             

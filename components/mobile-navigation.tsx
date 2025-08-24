@@ -14,10 +14,10 @@ interface MobileNavigationProps {
       role?: string
     }
   } | null
-  isMember: boolean
+  isProfessional: boolean
 }
 
-export default function MobileNavigation({ session, isMember }: MobileNavigationProps) {
+export default function MobileNavigation({ session, isProfessional }: MobileNavigationProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleMenu = () => setIsOpen(!isOpen)
@@ -51,7 +51,7 @@ export default function MobileNavigation({ session, isMember }: MobileNavigation
               {session ? (
                 <>
                   {/* Welcome message for mobile */}
-                  {isMember && (
+                  {isProfessional && (
                     <div className="pb-4 border-b border-gray-200">
                       <p className="text-sm font-medium text-emerald-900">Welcome back!</p>
                       <p className="text-xs text-emerald-700">{session.user?.name}</p>
@@ -65,7 +65,7 @@ export default function MobileNavigation({ session, isMember }: MobileNavigation
                   >
                     Home
                   </Link>
-                  {isMember && (
+                  {isProfessional && (
                     <>
                       <Link 
                         href="/directory" 
@@ -138,7 +138,7 @@ export default function MobileNavigation({ session, isMember }: MobileNavigation
                     className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
                     onClick={toggleMenu}
                   >
-                    Member Sign In
+                    Professional Sign In
                   </Link>
                   <Link 
                     href="/apply" 
@@ -148,7 +148,7 @@ export default function MobileNavigation({ session, isMember }: MobileNavigation
                       variant="outline" 
                       className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50"
                     >
-                      Become a Member
+                      Become a Professional
                     </Button>
                   </Link>
                 </>

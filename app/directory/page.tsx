@@ -11,7 +11,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import MobileNavigation from "@/components/mobile-navigation"
 
-type DirectoryMember = {
+type DirectoryProfessional = {
   id: string
   name: string
   displayName: string
@@ -21,32 +21,32 @@ type DirectoryMember = {
   interest: string | null
   contribution: string | null
   linkedin: string | null
-  memberSince: string
+  professionalSince: string
   initials: string
 }
 
 export default function DirectoryPage() {
   const { data: session, status } = useSession()
-  const [members, setMembers] = useState<DirectoryMember[]>([])
-  const [filteredMembers, setFilteredMembers] = useState<DirectoryMember[]>([])
+  const [professionals, setProfessionals] = useState<DirectoryProfessional[]>([])
+  const [filteredProfessionals, setFilteredProfessionals] = useState<DirectoryProfessional[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedMember, setSelectedMember] = useState<DirectoryMember | null>(null)
+  const [selectedProfessional, setSelectedProfessional] = useState<DirectoryProfessional | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isMember, setIsMember] = useState(false)
+  const [isProfessional, setIsProfessional] = useState(false)
 
   useEffect(() => {
     if (status === "loading") return
     
-    const checkMemberStatus = async () => {
+    const checkProfessionalStatus = async () => {
       if (!session?.user?.email) return
       
       try {
         const response = await fetch('/api/auth/check-admin')
         const data = await response.json()
-        setIsMember(data.isMember || data.isAdmin)
+        setIsProfessional(data.isMember || data.isAdmin)
       } catch (error) {
-        console.error('Error checking member status:', error)
+        console.error('Error checking professional status:', error)
       }
     }
 
@@ -54,25 +54,25 @@ export default function DirectoryPage() {
       redirect("/auth/signin")
     }
     
-    checkMemberStatus()
-    fetchMembers()
+    checkProfessionalStatus()
+    fetchProfessionals()
   }, [session, status])
 
   useEffect(() => {
-    // Filter members based on search term
+    // Filter professionals based on search term
     if (searchTerm.trim() === "") {
-      setFilteredMembers(members)
+      setFilteredProfessionals(professionals)
     } else {
-      const filtered = members.filter(member =>
-        member.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.employer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.professionalQualification?.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = professionals.filter(professional =>
+        professional.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        professional.employer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        professional.professionalQualification?.toLowerCase().includes(searchTerm.toLowerCase())
       )
-      setFilteredMembers(filtered)
+      setFilteredProfessionals(filtered)
     }
-  }, [searchTerm, members])
+  }, [searchTerm, professionals])
 
-  const fetchMembers = async () => {
+  const fetchProfessionals = async () => {
     try {
       setLoading(true)
       setError(null)
@@ -81,30 +81,30 @@ export default function DirectoryPage() {
       const data = await response.json()
       
       if (data.success) {
-        setMembers(data.members)
-        setFilteredMembers(data.members)
+        setProfessionals(data.members)
+        setFilteredProfessionals(data.members)
       } else {
-        setError(data.message || "Failed to load member directory")
+        setError(data.message || "Failed to load professional directory")
       }
     } catch (err) {
-      setError("Failed to load member directory")
-      console.error('Error fetching members:', err)
+      setError("Failed to load professional directory")
+      console.error('Error fetching professionals:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  // Group members alphabetically
-  const groupedMembers = filteredMembers.reduce((groups, member) => {
-    const firstLetter = member.displayName[0].toUpperCase()
+  // Group professionals alphabetically
+  const groupedProfessionals = filteredProfessionals.reduce((groups, professional) => {
+    const firstLetter = professional.displayName[0].toUpperCase()
     if (!groups[firstLetter]) {
       groups[firstLetter] = []
     }
-    groups[firstLetter].push(member)
+    groups[firstLetter].push(professional)
     return groups
-  }, {} as Record<string, DirectoryMember[]>)
+  }, {} as Record<string, DirectoryProfessional[]>)
 
-  const alphabeticalSections = Object.keys(groupedMembers).sort()
+  const alphabeticalSections = Object.keys(groupedProfessionals).sort()
 
   if (status === "loading" || loading) {
     return (
@@ -116,7 +116,7 @@ export default function DirectoryPage() {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
-                  <p className="text-xs md:text-sm text-emerald-600">Member Directory</p>
+                  <p className="text-xs md:text-sm text-emerald-600">Professional Directory</p>
                 </div>
               </div>
               <div className="animate-pulse">
@@ -153,7 +153,7 @@ export default function DirectoryPage() {
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
-                  <p className="text-xs md:text-sm text-emerald-600">Member Directory</p>
+                  <p className="text-xs md:text-sm text-emerald-600">Professional Directory</p>
                 </div>
               </div>
               {session && (
@@ -170,10 +170,10 @@ export default function DirectoryPage() {
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
             <h1 className="text-xl font-bold text-emerald-800 mb-4">
-              Member Directory
+              Professional Directory
             </h1>
             <div className="text-red-600 mb-4">{error}</div>
-            <Button onClick={fetchMembers} variant="outline">
+            <Button onClick={fetchProfessionals} variant="outline">
               Try Again
             </Button>
           </div>
@@ -200,7 +200,7 @@ export default function DirectoryPage() {
               {session ? (
                 <>
                   <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
-                  {isMember && (
+                  {isProfessional && (
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Directory</Link>
                       <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
@@ -236,11 +236,11 @@ export default function DirectoryPage() {
                 <>
                   <Link href="/#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</Link>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
-                    Member Sign In
+                    Professional Sign In
                   </Link>
                   <Link href="/apply">
                     <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                      Become a Member
+                      Become a Professional
                     </Button>
                   </Link>
                 </>
@@ -248,7 +248,7 @@ export default function DirectoryPage() {
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isProfessional} />
           </div>
         </div>
       </header>
@@ -260,7 +260,7 @@ export default function DirectoryPage() {
             Member Directory
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Connect with {members.length} professionals in the IMAN network
+            Connect with {professionals.length} professionals in the IMAN network
           </p>
         </header>
 
@@ -270,7 +270,7 @@ export default function DirectoryPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               type="text"
-              placeholder="Search members, companies, or expertise..."
+              placeholder="Search professionals, companies, or expertise..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-4 py-2 w-full"
@@ -278,11 +278,11 @@ export default function DirectoryPage() {
           </div>
         </div>
 
-        {/* Members Grid */}
+        {/* Professionals Grid */}
         {alphabeticalSections.length === 0 ? (
           <div className="text-center py-12">
             <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No members found matching your search.</p>
+            <p className="text-gray-600">No professionals found matching your search.</p>
           </div>
         ) : (
           <div className="space-y-8">
@@ -296,44 +296,44 @@ export default function DirectoryPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {groupedMembers[letter].map(member => (
+                  {groupedProfessionals[letter].map(professional => (
                     <Card 
-                      key={member.id}
+                      key={professional.id}
                       className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
-                      onClick={() => setSelectedMember(member)}
+                      onClick={() => setSelectedProfessional(professional)}
                     >
                       <CardContent className="p-6">
                         <div className="flex items-start space-x-4">
                           <div className="flex-shrink-0">
-                            {member.image ? (
+                            {professional.image ? (
                               <img
-                                src={member.image}
-                                alt={member.displayName}
+                                src={professional.image}
+                                alt={professional.displayName}
                                 className="w-12 h-12 rounded-full border-2 border-emerald-200"
                               />
                             ) : (
                               <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
-                                {member.initials}
+                                {professional.initials}
                               </div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <h3 className="font-semibold text-emerald-900 truncate">
-                              {member.displayName}
+                              {professional.displayName}
                             </h3>
-                            {member.employer && (
+                            {professional.employer && (
                               <p className="text-sm text-emerald-700 truncate mt-1">
-                                {member.employer}
+                                {professional.employer}
                               </p>
                             )}
-                            {member.professionalQualification && (
+                            {professional.professionalQualification && (
                               <p className="text-xs text-gray-600 line-clamp-2 mt-2">
-                                {member.professionalQualification}
+                                {professional.professionalQualification}
                               </p>
                             )}
                             <div className="flex items-center mt-3 text-xs text-gray-500">
                               <Calendar className="w-3 h-3 mr-1" />
-                              Member since {new Date(member.memberSince).getFullYear()}
+                              Professional since {new Date(professional.professionalSince).getFullYear()}
                             </div>
                           </div>
                         </div>
@@ -346,37 +346,37 @@ export default function DirectoryPage() {
           </div>
         )}
 
-        {/* Member Detail Modal */}
-        {selectedMember && (
-          <Dialog open={!!selectedMember} onOpenChange={() => setSelectedMember(null)}>
+        {/* Professional Detail Modal */}
+        {selectedProfessional && (
+          <Dialog open={!!selectedProfessional} onOpenChange={() => setSelectedProfessional(null)}>
             <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-xl font-semibold text-emerald-900">
-                  Member Profile
+                  Professional Profile
                 </DialogTitle>
               </DialogHeader>
               
               <div className="space-y-6">
                 {/* Profile Header */}
                 <div className="flex items-center space-x-4 pb-4 border-b border-emerald-200">
-                  {selectedMember.image ? (
+                  {selectedProfessional.image ? (
                     <img
-                      src={selectedMember.image}
-                      alt={selectedMember.displayName}
+                      src={selectedProfessional.image}
+                      alt={selectedProfessional.displayName}
                       className="w-16 h-16 rounded-full border-2 border-emerald-200"
                     />
                   ) : (
                     <div className="w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold text-xl">
-                      {selectedMember.initials}
+                      {selectedProfessional.initials}
                     </div>
                   )}
                   <div>
                     <h2 className="text-2xl font-semibold text-emerald-900">
-                      {selectedMember.displayName}
+                      {selectedProfessional.displayName}
                     </h2>
-                    {selectedMember.employer && (
+                    {selectedProfessional.employer && (
                       <p className="text-emerald-700 font-medium">
-                        {selectedMember.employer}
+                        {selectedProfessional.employer}
                       </p>
                     )}
                   </div>
@@ -384,44 +384,44 @@ export default function DirectoryPage() {
 
                 {/* Professional Information */}
                 <div className="space-y-4">
-                  {selectedMember.professionalQualification && (
+                  {selectedProfessional.professionalQualification && (
                     <div>
                       <h4 className="font-medium text-emerald-900 mb-2">Professional Qualification</h4>
                       <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                          {selectedMember.professionalQualification}
+                          {selectedProfessional.professionalQualification}
                         </p>
                       </div>
                     </div>
                   )}
 
-                  {selectedMember.interest && (
+                  {selectedProfessional.interest && (
                     <div>
                       <h4 className="font-medium text-emerald-900 mb-2">Professional Interests</h4>
                       <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                          {selectedMember.interest}
+                          {selectedProfessional.interest}
                         </p>
                       </div>
                     </div>
                   )}
 
-                  {selectedMember.contribution && (
+                  {selectedProfessional.contribution && (
                     <div>
                       <h4 className="font-medium text-emerald-900 mb-2">How I can help IMAN?</h4>
                       <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
                         <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                          {selectedMember.contribution}
+                          {selectedProfessional.contribution}
                         </p>
                       </div>
                     </div>
                   )}
 
-                  {selectedMember.linkedin && (
+                  {selectedProfessional.linkedin && (
                     <div>
                       <h4 className="font-medium text-emerald-900 mb-2">Professional Network</h4>
                       <a
-                        href={selectedMember.linkedin}
+                        href={selectedProfessional.linkedin}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center text-blue-600 hover:underline"
@@ -432,7 +432,7 @@ export default function DirectoryPage() {
                     </div>
                   )}
 
-                  {!selectedMember.professionalQualification && !selectedMember.interest && !selectedMember.contribution && !selectedMember.linkedin && (
+                  {!selectedProfessional.professionalQualification && !selectedProfessional.interest && !selectedProfessional.contribution && !selectedProfessional.linkedin && (
                     <div className="text-center py-6">
                       <p className="text-gray-500">Professional information not yet provided.</p>
                     </div>
@@ -441,7 +441,7 @@ export default function DirectoryPage() {
                   <div className="pt-4 border-t border-emerald-200">
                     <div className="flex items-center text-sm text-gray-600">
                       <Calendar className="w-4 h-4 mr-2" />
-                      Member since {new Date(selectedMember.memberSince).toLocaleDateString('en-US', {
+                      Professional since {new Date(selectedProfessional.professionalSince).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
@@ -479,7 +479,7 @@ export default function DirectoryPage() {
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/" className="hover:text-white">Home</Link></li>
-                {session && isMember && (
+                {session && isProfessional && (
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
                     <li><Link href="/events" className="hover:text-white">Events</Link></li>
@@ -490,7 +490,7 @@ export default function DirectoryPage() {
                 {!session && (
                   <>
                     <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
-                    <li><Link href="/auth/signin" className="hover:text-white">Member Sign In</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Professional Sign In</Link></li>
                   </>
                 )}
               </ul>

@@ -107,22 +107,22 @@ function ForumPostPreview({ post }: {
 export default async function HomePage() {
   const session = await auth()
   
-  // Check if user is an actual member (has completed activation)
-  let isMember = false
+  // Check if user is an actual professional (has completed activation)
+  let isProfessional = false
   if (session?.user?.id) {
     try {
-      // Allow admin users to see member content in development
+      // Allow admin users to see professional content in development
       if (session.user?.email === process.env.ADMIN_EMAIL) {
-        isMember = true
+        isProfessional = true
       } else {
         // First try to find by userId, then by email as fallback
-        let member = await prisma.member.findUnique({
+        let professional = await prisma.member.findUnique({
           where: { userId: session.user?.id || '' }
         })
         
-        // If no member found by userId, try by email (for users created via approved applications)
-        if (!member) {
-          member = await prisma.member.findUnique({
+        // If no professional found by userId, try by email (for users created via approved applications)
+        if (!professional) {
+          professional = await prisma.member.findUnique({
             where: { 
               email: session.user?.email || '',
               active: true 
@@ -130,20 +130,20 @@ export default async function HomePage() {
           })
         }
         
-        isMember = !!member
+        isProfessional = !!professional
       }
     } catch (error) {
-      console.error("Error checking member status:", error)
+      console.error("Error checking professional status:", error)
       // Fallback for admin in case of database issues
       if (session.user?.email === process.env.ADMIN_EMAIL) {
-        isMember = true
+        isProfessional = true
       }
     }
   }
 
   const events = await getUpcomingEvents(3)
 
-  // Fetch recent forum posts for members
+  // Fetch recent forum posts for professionals
   let recentPosts: Array<{
     id: string
     title: string
@@ -162,9 +162,9 @@ export default async function HomePage() {
     }
   }> = []
   
-  if (isMember) {
+  if (isProfessional) {
     try {
-      // Only fetch posts if user is actually a member
+      // Only fetch posts if user is actually a professional
       const posts = await prisma.post.findMany({
         orderBy: { createdAt: "desc" },
         take: 3,
@@ -234,7 +234,7 @@ export default async function HomePage() {
               <div className="flex-shrink-0">
                 <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
                 <p className="text-xs md:text-sm text-emerald-600">
-                  {isMember && session ? `Welcome back, ${session.user?.name}!` : "Connecting Professionals in the Seattle Metro"}
+                  {isProfessional && session ? `Welcome back, ${session.user?.name}!` : "Connecting Professionals in the Seattle Metro"}
                 </p>
               </div>
             </div>
@@ -244,7 +244,7 @@ export default async function HomePage() {
               {session ? (
                 <>
                   <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
-                  {isMember && (
+                  {isProfessional && (
                     <>
                       <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
                       <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Events</Link>
@@ -277,11 +277,11 @@ export default async function HomePage() {
                 <>
                   <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
-                    Member Sign In
+                    Professional Sign In
                   </Link>
                   <Link href="/apply">
                     <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                      Become a Member
+                      Become a Professional
                     </Button>
                   </Link>
                 </>
@@ -289,13 +289,13 @@ export default async function HomePage() {
             </nav>
 
             {/* Mobile Navigation */}
-            <MobileNavigation session={session} isMember={isMember} />
+            <MobileNavigation session={session} isProfessional={isProfessional} />
           </div>
         </div>
       </header>
 
-      {/* Hero Section - For non-members (including non-logged-in users) */}
-      {!isMember && (
+      {/* Hero Section - For non-professionals (including non-logged-in users) */
+      {!isProfessional && (
         <section className="relative py-20 lg:py-28">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -325,8 +325,8 @@ export default async function HomePage() {
       )}
 
 
-      {/* Mission Section - Only show for non-members */}
-      {!isMember && (
+      {/* Mission Section - Only show for non-professionals */
+      {!isProfessional && (
         <section id="about" className="py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -344,7 +344,7 @@ export default async function HomePage() {
                 </p>
                 <Link href="/apply">
                   <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    Learn More About Membership
+                    Learn More About Professional Membership
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
@@ -375,8 +375,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Values Section - Only show for non-members */}
-      {!isMember && (
+      {/* Values Section - Only show for non-professionals */
+      {!isProfessional && (
         <section className="py-20 bg-emerald-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -418,8 +418,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Events Section - Only show for members */}
-      {isMember && (
+      {/* Events Section - Only show for professionals */
+      {isProfessional && (
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-6">
@@ -472,8 +472,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Recent Forum Posts Section - Only show for members */}
-      {isMember && recentPosts.length > 0 && (
+      {/* Recent Forum Posts Section - Only show for professionals */
+      {isProfessional && recentPosts.length > 0 && (
         <section className="py-8 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-6">
@@ -499,8 +499,8 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Community Spotlight Section - Only show for members */}
-      {isMember && (
+      {/* Community Spotlight Section - Only show for professionals */
+      {isProfessional && (
         <section className="py-8 bg-emerald-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-6">
@@ -539,7 +539,7 @@ export default async function HomePage() {
               {communitySpotlight.length === 0 && (
                 <div className="col-span-full text-center py-12">
                   <Building2 className="w-16 h-16 text-emerald-300 mx-auto mb-4" />
-                  <p className="text-emerald-600">No community members in spotlight yet.</p>
+                  <p className="text-emerald-600">No community professionals in spotlight yet.</p>
                 </div>
               )}
             </div>
@@ -562,7 +562,7 @@ export default async function HomePage() {
               <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-emerald-200">
                 <li><Link href="/" className="hover:text-white">Home</Link></li>
-                {session && isMember && (
+                {session && isProfessional && (
                   <>
                     <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
                     <li><Link href="/events" className="hover:text-white">Events</Link></li>
@@ -573,7 +573,7 @@ export default async function HomePage() {
                 {!session && (
                   <>
                     <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
-                    <li><Link href="/auth/signin" className="hover:text-white">Member Sign In</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Professional Sign In</Link></li>
                   </>
                 )}
               </ul>
@@ -609,7 +609,7 @@ export default async function HomePage() {
       {/* Floating Donation Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <a
-          href="https://www.paypal.com/donate?token=ZbSkOutRn5Z-02hQ8AtywO2xaESEi6H6B5ZeF6cqrMFDv-fGPghFIRjriJEmia9Jk3fVW0GYZYzZfu1z"
+          href="https://www.paypal.com/donate/?hosted_button_id=YOUR_BUTTON_ID"
           target="_blank"
           rel="noopener noreferrer"
           className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 group"
