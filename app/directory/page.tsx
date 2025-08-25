@@ -23,7 +23,34 @@ type DirectoryProfessional = {
   linkedin: string | null
   professionalSince: string
   memberSince: string
+  lastSeenAt: string | null
   initials: string
+}
+
+// Helper function to format "last seen" timestamp
+function formatLastSeen(lastSeenAt: string): string {
+  const now = new Date()
+  const lastSeen = new Date(lastSeenAt)
+  const diffInMinutes = Math.floor((now.getTime() - lastSeen.getTime()) / (1000 * 60))
+  
+  if (diffInMinutes < 1) return 'just now'
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`
+  
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) return `${diffInHours}h ago`
+  
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays < 7) return `${diffInDays}d ago`
+  
+  const diffInWeeks = Math.floor(diffInDays / 7)
+  if (diffInWeeks < 4) return `${diffInWeeks}w ago`
+  
+  // For longer periods, show the actual date
+  return lastSeen.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: diffInDays > 365 ? 'numeric' : undefined
+  })
 }
 
 export default function DirectoryPage() {
@@ -418,7 +445,10 @@ export default function DirectoryPage() {
                               )}
                               <div className="flex items-center mt-3 text-xs text-gray-500">
                                 <Calendar className="w-3 h-3 mr-1" />
-                                Last seen recently
+                                {professional.lastSeenAt 
+                                  ? `Last seen ${formatLastSeen(professional.lastSeenAt)}`
+                                  : 'Never logged in'
+                                }
                               </div>
                             </div>
                           </div>
@@ -546,7 +576,10 @@ export default function DirectoryPage() {
                           )}
                           <div className="flex items-center mt-3 text-xs text-gray-500">
                             <Calendar className="w-3 h-3 mr-1" />
-                            Last seen recently
+                            {professional.lastSeenAt 
+                              ? `Last seen ${formatLastSeen(professional.lastSeenAt)}`
+                              : 'Never logged in'
+                            }
                           </div>
                         </div>
                       </div>
@@ -690,7 +723,10 @@ export default function DirectoryPage() {
                   <div className="pt-4 border-t border-emerald-200">
                     <div className="flex items-center text-sm text-gray-600">
                       <Calendar className="w-4 h-4 mr-2" />
-                      Last seen recently
+                      {selectedProfessional.lastSeenAt 
+                        ? `Last seen ${formatLastSeen(selectedProfessional.lastSeenAt)}`
+                        : 'Never logged in'
+                      }
                     </div>
                   </div>
                 </div>

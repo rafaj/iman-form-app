@@ -161,6 +161,7 @@ model User {
   image         String?
   password      String? // For credential provider
   role          UserRole  @default(MEMBER)
+  lastSeenAt    DateTime? // Track when user was last active
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 

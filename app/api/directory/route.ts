@@ -33,7 +33,8 @@ export async function GET() {
         user: {
           select: {
             name: true,
-            image: true
+            image: true,
+            lastSeenAt: true
           }
         }
       },
@@ -55,6 +56,7 @@ export async function GET() {
       contribution: member.contribution,
       linkedin: member.linkedin,
       memberSince: member.createdAt,
+      lastSeenAt: member.user?.lastSeenAt || null,
       // Create initials for avatar fallback
       initials: (member.user?.name || member.name)
         .split(' ')
