@@ -1,10 +1,7 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
 
-const prisma = new PrismaClient()
-
-export default auth(async (req) => {
+export default auth((req) => {
   const { pathname } = req.nextUrl
   
   // Public paths that don't require authentication
@@ -35,19 +32,6 @@ export default auth(async (req) => {
     const signInUrl = new URL('/auth/signin', req.url)
     signInUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(signInUrl)
-  }
-  
-  // Update user's lastSeenAt timestamp for authenticated users
-  if (req.auth.user?.email) {
-    try {
-      await prisma.user.update({
-        where: { email: req.auth.user.email },
-        data: { lastSeenAt: new Date() }
-      })
-    } catch (error) {
-      // Silently fail - don't block the request if lastSeenAt update fails
-      console.error('Failed to update lastSeenAt:', error)
-    }
   }
   
   return NextResponse.next()

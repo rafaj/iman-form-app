@@ -45,6 +45,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.role = user.email === process.env.ADMIN_EMAIL ? "ADMIN" : "MEMBER"
         session.user.email = user.email
         session.user.name = user.name
+        
+        // Update lastSeenAt timestamp (throttled to once per 5 minutes)
+        try {
+          const now = new Date()
+          const shouldUpdate = !user.lastSeenAt || 
+            (now.getTime() - new Date(user.lastSeenAt).getTime()) > 5 * 60 * 1000 // 5 minutes
+          
+          if (shouldUpdate) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { lastSeenAt: now }
+            })
+          }
+        } catch (error) {
+          // Silently fail - don't block the session if lastSeenAt update fails
+          console.error('Failed to update lastSeenAt:', error)
+        }
       }
       return session
     },
