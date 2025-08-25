@@ -4,12 +4,20 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'lh3.googleusercontent.com', // Google OAuth profile images
-      'avatars.githubusercontent.com', // GitHub profile images  
+      'avatars.githubusercontent.com', // GitHub profile images
+      'img.evbuc.com', // Eventbrite image CDN
+      'cdn.evbuc.com', // Eventbrite CDN
     ],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.evbuc.com',
         port: '',
         pathname: '/**',
       },
