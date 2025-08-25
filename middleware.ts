@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 
+// 🚨 CRITICAL: DO NOT IMPORT @/auth or any files with "server-only" directive
+// This runs in Edge Runtime which doesn't support server-only imports
+// Use cookie-based authentication checking only
+
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   

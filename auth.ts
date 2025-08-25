@@ -1,4 +1,4 @@
-import "server-only"
+import "server-only" // 🚨 CRITICAL: This file CANNOT be imported in middleware or client components
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Resend from "next-auth/providers/resend"

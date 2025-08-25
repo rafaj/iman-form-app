@@ -77,10 +77,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Security**: Rate limiting and validation on all endpoints with permission-based access control
 
 ### Key Configuration Files
-- `auth.ts` - NextAuth.js configuration with OAuth providers
-- `middleware.ts` - Route protection middleware
+- `auth.ts` - NextAuth.js configuration with OAuth providers ⚠️ **SERVER-ONLY** (do not import in middleware)
+- `middleware.ts` - Route protection middleware ⚠️ **EDGE RUNTIME COMPATIBLE** (cookie-based auth check only)
 - `prisma/schema.prisma` - Database schema with PostgreSQL and user roles
-- `next.config.ts` - Basic Next.js configuration
+- `next.config.ts` - Basic Next.js configuration with Prisma client-side exclusions
 - `tsconfig.json` - TypeScript config with `@/*` path mapping
 
 ### Environment Variables Required
@@ -92,6 +92,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `ADMIN_EMAIL` - Email address to make admin user
 - `RESEND_API_KEY` - Email service API key
 - `EVENTBRITE_API_KEY` & `EVENTBRITE_ORGANIZATION_ID` - Event integration
+
+## 🚨 CRITICAL ARCHITECTURE CONSTRAINTS
+
+### Edge Runtime Compatibility (middleware.ts)
+- **NEVER import `@/auth` in middleware** - causes 500 MIDDLEWARE_INVOCATION_FAILED errors
+- **NEVER import files with `"server-only"` directive** - incompatible with Edge Runtime
+- **NEVER import Prisma or database files** - not available in Edge Runtime
+- **ONLY use cookie-based authentication checking** - check for session tokens in cookies
+- Current implementation uses `req.cookies.get('next-auth.session-token')` and is working correctly
+
+### Server-Only Protection (Prisma & Database)
+- **ALL Prisma imports MUST have `"server-only"` at top of file** - prevents client-side bundling errors
+- **Files with Prisma: `auth.ts`, `lib/auth-adapter.ts`, `lib/database.ts`** - all protected with "server-only"
+- **Client components MUST NOT import from `@prisma/client`** - use local enums/types instead
+- **Webpack config excludes Prisma from client bundles** - configured in `next.config.ts`
 
 ### Development Notes
 - All routes protected by authentication middleware except auth pages

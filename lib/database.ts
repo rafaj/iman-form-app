@@ -1,4 +1,4 @@
-import "server-only"
+import "server-only" // 🚨 CRITICAL: This file CANNOT be imported in middleware or client components
 import { PrismaClient, ApplicationStatus, Member, Application } from '@prisma/client'
 
 // Multiple layers of protection against client-side usage
