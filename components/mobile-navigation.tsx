@@ -138,7 +138,7 @@ export default function MobileNavigation({ session, isProfessional }: MobileNavi
                     className="block text-emerald-700 hover:text-emerald-900 font-medium py-2"
                     onClick={toggleMenu}
                   >
-                    Professional Sign In
+                    Sign In
                   </Link>
                   <Link 
                     href="/apply" 
@@ -148,7 +148,7 @@ export default function MobileNavigation({ session, isProfessional }: MobileNavi
                       variant="outline" 
                       className="w-full border-emerald-600 text-emerald-700 hover:bg-emerald-50"
                     >
-                      Become a Professional
+                      Join IMAN Professional Network
                     </Button>
                   </Link>
                 </>

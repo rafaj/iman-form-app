@@ -334,11 +334,11 @@ export default async function HomePage() {
                 <>
                   <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
                   <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
-                    Professional Sign In
+                    Sign In
                   </Link>
                   <Link href="/apply">
                     <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
-                      Become a Professional
+                      Join IMAN Professional Network
                     </Button>
                   </Link>
                 </>
