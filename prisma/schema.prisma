@@ -43,6 +43,11 @@ model Member {
   mentorConnections     MentorConnection[] @relation("MentorConnections")
   menteeConnections     MentorConnection[] @relation("MenteeConnections")
 
+  // Performance indexes
+  @@index([email, active])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([active])
   @@map("members")
 }
 
@@ -91,6 +96,11 @@ model Application {
   // Audit trail
   auditLogs                AuditLog[]
 
+  // Performance indexes
+  @@index([applicantEmail, status])
+  @@index([sponsorEmail])
+  @@index([status, createdAt])
+  @@index([token])
   @@map("applications")
 }
 
@@ -119,6 +129,9 @@ model Sponsor {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  // Performance indexes
+  @@index([active])
+  @@index([tier])
   @@map("sponsors")
 }
 
@@ -177,6 +190,9 @@ model User {
   postVotes     PostVote[]
   commentVotes  CommentVote[]
 
+  // Performance indexes
+  @@index([email])
+  @@index([lastSeenAt])
   @@map("users")
 }
 
@@ -207,6 +223,8 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Performance indexes
+  @@index([userId, expires])
   @@map("sessions")
 }
 
@@ -239,6 +257,11 @@ model Post {
   comments    Comment[]
   votes       PostVote[]
 
+  // Performance indexes
+  @@index([createdAt])
+  @@index([score])
+  @@index([type, createdAt])
+  @@index([authorId])
   @@map("posts")
 }
 
@@ -261,6 +284,10 @@ model Comment {
   replies     Comment[]    @relation("CommentReplies")
   votes       CommentVote[]
 
+  // Performance indexes
+  @@index([postId, parentId])
+  @@index([score])
+  @@index([authorId])
   @@map("comments")
 }
 
@@ -276,6 +303,7 @@ model PostVote {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([postId, userId])
+  @@index([userId])
   @@map("post_votes")
 }
 
@@ -291,6 +319,7 @@ model CommentVote {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([commentId, userId])
+  @@index([userId])
   @@map("comment_votes")
 }
 

@@ -115,20 +115,18 @@ export default async function HomePage() {
       if (session.user?.email === process.env.ADMIN_EMAIL) {
         isMember = true
       } else {
-        // First try to find by userId, then by email as fallback
-        let member = await prisma.member.findUnique({
-          where: { userId: session.user?.id || '' }
+        // Single optimized query with OR condition instead of sequential queries
+        const member = await prisma.member.findFirst({
+          where: {
+            OR: [
+              { userId: session.user?.id || '' },
+              { 
+                email: session.user?.email || '',
+                active: true 
+              }
+            ]
+          }
         })
-        
-        // If no member found by userId, try by email (for users created via approved applications)
-        if (!member) {
-          member = await prisma.member.findUnique({
-            where: { 
-              email: session.user?.email || '',
-              active: true 
-            }
-          })
-        }
         
         isMember = !!member
       }

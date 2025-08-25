@@ -44,53 +44,72 @@ export async function GET(request: NextRequest) {
       }
     })
     
-    // Get sponsor information from applications (for those who came through application process)
-    const membersWithDetails = await Promise.all(
-      activeMembers.map(async (member) => {
-        // Find their approved application only for sponsor info
-        const approvedApplication = await prisma.application.findFirst({
-          where: {
-            applicantEmail: member.email,
-            status: 'APPROVED'
-          },
+    // Get all member emails for batch queries
+    const memberEmails = activeMembers.map(m => m.email)
+    const userIds = activeMembers.map(m => m.user?.id).filter(Boolean) as string[]
+    
+    // Batch query for all approved applications
+    const applications = await prisma.application.findMany({
+      where: {
+        applicantEmail: { in: memberEmails },
+        status: 'APPROVED'
+      },
+      select: {
+        applicantEmail: true,
+        createdAt: true,
+        approvedAt: true,
+        sponsorEmail: true,
+        sponsor: {
           select: {
-            createdAt: true,
-            approvedAt: true,
-            sponsorEmail: true,
-            sponsor: {
-              select: {
-                name: true,
-                email: true
-              }
-            }
-          },
-          orderBy: {
-            approvedAt: 'desc'
-          }
-        })
-        
-        // Get last login information from most recent session
-        let lastSignedIn = null
-        if (member.user) {
-          const recentSession = await prisma.session.findFirst({
-            where: {
-              userId: member.user.id
-            },
-            orderBy: {
-              expires: 'desc'
-            },
-            select: {
-              expires: true
-            }
-          })
-          
-          // For active sessions, we estimate last login as session creation time
-          // (expires - 30 days for NextAuth default)
-          if (recentSession) {
-            const sessionDuration = 30 * 24 * 60 * 60 * 1000 // 30 days in ms
-            lastSignedIn = new Date(recentSession.expires.getTime() - sessionDuration)
+            name: true,
+            email: true
           }
         }
+      },
+      orderBy: {
+        approvedAt: 'desc'
+      }
+    })
+    
+    // Batch query for all recent sessions
+    const sessions = await prisma.session.findMany({
+      where: {
+        userId: { in: userIds }
+      },
+      select: {
+        userId: true,
+        expires: true
+      },
+      orderBy: {
+        expires: 'desc'
+      }
+    })
+    
+    // Create lookup maps for O(1) access
+    const applicationMap = new Map(
+      applications.map(app => [app.applicantEmail, app])
+    )
+    
+    const sessionMap = new Map(
+      sessions.map(session => [session.userId, session])
+    )
+    
+    // Build member details with optimized lookups
+    const membersWithDetails = activeMembers.map((member) => {
+      const approvedApplication = applicationMap.get(member.email)
+      
+      // Get last login information from most recent session
+      let lastSignedIn = null
+      if (member.user) {
+        const recentSession = sessionMap.get(member.user.id)
+        
+        // For active sessions, we estimate last login as session creation time
+        // (expires - 30 days for NextAuth default)
+        if (recentSession) {
+          const sessionDuration = 30 * 24 * 60 * 60 * 1000 // 30 days in ms
+          lastSignedIn = new Date(recentSession.expires.getTime() - sessionDuration)
+        }
+      }
         
         return {
           id: member.id,
