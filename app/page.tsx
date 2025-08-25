@@ -7,6 +7,7 @@ import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
 import { getUpcomingEvents } from "@/lib/eventbrite"
 import MobileNavigation from "@/components/mobile-navigation"
+import WelcomeProfessionals from "@/components/welcome-professionals"
 
 function ForumPostPreview({ post }: { 
   post: {
@@ -149,7 +150,11 @@ export default async function HomePage() {
     displayName: string
     image: string | null
     employer: string | null
-    createdAt: Date
+    professionalQualification: string | null
+    interest: string | null
+    contribution: string | null
+    linkedin: string | null
+    createdAt: string
     initials: string
   }> = []
   
@@ -163,7 +168,15 @@ export default async function HomePage() {
           active: true,
           createdAt: { gte: thirtyDaysAgo }
         },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          employer: true,
+          professionalQualification: true,
+          interest: true,
+          contribution: true,
+          linkedin: true,
+          createdAt: true,
           user: {
             select: {
               name: true,
@@ -185,7 +198,11 @@ export default async function HomePage() {
             displayName,
             image: member.user?.image || null,
             employer: member.employer,
-            createdAt: member.createdAt,
+            professionalQualification: member.professionalQualification,
+            interest: member.interest,
+            contribution: member.contribution,
+            linkedin: member.linkedin,
+            createdAt: member.createdAt.toISOString(),
             initials: displayName
               .split(' ')
               .map(n => n[0])
@@ -479,72 +496,7 @@ export default async function HomePage() {
       )}
 
       {/* Welcome New Professionals Section - Only show for members */}
-      {isMember && newMembers.length > 0 && (
-        <section className="py-8 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-2">Welcome New Professionals at IMAN</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-              {newMembers.slice(0, 6).map((member) => (
-                <Link 
-                  key={member.id}
-                  href="/directory?view=recent"
-                  className="bg-emerald-50 rounded-lg p-3 border border-emerald-200 hover:shadow-md hover:bg-emerald-100 transition-all cursor-pointer block"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0">
-                        {member.image ? (
-                          <Image
-                            src={member.image}
-                            alt={member.displayName}
-                            width={40}
-                            height={40}
-                            className="w-10 h-10 rounded-full border-2 border-emerald-300"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold text-sm">
-                            {member.initials}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-base font-semibold text-emerald-900 truncate">
-                          {member.displayName}
-                        </h4>
-                        {member.employer && (
-                          <p className="text-xs text-emerald-700 truncate">
-                            {member.employer}
-                          </p>
-                        )}
-                        <p className="text-xs text-emerald-600">
-                          Joined {new Date(member.createdAt).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric' 
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="ml-2">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                        NEW
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-            {newMembers.length > 6 && (
-              <div className="text-center">
-                <Link href="/directory?view=recent" className="text-sm text-emerald-600 hover:text-emerald-800 hover:underline">
-                  + {newMembers.length - 6} more professionals joined this month
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
+      {isMember && <WelcomeProfessionals newMembers={newMembers} />}
 
       {/* Events Section - Only show for members */}
       {isMember && (
