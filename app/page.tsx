@@ -272,7 +272,7 @@ export default async function HomePage() {
     communitySpotlight = sponsors.map(sponsor => ({
       id: sponsor.id,
       name: sponsor.name,
-      logo: sponsor.logoUrl || '/placeholder-logo.png',
+      logo: sponsor.logoUrl || '/globe.svg',
       website: sponsor.website || '#',
       description: sponsor.description
     }))
@@ -649,7 +649,7 @@ export default async function HomePage() {
                     <div className="flex items-center gap-6 mb-4">
                       <div className="flex-shrink-0">
                         <Image 
-                          src={member.logo} 
+                          src={member.logo || '/globe.svg'} 
                           alt={member.name}
                           width={96}
                           height={96}

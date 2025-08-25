@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import AuthProvider from "@/components/auth-provider"
 // import Navigation from "@/components/navigation"
+import ActivityTracker from "@/components/activity-tracker"
 import { Toaster } from "@/components/ui/toaster"
 import { Analytics } from '@vercel/analytics/react';
 import "./globals.css"
@@ -34,6 +35,7 @@ html {
       </head>
       <body className={`${jakarta.className} min-h-screen bg-background text-foreground antialiased`}>
         <AuthProvider>
+          <ActivityTracker />
           <main>{children}</main>
           <Toaster />
         </AuthProvider>
