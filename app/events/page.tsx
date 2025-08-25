@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { MapPin, Clock, ExternalLink, Mail, Phone } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { getUpcomingEvents, type IMANEvent } from "@/lib/eventbrite"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
@@ -114,9 +115,11 @@ export default async function EventsPage() {
                   )}
                   <div className="flex items-center space-x-3">
                     {session.user?.image && (
-                      <img 
+                      <Image 
                         src={session.user.image} 
                         alt={session.user.name || "User"} 
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full"
                       />
                     )}
@@ -167,9 +170,11 @@ export default async function EventsPage() {
             return (
               <Card key={event.id} className="hover:shadow-lg transition-shadow overflow-hidden">
                 {event.imageUrl && (
-                  <img 
+                  <Image 
                     src={event.imageUrl} 
                     alt={event.title} 
+                    width={400}
+                    height={192}
                     className="w-full h-48 object-cover rounded-t-lg" 
                   />
                 )}

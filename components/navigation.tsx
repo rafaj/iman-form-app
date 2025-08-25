@@ -2,6 +2,7 @@
 
 // Updated navigation: removed apply link for members, added clickable profile name
 import { signOut, useSession } from "next-auth/react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { LogOut } from "lucide-react"
@@ -67,10 +68,12 @@ export default function Navigation() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               {session.user?.image && (
-                <img 
+                <Image 
                   src={session.user.image} 
                   alt={session.user.name || "User"} 
                   className="w-8 h-8 rounded-full"
+                  width={32}
+                  height={32}
                 />
               )}
               <div className="hidden md:block">

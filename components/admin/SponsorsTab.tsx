@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -298,10 +299,12 @@ export default function MemberSpotlightTab({ members, onRefresh }: MemberSpotlig
                   </div>
                   {logoPreview && (
                     <div className="mt-2">
-                      <img
+                      <Image
                         src={logoPreview}
                         alt="Logo preview"
                         className="h-16 w-auto object-contain border border-gray-200 rounded"
+                        width={120}
+                        height={64}
                       />
                     </div>
                   )}
@@ -339,10 +342,12 @@ export default function MemberSpotlightTab({ members, onRefresh }: MemberSpotlig
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4">
                     {member.logoUrl ? (
-                      <img
+                      <Image
                         src={member.logoUrl}
                         alt={`${member.name} logo`}
                         className="h-16 w-16 object-contain border border-gray-200 rounded"
+                        width={64}
+                        height={64}
                       />
                     ) : (
                       <div className="h-16 w-16 bg-gray-100 border border-gray-200 rounded flex items-center justify-center">

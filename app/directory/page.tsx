@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin, Building2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import Image from "next/image"
 import MobileNavigation from "@/components/mobile-navigation"
 
 type DirectoryProfessional = {
@@ -268,9 +269,11 @@ export default function DirectoryPage() {
                   )}
                   <div className="flex items-center space-x-3">
                     {session.user?.image && (
-                      <img 
+                      <Image 
                         src={session.user.image} 
                         alt={session.user.name || "User"} 
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full"
                       />
                     )}
@@ -418,9 +421,11 @@ export default function DirectoryPage() {
                           <div className="flex items-start space-x-4">
                             <div className="flex-shrink-0">
                               {professional.image ? (
-                                <img
+                                <Image
                                   src={professional.image}
                                   alt={professional.displayName}
+                                  width={48}
+                                  height={48}
                                   className="w-12 h-12 rounded-full border-2 border-emerald-200"
                                 />
                               ) : (
@@ -483,9 +488,11 @@ export default function DirectoryPage() {
                       <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">
                           {professional.image ? (
-                            <img
+                            <Image
                               src={professional.image}
                               alt={professional.displayName}
+                              width={48}
+                              height={48}
                               className="w-12 h-12 rounded-full border-2 border-emerald-200"
                             />
                           ) : (
@@ -554,9 +561,11 @@ export default function DirectoryPage() {
                       <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">
                           {professional.image ? (
-                            <img
+                            <Image
                               src={professional.image}
                               alt={professional.displayName}
+                              width={48}
+                              height={48}
                               className="w-12 h-12 rounded-full border-2 border-emerald-200"
                             />
                           ) : (
@@ -642,9 +651,11 @@ export default function DirectoryPage() {
                 {/* Profile Header */}
                 <div className="flex items-center space-x-4 pb-4 border-b border-emerald-200">
                   {selectedProfessional.image ? (
-                    <img
+                    <Image
                       src={selectedProfessional.image}
                       alt={selectedProfessional.displayName}
+                      width={64}
+                      height={64}
                       className="w-16 h-16 rounded-full border-2 border-emerald-200"
                     />
                   ) : (

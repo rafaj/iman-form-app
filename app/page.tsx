@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar, MessageSquare, Clock, Heart } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
 import { getUpcomingEvents } from "@/lib/eventbrite"
@@ -314,9 +315,11 @@ export default async function HomePage() {
                   )}
                   <div className="flex items-center space-x-3">
                     {session.user?.image && (
-                      <img 
+                      <Image 
                         src={session.user.image} 
                         alt={session.user.name || "User"} 
+                        width={32}
+                        height={32}
                         className="w-8 h-8 rounded-full"
                       />
                     )}
@@ -493,9 +496,11 @@ export default async function HomePage() {
                     <div className="flex items-center space-x-3 flex-1 min-w-0">
                       <div className="flex-shrink-0">
                         {member.image ? (
-                          <img
+                          <Image
                             src={member.image}
                             alt={member.displayName}
+                            width={40}
+                            height={40}
                             className="w-10 h-10 rounded-full border-2 border-emerald-300"
                           />
                         ) : (
@@ -643,9 +648,11 @@ export default async function HomePage() {
                   >
                     <div className="flex items-center gap-6 mb-4">
                       <div className="flex-shrink-0">
-                        <img 
+                        <Image 
                           src={member.logo} 
                           alt={member.name}
+                          width={96}
+                          height={96}
                           className="h-24 w-24 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-3 bg-white"
                         />
                       </div>

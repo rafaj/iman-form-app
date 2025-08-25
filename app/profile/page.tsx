@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { User, Mail, Calendar, Settings, Edit, Save, X, Linkedin, Building, MapPin, Phone } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 import { redirect } from "next/navigation"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
@@ -209,10 +210,12 @@ export default function ProfilePage() {
                   )}
                   <div className="flex items-center space-x-3">
                     {session.user?.image && (
-                      <img 
+                      <Image 
                         src={session.user.image} 
                         alt={session.user.name || "User"} 
                         className="w-8 h-8 rounded-full"
+                        width={32}
+                        height={32}
                       />
                     )}
                     <Link href="/profile" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors border-b-2 border-emerald-600">
@@ -266,10 +269,12 @@ export default function ProfilePage() {
             <CardHeader className="pb-6">
               <div className="flex items-center space-x-4">
                 {session.user?.image && (
-                  <img 
+                  <Image 
                     src={session.user.image} 
                     alt={session.user.name || "User"} 
                     className="w-16 h-16 rounded-full border-2 border-emerald-200"
+                    width={64}
+                    height={64}
                   />
                 )}
                 <div>
