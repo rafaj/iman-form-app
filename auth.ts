@@ -49,8 +49,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Update lastSeenAt timestamp (throttled to once per 5 minutes)
         try {
           const now = new Date()
-          const shouldUpdate = !user.lastSeenAt || 
-            (now.getTime() - new Date(user.lastSeenAt).getTime()) > 5 * 60 * 1000 // 5 minutes
+          
+          // Fetch current user data to check lastSeenAt
+          const currentUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { lastSeenAt: true }
+          })
+          
+          const shouldUpdate = !currentUser?.lastSeenAt || 
+            (now.getTime() - currentUser.lastSeenAt.getTime()) > 5 * 60 * 1000 // 5 minutes
           
           if (shouldUpdate) {
             await prisma.user.update({
