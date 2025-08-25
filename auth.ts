@@ -1,11 +1,10 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Resend from "next-auth/providers/resend"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/lib/database"
+import { adapter } from "@/lib/auth-adapter"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  adapter: adapter,
   session: { strategy: "database" },
   providers: [
     Google({
