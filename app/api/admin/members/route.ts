@@ -111,35 +111,34 @@ export async function GET(request: NextRequest) {
         }
       }
         
-        return {
-          id: member.id,
-          name: member.name,
-          email: maskEmail(member.email),
-          realEmail: member.email, // Unmasked email for admin use
-          active: member.active,
-          createdAt: member.createdAt,
-          approvalsInWindow: member.approvalsInWindow,
-          lastApprovalAt: member.lastApprovalAt,
-          // Professional info from member table (always current)
-          professionalQualification: member.professionalQualification,
-          interest: member.interest,
-          contribution: member.contribution,
-          employer: member.employer,
-          linkedin: member.linkedin,
-          // User role info for admin panel
-          userRole: member.user?.role || 'No Account',
-          isAdminSponsor: member.user?.role === 'ADMIN',
-          // Application timeline info
-          applicationDate: approvedApplication?.createdAt || null,
-          approvedDate: approvedApplication?.approvedAt || null,
-          // Sponsor information (from application only)
-          sponsorEmail: approvedApplication?.sponsorEmail || null,
-          sponsorName: approvedApplication?.sponsor?.name || null,
-          // Login activity info
-          lastSignedIn: lastSignedIn
-        }
-      })
-    )
+      return {
+        id: member.id,
+        name: member.name,
+        email: maskEmail(member.email),
+        realEmail: member.email, // Unmasked email for admin use
+        active: member.active,
+        createdAt: member.createdAt,
+        approvalsInWindow: member.approvalsInWindow,
+        lastApprovalAt: member.lastApprovalAt,
+        // Professional info from member table (always current)
+        professionalQualification: member.professionalQualification,
+        interest: member.interest,
+        contribution: member.contribution,
+        employer: member.employer,
+        linkedin: member.linkedin,
+        // User role info for admin panel
+        userRole: member.user?.role || 'No Account',
+        isAdminSponsor: member.user?.role === 'ADMIN',
+        // Application timeline info
+        applicationDate: approvedApplication?.createdAt || null,
+        approvedDate: approvedApplication?.approvedAt || null,
+        // Sponsor information (from application only)
+        sponsorEmail: approvedApplication?.sponsorEmail || null,
+        sponsorName: approvedApplication?.sponsor?.name || null,
+        // Login activity info
+        lastSignedIn: lastSignedIn
+      }
+    })
     
     // Sort the final result by createdAt descending (newest first)
     membersWithDetails.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
