@@ -1,7 +1,6 @@
-import { auth } from "@/auth"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   
   // Public paths that don't require authentication
@@ -9,6 +8,7 @@ export default auth((req) => {
     '/',
     '/auth/signin',
     '/auth/error',
+    '/auth/verify-request',
     '/api/auth/',
     '/_next',
     '/favicon.ico',
@@ -26,16 +26,18 @@ export default auth((req) => {
     return NextResponse.next()
   }
   
-  // Check if user is authenticated
-  if (!req.auth) {
-    // Redirect to sign in page
+  // For protected paths, check for session cookie
+  const sessionToken = req.cookies.get('next-auth.session-token') || req.cookies.get('__Secure-next-auth.session-token')
+  
+  // If no session token, redirect to sign in
+  if (!sessionToken) {
     const signInUrl = new URL('/auth/signin', req.url)
     signInUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(signInUrl)
   }
   
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: [
