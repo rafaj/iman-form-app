@@ -1,5 +1,10 @@
 import { PrismaClient, ApplicationStatus, Member, Application } from '@prisma/client'
 
+// Prevent client-side initialization
+if (typeof window !== 'undefined') {
+  throw new Error('Database client should not be used on the client side')
+}
+
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
