@@ -1,8 +1,13 @@
+import "server-only"
 import { PrismaClient, ApplicationStatus, Member, Application } from '@prisma/client'
 
-// Prevent client-side initialization
+// Multiple layers of protection against client-side usage
 if (typeof window !== 'undefined') {
   throw new Error('Database client should not be used on the client side')
+}
+
+if (typeof process === 'undefined' || !process.versions?.node) {
+  throw new Error('Database client can only be used in Node.js environment')
 }
 
 const globalForPrisma = globalThis as unknown as {

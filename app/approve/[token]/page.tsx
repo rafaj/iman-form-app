@@ -12,7 +12,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle2, ShieldCheck, TriangleAlert } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { ApplicationStatus } from "@prisma/client"
+// Define ApplicationStatus enum locally to avoid importing @prisma/client on client-side
+enum ApplicationStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED", 
+  REJECTED = "REJECTED",
+  EXPIRED = "EXPIRED"
+}
 
 type Application = {
   applicantName: string

@@ -17,13 +17,27 @@ const nextConfig: NextConfig = {
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // Don't bundle Prisma for client-side to prevent browser errors
+      // Completely exclude Prisma from client-side bundles
       config.resolve.fallback = {
         ...config.resolve.fallback,
         '@prisma/client': false,
         'prisma': false,
+        'fs': false,
+        'path': false,
+        'crypto': false,
       };
+      
+      // Add externals to prevent bundling
+      config.externals = config.externals || [];
+      config.externals.push({
+        '@prisma/client': 'commonjs @prisma/client',
+        'prisma': 'commonjs prisma'
+      });
+      
+      // More aggressive exclusion
       config.externals.push('node_modules/.prisma/client');
+      config.externals.push('@prisma/client/runtime/library');
+      config.externals.push('@prisma/client/runtime/data-proxy');
     }
     return config;
   },

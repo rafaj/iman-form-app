@@ -339,7 +339,7 @@ export default function DirectoryPage() {
         {/* View Toggle */}
         <div className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex space-x-2">
+            <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
               <Button
                 variant={viewMode === 'alphabetical' ? 'default' : 'outline'}
                 size="sm"
@@ -347,7 +347,7 @@ export default function DirectoryPage() {
                   setViewMode('alphabetical')
                   setSelectedEmployer(null)
                 }}
-                className={viewMode === 'alphabetical' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+                className={`w-full sm:w-auto ${viewMode === 'alphabetical' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
               >
                 <Users className="h-4 w-4 mr-2" />
                 Alphabetical
@@ -359,10 +359,11 @@ export default function DirectoryPage() {
                   setViewMode('employer')
                   setSelectedEmployer(null)
                 }}
-                className={viewMode === 'employer' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+                className={`w-full sm:w-auto ${viewMode === 'employer' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
               >
                 <Building2 className="h-4 w-4 mr-2" />
-                Employers represented at IMAN
+                <span className="hidden sm:inline">Employers represented at IMAN</span>
+                <span className="sm:hidden">Employers</span>
               </Button>
               <Button
                 variant={viewMode === 'recent' ? 'default' : 'outline'}
@@ -371,7 +372,7 @@ export default function DirectoryPage() {
                   setViewMode('recent')
                   setSelectedEmployer(null)
                 }}
-                className={viewMode === 'recent' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+                className={`w-full sm:w-auto ${viewMode === 'recent' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
               >
                 <Calendar className="h-4 w-4 mr-2" />
                 Recently Joined
