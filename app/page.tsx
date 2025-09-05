@@ -6,6 +6,7 @@ import Image from "next/image"
 import { auth, signOut } from "@/auth"
 import { prisma } from "@/lib/database"
 import { getUpcomingEvents } from "@/lib/eventbrite"
+import { getCached, setCached, CACHE_KEYS } from "@/lib/cache"
 import MobileNavigation from "@/components/mobile-navigation"
 import WelcomeProfessionals from "@/components/welcome-professionals"
 
@@ -117,18 +118,27 @@ export default async function HomePage() {
       if (session.user?.email === process.env.ADMIN_EMAIL) {
         isMember = true
       } else {
-        // Single optimized query with OR condition instead of sequential queries
-        const member = await prisma.member.findFirst({
-          where: {
-            OR: [
-              { userId: session.user?.id || '' },
-              { 
-                email: session.user?.email || '',
-                active: true 
-              }
-            ]
-          }
-        })
+        // Check cache first for member status (1 minute cache)
+        const cacheKey = CACHE_KEYS.MEMBER_CHECK(session.user?.email || '')
+        let member = getCached<{ id: string; userId?: string | null; email: string; active: boolean } | null>(cacheKey)
+        
+        if (member === null) {
+          // Single optimized query with OR condition instead of sequential queries
+          member = await prisma.member.findFirst({
+            where: {
+              OR: [
+                { userId: session.user?.id || '' },
+                { 
+                  email: session.user?.email || '',
+                  active: true 
+                }
+              ]
+            }
+          })
+          
+          // Cache for 1 minute (short cache for auth-critical data)
+          setCached(cacheKey, member, 1)
+        }
         
         isMember = !!member
       }
@@ -160,33 +170,52 @@ export default async function HomePage() {
   
   if (isMember) {
     try {
-      const thirtyDaysAgo = new Date()
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+      // Check cache first (10 minute cache for members)  
+      type MemberWithUser = {
+        id: string
+        name: string
+        employer: string | null
+        professionalQualification: string | null
+        interest: string | null
+        contribution: string | null
+        linkedin: string | null
+        createdAt: Date
+        user: { name: string | null; image: string | null } | null
+      }
+      let recentMembers = getCached<MemberWithUser[]>(CACHE_KEYS.RECENT_MEMBERS)
       
-      const recentMembers = await prisma.member.findMany({
-        where: {
-          active: true,
-          createdAt: { gte: thirtyDaysAgo }
-        },
-        select: {
-          id: true,
-          name: true,
-          employer: true,
-          professionalQualification: true,
-          interest: true,
-          contribution: true,
-          linkedin: true,
-          createdAt: true,
-          user: {
-            select: {
-              name: true,
-              image: true
+      if (!recentMembers) {
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+        
+        recentMembers = await prisma.member.findMany({
+          where: {
+            active: true,
+            createdAt: { gte: thirtyDaysAgo }
+          },
+          select: {
+            id: true,
+            name: true,
+            employer: true,
+            professionalQualification: true,
+            interest: true,
+            contribution: true,
+            linkedin: true,
+            createdAt: true,
+            user: {
+              select: {
+                name: true,
+                image: true
+              }
             }
-          }
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 20 // Get more than 6 to handle the counter
-      })
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 20 // Get more than 6 to handle the counter
+        })
+        
+        // Cache for 10 minutes
+        setCached(CACHE_KEYS.RECENT_MEMBERS, recentMembers, 10)
+      }
       
       // Only show if we have at least 3 new members
       if (recentMembers.length >= 3) {
@@ -239,26 +268,44 @@ export default async function HomePage() {
   
   if (isMember) {
     try {
-      // Only fetch posts if user is actually a member
-      const posts = await prisma.post.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 3,
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true,
-              image: true
-            }
-          },
-          _count: {
-            select: {
-              comments: true,
-              votes: true
+      // Check cache first (3 minute cache for forum posts)
+      type PostWithAuthor = {
+        id: string
+        title: string
+        content: string | null
+        url: string | null  
+        type: string
+        createdAt: Date
+        author: { id: string; name: string | null; image: string | null }
+        _count: { comments: number; votes: number }
+      }
+      let posts = getCached<PostWithAuthor[]>(CACHE_KEYS.FORUM_POSTS)
+      
+      if (!posts) {
+        // Only fetch posts if user is actually a member
+        posts = await prisma.post.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                image: true
+              }
+            },
+            _count: {
+              select: {
+                comments: true,
+                votes: true
+              }
             }
           }
-        }
-      })
+        })
+        
+        // Cache for 3 minutes (shorter for more dynamic content)
+        setCached(CACHE_KEYS.FORUM_POSTS, posts, 3)
+      }
       
       recentPosts = posts.map(post => ({
         ...post,
