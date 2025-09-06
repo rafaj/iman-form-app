@@ -8,7 +8,6 @@ import { randomBytes } from "crypto"
 
 const ApproveSchema = z.object({
   memberEmail: z.string().email().max(200),
-  memberId: z.string().min(3).max(50),
   verificationCode: z
     .string()
     .length(6)
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
       include: { user: true }
     })
     
-    if (!member || !member.active || member.id !== payload.memberId) {
+    if (!member || !member.active) {
       return NextResponse.json({ message: "Member verification failed." }, { status: 401 })
     }
     
@@ -57,7 +56,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
     // Validate verification code and rate-limits, then approve
     const ok = await approveApplication({
       token,
-      memberId: payload.memberId,
+      memberId: member.id,
       verificationCode: payload.verificationCode,
     })
 

@@ -449,12 +449,25 @@ export default function DirectoryPage() {
                                   {professional.professionalQualification}
                                 </p>
                               )}
-                              <div className="flex items-center mt-3 text-xs text-gray-500">
-                                <Calendar className="w-3 h-3 mr-1" />
-                                {professional.lastSeenAt 
-                                  ? `Last seen ${formatLastSeen(professional.lastSeenAt)}`
-                                  : 'Never logged in'
-                                }
+                              <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                                <div className="flex items-center">
+                                  <Calendar className="w-3 h-3 mr-1" />
+                                  {professional.lastSeenAt 
+                                    ? `Last seen ${formatLastSeen(professional.lastSeenAt)}`
+                                    : 'Never logged in'
+                                  }
+                                </div>
+                                {professional.linkedin && (
+                                  <a
+                                    href={professional.linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <Linkedin className="w-3 h-3" />
+                                  </a>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -511,13 +524,26 @@ export default function DirectoryPage() {
                               {professional.employer}
                             </p>
                           )}
-                          <div className="flex items-center mt-2 text-xs text-emerald-600">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            Joined {new Date(professional.memberSince).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
+                          <div className="flex items-center justify-between mt-2 text-xs">
+                            <div className="flex items-center text-emerald-600">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              Joined {new Date(professional.memberSince).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </div>
+                            {professional.linkedin && (
+                              <a
+                                href={professional.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Linkedin className="w-3 h-3" />
+                              </a>
+                            )}
                           </div>
                           {professional.professionalQualification && (
                             <p className="text-xs text-gray-600 line-clamp-2 mt-2">
@@ -584,12 +610,25 @@ export default function DirectoryPage() {
                               {professional.professionalQualification}
                             </p>
                           )}
-                          <div className="flex items-center mt-3 text-xs text-gray-500">
-                            <Calendar className="w-3 h-3 mr-1" />
-                            {professional.lastSeenAt 
-                              ? `Last seen ${formatLastSeen(professional.lastSeenAt)}`
-                              : 'Never logged in'
-                            }
+                          <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                            <div className="flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              {professional.lastSeenAt 
+                                ? `Last seen ${formatLastSeen(professional.lastSeenAt)}`
+                                : 'Never logged in'
+                              }
+                            </div>
+                            {professional.linkedin && (
+                              <a
+                                href={professional.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Linkedin className="w-3 h-3" />
+                              </a>
+                            )}
                           </div>
                         </div>
                       </div>

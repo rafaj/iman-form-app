@@ -131,14 +131,13 @@ function ApproveForm({ token, disabled }: { token: string; disabled: boolean }) 
     if (disabled) return
     const fd = new FormData(e.currentTarget)
     const memberEmail = String(fd.get("memberEmail") || "").trim()
-    const memberId = String(fd.get("memberId") || "").trim()
     const verificationCode = String(fd.get("verificationCode") || "").trim()
     setLoading(true)
     try {
       const res = await fetch(`/api/applications/${token}/approve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberEmail, memberId, verificationCode }),
+        body: JSON.stringify({ memberEmail, verificationCode }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -168,17 +167,6 @@ function ApproveForm({ token, disabled }: { token: string; disabled: boolean }) 
           name="memberEmail"
           type="email"
           placeholder="member@iman.org"
-          required
-          disabled={disabled}
-          className={inputClass}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="memberId">Your member ID</Label>
-        <Input
-          id="memberId"
-          name="memberId"
-          placeholder="e.g. MBR-1024"
           required
           disabled={disabled}
           className={inputClass}

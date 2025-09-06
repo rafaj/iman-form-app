@@ -33,8 +33,14 @@ export async function requireAdmin() {
     throw new Error("Authentication required")
   }
   
+  // List of admin emails
+  const adminEmails = [
+    process.env.ADMIN_EMAIL,
+    'riyaz.vazir@gmail.com'
+  ].filter(Boolean) // Remove any undefined values
+  
   // Check if user is admin based on email or role
-  const isAdminUser = session.user.email === process.env.ADMIN_EMAIL || session.user.role === 'ADMIN'
+  const isAdminUser = adminEmails.includes(session.user.email) || session.user.role === 'ADMIN'
   
   if (!isAdminUser) {
     throw new Error("Admin access required")
