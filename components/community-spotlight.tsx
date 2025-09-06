@@ -76,6 +76,7 @@ export default function CommunitySpotlight() {
         })
       }
     } catch (error) {
+      console.error('Error toggling heart:', error)
       toast({
         title: "Error",
         description: "Failed to update heart. Please try again.",
