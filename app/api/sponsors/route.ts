@@ -40,8 +40,8 @@ export async function GET() {
 
     // Transform the response to include heart status
     const sponsorsWithHearts = sponsors.map(sponsor => {
-      const heartedByNames = sponsor.hearts.map((heart: any) => heart.user.name).filter(Boolean)
-      const isHearted = userId ? sponsor.hearts.some((heart: any) => heart.userId === userId) : false
+      const heartedByNames = sponsor.hearts.map((heart: { user: { name: string | null } }) => heart.user.name).filter(Boolean)
+      const isHearted = userId ? sponsor.hearts.some((heart: { userId: string }) => heart.userId === userId) : false
       
       return {
         id: sponsor.id,
