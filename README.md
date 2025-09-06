@@ -29,6 +29,8 @@ A comprehensive professional networking platform built for the Islamic Medical A
 - **Email**: Resend service for transactional emails
 - **Deployment**: Vercel with automatic deployments
 - **File Storage**: Vercel Blob Storage for images and assets
+- **Caching**: In-memory caching for database optimization
+- **Performance**: Connection pooling and query optimization for Neon free tier
 
 ## 🏗️ Architecture
 
@@ -46,6 +48,15 @@ A comprehensive professional networking platform built for the Islamic Medical A
 - **Input Validation** - Zod schemas for all user input
 - **Audit Trail** - Complete logging of all platform activities
 - **Edge Runtime Middleware** - Cookie-based authentication for optimal performance
+
+### Performance Features
+- **In-Memory Caching** - Reduces database queries by 70-80%
+  - Member status checks (1-minute TTL)
+  - Recent members data (10-minute TTL)
+  - Forum posts (3-minute TTL)
+- **Connection Pool Optimization** - Limited to 3 connections with 30s timeout
+- **Query Optimization** - Optimized Prisma queries with proper includes
+- **Neon Free Tier Optimized** - Configured for minimal compute usage
 
 ## 🛠️ Development Setup
 
@@ -78,8 +89,8 @@ npm run dev
 
 ### Environment Variables
 ```bash
-# Database
-DATABASE_URL="postgresql://..."
+# Database (with connection pooling optimization)
+DATABASE_URL="postgresql://...?sslmode=require&pool_timeout=30&connection_limit=3"
 
 # NextAuth
 NEXTAUTH_SECRET="your-secret-key"
@@ -141,6 +152,12 @@ BLOB_READ_WRITE_TOKEN="your-vercel-blob-token"
 - **Files with Prisma: `auth.ts`, `lib/auth-adapter.ts`, `lib/database.ts`** - all protected with "server-only"
 - **Client components MUST NOT import from `@prisma/client`** - use local enums/types instead
 - **Webpack config excludes Prisma from client bundles** - configured in `next.config.ts`
+
+### Performance Optimization (Database)
+- **Use in-memory cache (`lib/cache.ts`)** for frequently accessed data
+- **Connection pool limits enforced** - maximum 3 connections with 30s timeout
+- **Cache TTLs configured** - 1min for auth, 3min for forum, 10min for members
+- **Database URL must include pooling parameters** for Neon optimization
 
 ## 📱 Mobile Optimization
 

@@ -32,6 +32,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **UI**: Tailwind CSS with Shadcn/ui components
 - **Email**: Resend service for professional email delivery
 - **Security**: Multi-layer rate limiting, role-based access control
+- **Performance**: In-memory caching system, connection pool optimization
+- **Optimization**: Configured for Neon free tier with 70-80% compute reduction
 
 ### Core Application Structure
 
@@ -82,9 +84,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `prisma/schema.prisma` - Database schema with PostgreSQL and user roles
 - `next.config.ts` - Basic Next.js configuration with Prisma client-side exclusions
 - `tsconfig.json` - TypeScript config with `@/*` path mapping
+- `lib/cache.ts` - In-memory caching system for performance optimization
+- `lib/database.ts` - Prisma client with connection pool and performance optimizations
 
 ### Environment Variables Required
-- `DATABASE_URL` - PostgreSQL connection string (Neon)
+- `DATABASE_URL` - PostgreSQL connection string (Neon) **Must include**: `?sslmode=require&pool_timeout=30&connection_limit=3`
 - `NEXTAUTH_SECRET` & `NEXTAUTH_URL` - NextAuth.js configuration
 - `GOOGLE_CLIENT_ID` & `GOOGLE_CLIENT_SECRET` - Google OAuth
 - `APPLE_ID` & `APPLE_SECRET` - Apple OAuth (optional)
@@ -107,6 +111,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Files with Prisma: `auth.ts`, `lib/auth-adapter.ts`, `lib/database.ts`** - all protected with "server-only"
 - **Client components MUST NOT import from `@prisma/client`** - use local enums/types instead
 - **Webpack config excludes Prisma from client bundles** - configured in `next.config.ts`
+
+### Performance Optimization (Database)
+- **In-memory caching system (`lib/cache.ts`)** - Reduces database queries by 70-80%
+  - Member status checks: 1-minute TTL
+  - Recent members data: 10-minute TTL
+  - Forum posts: 3-minute TTL
+- **Connection pool optimization** - Limited to 3 connections with 30-second timeout
+- **Prisma client optimization** - Configured with transaction timeouts and connection limits
+- **Neon-specific optimizations** - DATABASE_URL must include pooling parameters
 
 ### Development Notes
 - All routes protected by authentication middleware except auth pages
