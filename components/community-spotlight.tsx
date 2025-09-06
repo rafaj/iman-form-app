@@ -13,6 +13,7 @@ type Sponsor = {
   logo: string
   heartCount: number
   isHearted: boolean
+  heartedByNames: string[]
 }
 
 export default function CommunitySpotlight() {
@@ -135,61 +136,60 @@ export default function CommunitySpotlight() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {sponsors.map((sponsor) => (
             <div key={sponsor.id} className="bg-white rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-300">
-              <a 
-                href={sponsor.website} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <div className="flex items-center gap-6 mb-4">
-                  <div className="flex-shrink-0">
-                    <Image 
-                      src={sponsor.logo || '/globe.svg'} 
-                      alt={sponsor.name}
-                      width={96}
-                      height={96}
-                      className="h-24 w-24 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-3 bg-white"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xl font-semibold text-emerald-900">{sponsor.name}</h4>
-                  </div>
-                </div>
-                {sponsor.description && (
-                  <p className="text-sm text-emerald-600 line-clamp-3 mb-4">{sponsor.description}</p>
-                )}
-              </a>
-              
-              {/* Heart Button */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-emerald-100">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    handleHeartToggle(sponsor.id, sponsor.isHearted)
-                  }}
-                  disabled={heartingSponsors.has(sponsor.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                    sponsor.isHearted 
-                      ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100' 
-                      : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-red-50 hover:text-red-600 hover:border-red-200'
-                  } ${heartingSponsors.has(sponsor.id) ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-sm'}`}
+              {/* Top Row: Two columns */}
+              <div className="flex items-start justify-between mb-4">
+                {/* Left Column: Picture + Name */}
+                <a 
+                  href={sponsor.website} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center"
                 >
-                  <Heart 
-                    className={`w-4 h-4 transition-all duration-200 ${
-                      sponsor.isHearted ? 'fill-current' : ''
-                    } ${heartingSponsors.has(sponsor.id) ? 'animate-pulse' : ''}`} 
+                  <Image 
+                    src={sponsor.logo || '/globe.svg'} 
+                    alt={sponsor.name}
+                    width={80}
+                    height={80}
+                    className="h-20 w-20 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-2 bg-white mb-2"
                   />
-                  <span>{sponsor.heartCount}</span>
-                  <span className="hidden sm:inline">
-                    {sponsor.isHearted ? 'Hearted' : 'Heart'}
-                  </span>
-                </button>
-                
-                <div className="text-xs text-gray-500">
-                  {sponsor.heartCount} {sponsor.heartCount === 1 ? 'heart' : 'hearts'}
+                  <h4 className="text-lg font-semibold text-emerald-900 text-center">{sponsor.name}</h4>
+                </a>
+
+                {/* Right Column: Heart Button */}
+                <div className="flex flex-col items-center">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleHeartToggle(sponsor.id, sponsor.isHearted)
+                    }}
+                    disabled={heartingSponsors.has(sponsor.id)}
+                    className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                      sponsor.isHearted 
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100' 
+                        : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200'
+                    } ${heartingSponsors.has(sponsor.id) ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-sm'}`}
+                    title={sponsor.heartedByNames.length > 0 
+                      ? `Hearted by: ${sponsor.heartedByNames.join(', ')}${sponsor.heartCount > sponsor.heartedByNames.length ? ` and ${sponsor.heartCount - sponsor.heartedByNames.length} more` : ''}`
+                      : `${sponsor.heartCount} ${sponsor.heartCount === 1 ? 'heart' : 'hearts'}`
+                    }
+                  >
+                    <Heart 
+                      className={`w-4 h-4 transition-all duration-200 ${
+                        sponsor.isHearted ? 'fill-current' : ''
+                      } ${heartingSponsors.has(sponsor.id) ? 'animate-pulse' : ''}`} 
+                    />
+                    <span>{sponsor.heartCount}</span>
+                  </button>
                 </div>
               </div>
+
+              {/* Bottom Row: Description */}
+              {sponsor.description && (
+                <div className="pt-4 border-t border-emerald-100">
+                  <p className="text-sm text-emerald-600 line-clamp-3">{sponsor.description}</p>
+                </div>
+              )}
             </div>
           ))}
           {sponsors.length === 0 && (

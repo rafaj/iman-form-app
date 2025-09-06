@@ -23,24 +23,37 @@ export async function GET() {
             hearts: true
           }
         },
-        hearts: userId ? {
-          where: { userId },
-          select: { id: true }
-        } : false
+        hearts: {
+          select: {
+            userId: true,
+            user: {
+              select: {
+                name: true
+              }
+            }
+          },
+          take: 10 // Limit to 10 names for tooltip
+        }
       },
       orderBy: { createdAt: 'desc' }
     })
 
     // Transform the response to include heart status
-    const sponsorsWithHearts = sponsors.map(sponsor => ({
-      id: sponsor.id,
-      name: sponsor.name,
-      description: sponsor.description,
-      website: sponsor.website || '#',
-      logo: sponsor.logoUrl || '/globe.svg',
-      heartCount: sponsor._count.hearts,
-      isHearted: userId ? sponsor.hearts.length > 0 : false
-    }))
+    const sponsorsWithHearts = sponsors.map(sponsor => {
+      const heartedByNames = sponsor.hearts.map((heart: any) => heart.user.name).filter(Boolean)
+      const isHearted = userId ? sponsor.hearts.some((heart: any) => heart.userId === userId) : false
+      
+      return {
+        id: sponsor.id,
+        name: sponsor.name,
+        description: sponsor.description,
+        website: sponsor.website || '#',
+        logo: sponsor.logoUrl || '/globe.svg',
+        heartCount: sponsor._count.hearts,
+        isHearted,
+        heartedByNames
+      }
+    })
 
     return NextResponse.json({
       success: true,
