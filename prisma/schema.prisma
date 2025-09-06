@@ -129,6 +129,9 @@ model Sponsor {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  // Relations
+  hearts      SponsorHeart[]
+
   // Performance indexes
   @@index([active])
   @@index([tier])
@@ -189,6 +192,9 @@ model User {
   comments      Comment[]
   postVotes     PostVote[]
   commentVotes  CommentVote[]
+  
+  // Sponsor relations
+  sponsorHearts SponsorHeart[]
 
   // Performance indexes
   @@index([email])
@@ -338,6 +344,22 @@ model MentorConnection {
   
   @@unique([mentorId, menteeId])
   @@map("mentor_connections")
+}
+
+model SponsorHeart {
+  id        String   @id @default(cuid())
+  sponsorId String
+  userId    String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([sponsorId, userId])
+  @@index([sponsorId])
+  @@index([userId])
+  @@map("sponsor_hearts")
 }
 
 enum ConnectionStatus {

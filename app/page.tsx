@@ -9,6 +9,7 @@ import { getUpcomingEvents } from "@/lib/eventbrite"
 import { getCached, setCached, CACHE_KEYS } from "@/lib/cache"
 import MobileNavigation from "@/components/mobile-navigation"
 import WelcomeProfessionals from "@/components/welcome-professionals"
+import CommunitySpotlight from "@/components/community-spotlight"
 
 function ForumPostPreview({ post }: { 
   post: {
@@ -319,32 +320,6 @@ export default async function HomePage() {
     }
   }
 
-  // Fetch community spotlight data from database
-  let communitySpotlight: Array<{
-    id: string
-    name: string
-    logo: string
-    website: string
-    description: string
-  }> = []
-  try {
-    const sponsors = await prisma.sponsor.findMany({
-      where: { active: true },
-      orderBy: { createdAt: 'desc' }
-    })
-    
-    communitySpotlight = sponsors.map(sponsor => ({
-      id: sponsor.id,
-      name: sponsor.name,
-      logo: sponsor.logoUrl || '/globe.svg',
-      website: sponsor.website || '#',
-      description: sponsor.description
-    }))
-  } catch (error) {
-    console.error("Error fetching community spotlight data:", error)
-    // Fallback to empty array if database fails
-    communitySpotlight = []
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
@@ -543,54 +518,7 @@ export default async function HomePage() {
       )}
 
       {/* Community Spotlight Section - Only show for members */}
-      {isMember && (
-        <section className="py-8 bg-emerald-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-emerald-800 mb-2">Community Spotlight</h3>
-              <p className="text-emerald-700">
-                Grateful to have these amazing individuals as part of our community.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {communitySpotlight.map((member) => (
-                <div key={member.id} className="bg-white rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-300">
-                  <a 
-                    href={member.website} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <div className="flex items-center gap-6 mb-4">
-                      <div className="flex-shrink-0">
-                        <Image 
-                          src={member.logo || '/globe.svg'} 
-                          alt={member.name}
-                          width={96}
-                          height={96}
-                          className="h-24 w-24 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-3 bg-white"
-                        />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-xl font-semibold text-emerald-900">{member.name}</h4>
-                      </div>
-                    </div>
-                    {member.description && (
-                      <p className="text-sm text-emerald-600 line-clamp-3">{member.description}</p>
-                    )}
-                  </a>
-                </div>
-              ))}
-              {communitySpotlight.length === 0 && (
-                <div className="col-span-full text-center py-12">
-                  <Building2 className="w-16 h-16 text-emerald-300 mx-auto mb-4" />
-                  <p className="text-emerald-600">No community professionals in spotlight yet.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}
+      {isMember && <CommunitySpotlight />}
 
       {/* Events Section - Only show for members */}
       {isMember && (
