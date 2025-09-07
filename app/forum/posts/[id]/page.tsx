@@ -556,6 +556,26 @@ interface CommentItemProps {
   isFirst: boolean
 }
 
-const CommentItem = ({ comment }: CommentItemProps) => {
-  return React.createElement('div', { className: 'p-3' }, comment.author.name, ': ', comment.content)
+const CommentItem = ({ comment, formatTimeAgo }: CommentItemProps) => {
+  return (
+    <div className="p-3 border-b border-gray-100 last:border-b-0">
+      <div className="flex items-start gap-2">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <Link 
+              href="/directory" 
+              className="font-medium text-emerald-600 hover:text-emerald-800 text-sm"
+              title={`View ${comment.author.name} in directory`}
+            >
+              {comment.author.name}
+            </Link>
+            <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
+          </div>
+          <div className="text-sm text-gray-700 leading-relaxed">
+            {renderContentWithLinks(comment.content)}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
