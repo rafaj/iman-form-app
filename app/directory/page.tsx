@@ -189,7 +189,7 @@ export default function DirectoryPage() {
   // Helper function to parse multiple schools from education text
   function parseSchools(educationText: string): string[] {
     // Common separators: comma, semicolon, " and ", " & ", newlines
-    let schools = educationText.split(/[,;]|\sand\s|\s&\s|\n/)
+    const schools = educationText.split(/[,;]|\sand\s|\s&\s|\n/)
     
     return schools
       .map(school => {
