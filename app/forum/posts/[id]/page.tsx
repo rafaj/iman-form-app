@@ -570,49 +570,49 @@ function CommentItem({
   return (
     <div className="p-3">
       <div className="flex gap-2">
-          {/* Vote Column */}
-          <div className="flex flex-col items-center space-y-1 min-w-[25px]">
-            <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
-              <ArrowUp className="w-2.5 h-2.5" />
-            </Button>
-            <span className="text-xs font-medium text-gray-600">{comment.score}</span>
-            <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
-              <ArrowDown className="w-2.5 h-2.5" />
-            </Button>
+        {/* Vote Column */}
+        <div className="flex flex-col items-center space-y-1 min-w-[25px]">
+          <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
+            <ArrowUp className="w-2.5 h-2.5" />
+          </Button>
+          <span className="text-xs font-medium text-gray-600">{comment.score}</span>
+          <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
+            <ArrowDown className="w-2.5 h-2.5" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center space-x-2 mb-1">
+            <span className="font-medium text-gray-900 text-sm">{comment.author.name}</span>
+            <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
+          </div>
+          
+          <div className="mb-2 text-sm">
+            {renderContentWithLinks(comment.content)}
+          </div>
+          
+          <div className="flex items-center space-x-4 text-sm">
+            {!postLocked && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onReply(comment.id)}
+                className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
+              >
+                <Reply className="w-3 h-3" />
+                Reply
+              </Button>
+            )}
+            {comment._count.replies > 0 && (
+              <span className="text-gray-500">
+                {comment._count.replies} {comment._count.replies === 1 ? 'reply' : 'replies'}
+              </span>
+            )}
           </div>
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-1">
-              <span className="font-medium text-gray-900 text-sm">{comment.author.name}</span>
-              <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
-            </div>
-            
-            <div className="mb-2 text-sm">
-              {renderContentWithLinks(comment.content)}
-            </div>
-            
-            <div className="flex items-center space-x-4 text-sm">
-              {!postLocked && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onReply(comment.id)}
-                  className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
-                >
-                  <Reply className="w-3 h-3" />
-                  Reply
-                </Button>
-              )}
-              {comment._count.replies > 0 && (
-                <span className="text-gray-500">
-                  {comment._count.replies} {comment._count.replies === 1 ? 'reply' : 'replies'}
-                </span>
-              )}
-            </div>
-
-            {/* Reply Form */}
-            {replyingTo === comment.id && (
+          {/* Reply Form */}
+          {replyingTo === comment.id && (
               <div className="mt-4 space-y-3">
                 <Textarea
                   value={replyContent}
