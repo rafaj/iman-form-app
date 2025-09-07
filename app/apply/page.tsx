@@ -276,7 +276,7 @@ function ApplyCard() {
             <Input 
               id="applicantName" 
               name="applicantName" 
-              placeholder="Alex Doe" 
+              placeholder="Fulan al-Fulani" 
               defaultValue={session?.user?.name || ""}
               required 
               className={inputClass} 
