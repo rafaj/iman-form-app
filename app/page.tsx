@@ -562,7 +562,7 @@ export default async function HomePage() {
 
       {/* Recent Forum Posts Section - Only show for members */}
       {isMember && recentPosts.length > 0 && (
-        <section className="py-8 bg-white">
+        <section className="py-8 bg-emerald-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-6">
               <h3 className="text-xl font-bold text-emerald-800 mb-2">Latest Forum Discussions</h3>
