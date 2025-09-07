@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useSession, signOut } from "next-auth/react"
 import { useParams, useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,8 +17,7 @@ import {
   Phone,
   MapPin,
   MessageSquare,
-  ArrowLeft,
-  Reply
+  ArrowLeft
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -544,18 +543,7 @@ export default function ForumPostPage() {
   )
 }
 
-function CommentItem({ 
-  comment, 
-  postLocked,
-  replyingTo,
-  replyContent,
-  onReply,
-  onCancelReply,
-  onReplyContentChange,
-  onSubmitReply,
-  formatTimeAgo,
-  isFirst
-}: { 
+interface CommentItemProps {
   comment: Comment
   postLocked: boolean
   replyingTo: string | null
@@ -566,110 +554,8 @@ function CommentItem({
   onSubmitReply: (parentId: string) => void
   formatTimeAgo: (date: string) => string
   isFirst: boolean
-}) {
-  return (
-    <div className="p-3">
-      <div className="flex gap-2">
-        {/* Vote Column */}
-        <div className="flex flex-col items-center space-y-1 min-w-[25px]">
-          <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
-            <ArrowUp className="w-2.5 h-2.5" />
-          </Button>
-          <span className="text-xs font-medium text-gray-600">{comment.score}</span>
-          <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
-            <ArrowDown className="w-2.5 h-2.5" />
-          </Button>
-        </div>
+}
 
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center space-x-2 mb-1">
-            <span className="font-medium text-gray-900 text-sm">{comment.author.name}</span>
-            <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
-          </div>
-          
-          <div className="mb-2 text-sm">
-            {renderContentWithLinks(comment.content)}
-          </div>
-          
-          <div className="flex items-center space-x-4 text-sm">
-            {!postLocked && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onReply(comment.id)}
-                className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
-              >
-                <Reply className="w-3 h-3" />
-                Reply
-              </Button>
-            )}
-            {comment._count.replies > 0 && (
-              <span className="text-gray-500">
-                {comment._count.replies} {comment._count.replies === 1 ? 'reply' : 'replies'}
-              </span>
-            )}
-          </div>
-
-          {/* Reply Form */}
-          {replyingTo === comment.id && (
-              <div className="mt-4 space-y-3">
-                <Textarea
-                  value={replyContent}
-                  onChange={(e) => onReplyContentChange(e.target.value)}
-                  placeholder="Write your reply..."
-                  rows={3}
-                />
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={() => onSubmitReply(comment.id)}
-                    disabled={!replyContent.trim()}
-                    className="bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    Submit Reply
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={onCancelReply}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* Replies */}
-            {comment.replies.length > 0 && (
-              <div className="mt-4 space-y-3 border-l border-gray-200 pl-4">
-                {comment.replies.map((reply) => (
-                  <div key={reply.id} className="flex gap-2 text-sm">
-                    <div className="flex flex-col items-center space-y-0.5 min-w-[20px]">
-                      <Button variant="ghost" size="sm" className="p-0.5 h-4 w-4 hover:bg-gray-200">
-                        <ArrowUp className="w-2 h-2" />
-                      </Button>
-                      <span className="text-xs font-medium text-gray-500">{reply.score}</span>
-                      <Button variant="ghost" size="sm" className="p-0.5 h-4 w-4 hover:bg-gray-200">
-                        <ArrowDown className="w-2 h-2" />
-                      </Button>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-medium text-gray-800 text-sm">{reply.author.name}</span>
-                        <span className="text-xs text-gray-400">{formatTimeAgo(reply.createdAt)}</span>
-                      </div>
-                      <div className="text-gray-700 text-sm leading-relaxed">
-                        {renderContentWithLinks(reply.content)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+const CommentItem = ({ comment }: CommentItemProps) => {
+  return React.createElement('div', { className: 'p-3' }, comment.author.name, ': ', comment.content)
 }
