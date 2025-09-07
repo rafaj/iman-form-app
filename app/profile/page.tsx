@@ -24,6 +24,8 @@ type MemberProfile = {
   contribution?: string
   employer?: string
   linkedin?: string
+  skills?: string
+  school?: string
   availableAsMentor: boolean
   mentorProfile?: string
   seekingMentor: boolean
@@ -45,6 +47,8 @@ export default function ProfilePage() {
     contribution: "",
     employer: "",
     linkedin: "",
+    skills: "",
+    school: "",
     availableAsMentor: false,
     mentorProfile: "",
     seekingMentor: false,
@@ -85,6 +89,8 @@ export default function ProfilePage() {
           contribution: data.member.contribution || "",
           employer: data.member.employer || "",
           linkedin: data.member.linkedin || "",
+          skills: data.member.skills || "",
+          school: data.member.school || "",
           availableAsMentor: data.member.availableAsMentor || false,
           mentorProfile: data.member.mentorProfile || "",
           seekingMentor: data.member.seekingMentor || false,
@@ -156,6 +162,8 @@ export default function ProfilePage() {
         contribution: profile.contribution || "",
         employer: profile.employer || "",
         linkedin: profile.linkedin || "",
+        skills: profile.skills || "",
+        school: profile.school || "",
         availableAsMentor: profile.availableAsMentor || false,
         mentorProfile: profile.mentorProfile || "",
         seekingMentor: profile.seekingMentor || false,
@@ -383,6 +391,29 @@ export default function ProfilePage() {
                     />
                   </div>
 
+                  {/* Professional Skills */}
+                  <div className="space-y-2">
+                    <Label htmlFor="skills">Professional Skills</Label>
+                    <Textarea
+                      id="skills"
+                      value={formData.skills}
+                      onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
+                      placeholder="List your key professional skills and areas of expertise"
+                      rows={3}
+                    />
+                  </div>
+
+                  {/* Education */}
+                  <div className="space-y-2">
+                    <Label htmlFor="school">Education</Label>
+                    <Input
+                      id="school"
+                      value={formData.school}
+                      onChange={(e) => setFormData(prev => ({ ...prev, school: e.target.value }))}
+                      placeholder="School/University attended (e.g., University of Washington)"
+                    />
+                  </div>
+
                   {/* Professional Interests */}
                   <div className="space-y-2">
                     <Label htmlFor="interest">Professional Interests</Label>
@@ -538,6 +569,26 @@ export default function ProfilePage() {
                     </div>
                   )}
 
+                  {/* Professional Skills */}
+                  {profile?.skills && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-emerald-900">Professional Skills</h4>
+                      <div className="bg-white p-4 rounded-lg border border-emerald-200">
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{profile.skills}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Education */}
+                  {profile?.school && (
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-emerald-900">Education</h4>
+                      <div className="bg-white p-4 rounded-lg border border-emerald-200">
+                        <p className="text-sm text-gray-700">{profile.school}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Professional Interests */}
                   {profile?.interest && (
                     <div className="space-y-2">
@@ -593,7 +644,7 @@ export default function ProfilePage() {
 
                   {/* Empty State */}
                   {!profile?.professionalQualification && !profile?.employer && !profile?.linkedin && 
-                   !profile?.interest && !profile?.contribution && (
+                   !profile?.skills && !profile?.school && !profile?.interest && !profile?.contribution && (
                     <div className="text-center py-8 bg-gray-50 rounded-lg border border-gray-200">
                       <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-600 mb-2">No professional information added yet</p>
