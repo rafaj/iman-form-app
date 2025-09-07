@@ -24,6 +24,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useToast } from "@/hooks/use-toast"
 import MobileNavigation from "@/components/mobile-navigation"
+import { renderContentWithLinks } from "@/lib/url-linkify"
 
 type Comment = {
   id: string
@@ -371,31 +372,31 @@ export default function ForumPostPage() {
         </div>
 
         {/* Post Content */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex gap-4">
+        <div className="bg-white border border-gray-200 rounded-lg mb-6">
+          <div className="p-4">
+            <div className="flex gap-3">
               {/* Vote Column */}
-              <div className="flex flex-col items-center space-y-1 min-w-[40px]">
-                <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-                  <ArrowUp className="w-4 h-4" />
+              <div className="flex flex-col items-center space-y-1 min-w-[30px]">
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 hover:bg-gray-100">
+                  <ArrowUp className="w-3 h-3" />
                 </Button>
-                <span className="text-sm font-medium">{post.score}</span>
-                <Button variant="ghost" size="sm" className="p-1 h-8 w-8">
-                  <ArrowDown className="w-4 h-4" />
+                <span className="text-xs font-medium text-gray-600">{post.score}</span>
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 hover:bg-gray-100">
+                  <ArrowDown className="w-3 h-3" />
                 </Button>
               </div>
 
               {/* Content */}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-4">
-                  {post.pinned && <Pin className="w-4 h-4 text-emerald-600" />}
-                  {post.locked && <Lock className="w-4 h-4 text-gray-500" />}
-                  <Badge variant="secondary" className={getPostTypeColor(post.type)}>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-2">
+                  {post.pinned && <Pin className="w-3 h-3 text-emerald-600" />}
+                  {post.locked && <Lock className="w-3 h-3 text-gray-500" />}
+                  <Badge variant="secondary" className={`${getPostTypeColor(post.type)} text-xs px-2 py-0.5`}>
                     {post.type.replace('_', ' ')}
                   </Badge>
                 </div>
                 
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                <h1 className="text-lg font-semibold text-gray-900 mb-2 leading-tight">
                   {post.title}
                 </h1>
                 
@@ -404,36 +405,34 @@ export default function ForumPostPage() {
                     href={post.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline flex items-center gap-1 mb-4"
+                    className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm mb-3 break-all"
                   >
                     {new URL(post.url).hostname}
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-3 h-3 flex-shrink-0" />
                   </a>
                 )}
                 
                 {post.content && (
-                  <div className="prose max-w-none mb-6">
-                    <p className="text-gray-700 whitespace-pre-wrap">{post.content}</p>
+                  <div className="mb-3 text-sm">
+                    {renderContentWithLinks(post.content)}
                   </div>
                 )}
 
-                <div className="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
-                  <div className="flex items-center space-x-4">
+                <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                  <div className="flex items-center space-x-3">
                     <span>by {post.author.name}</span>
                     <span>{formatTimeAgo(post.createdAt)}</span>
                   </div>
                   
-                  <div className="flex items-center space-x-4">
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="w-4 h-4" />
-                      {post._count.comments} comments
-                    </span>
+                  <div className="flex items-center gap-1">
+                    <MessageSquare className="w-3 h-3" />
+                    <span>{post._count.comments}</span>
                   </div>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Add Comment Section */}
         {!post.locked && (
@@ -566,30 +565,30 @@ function CommentCard({
   formatTimeAgo: (date: string) => string
 }) {
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex gap-4">
+    <div className="border-l-2 border-gray-100 pl-3 mb-4">
+      <div className="bg-gray-50 rounded-lg p-3">
+        <div className="flex gap-2">
           {/* Vote Column */}
-          <div className="flex flex-col items-center space-y-1 min-w-[40px]">
-            <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
-              <ArrowUp className="w-3 h-3" />
+          <div className="flex flex-col items-center space-y-1 min-w-[25px]">
+            <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
+              <ArrowUp className="w-2.5 h-2.5" />
             </Button>
-            <span className="text-xs font-medium">{comment.score}</span>
-            <Button variant="ghost" size="sm" className="p-1 h-6 w-6">
-              <ArrowDown className="w-3 h-3" />
+            <span className="text-xs font-medium text-gray-600">{comment.score}</span>
+            <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
+              <ArrowDown className="w-2.5 h-2.5" />
             </Button>
           </div>
 
           {/* Content */}
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-gray-900">{comment.author.name}</span>
-                <span className="text-sm text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
-              </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center space-x-2 mb-1">
+              <span className="font-medium text-gray-900 text-sm">{comment.author.name}</span>
+              <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
             </div>
             
-            <p className="text-gray-700 mb-4 whitespace-pre-wrap">{comment.content}</p>
+            <div className="mb-2 text-sm">
+              {renderContentWithLinks(comment.content)}
+            </div>
             
             <div className="flex items-center space-x-4 text-sm">
               {!postLocked && (
@@ -658,7 +657,9 @@ function CommentCard({
                         <span className="font-medium text-gray-900 text-sm">{reply.author.name}</span>
                         <span className="text-xs text-gray-500">{formatTimeAgo(reply.createdAt)}</span>
                       </div>
-                      <p className="text-gray-700 text-sm whitespace-pre-wrap">{reply.content}</p>
+                      <div className="text-gray-700 text-sm">
+                        {renderContentWithLinks(reply.content)}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -666,7 +667,7 @@ function CommentCard({
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
