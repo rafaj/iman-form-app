@@ -136,27 +136,36 @@ export default function CommunitySpotlight() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {sponsors.map((sponsor) => (
             <div key={sponsor.id} className="bg-white rounded-lg p-6 border border-emerald-200 hover:shadow-lg transition-all duration-300 hover:border-emerald-300">
-              {/* Top Row: Two columns */}
-              <div className="flex items-start justify-between mb-4">
-                {/* Left Column: Picture + Name */}
+              {/* Main layout: Left picture, Right content */}
+              <div className="flex items-start gap-6 mb-4">
+                {/* Left: Large Picture */}
                 <a 
                   href={sponsor.website} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex flex-col items-center"
+                  className="flex-shrink-0"
                 >
                   <Image 
                     src={sponsor.logo || '/globe.svg'} 
                     alt={sponsor.name}
-                    width={80}
-                    height={80}
-                    className="h-20 w-20 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-2 bg-white mb-2"
+                    width={160}
+                    height={160}
+                    className="h-40 w-40 object-contain rounded-lg border-2 border-emerald-100 shadow-md p-4 bg-white hover:shadow-lg transition-shadow"
                   />
-                  <h4 className="text-lg font-semibold text-emerald-900 text-center">{sponsor.name}</h4>
                 </a>
 
-                {/* Right Column: Heart Button */}
-                <div className="flex flex-col items-center">
+                {/* Right: Name and Hearts */}
+                <div className="flex flex-col justify-center min-w-0 flex-1">
+                  <a 
+                    href={sponsor.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block mb-3"
+                  >
+                    <h4 className="text-xl font-semibold text-emerald-900 hover:text-emerald-700 transition-colors">{sponsor.name}</h4>
+                  </a>
+                  
+                  {/* Hearts below name */}
                   <button
                     onClick={(e) => {
                       e.preventDefault()
@@ -164,7 +173,7 @@ export default function CommunitySpotlight() {
                       handleHeartToggle(sponsor.id, sponsor.isHearted)
                     }}
                     disabled={heartingSponsors.has(sponsor.id)}
-                    className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    className={`flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 w-fit ${
                       sponsor.isHearted 
                         ? 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100' 
                         : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200'
