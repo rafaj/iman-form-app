@@ -156,7 +156,7 @@ export default function CommunitySpotlight() {
                 </a>
 
                 {/* Right: Name and Hearts */}
-                <div className="flex flex-col justify-between min-w-0 flex-1 h-full">
+                <div className="flex flex-col justify-between min-w-0 flex-1 h-40">
                   <a 
                     href={sponsor.website} 
                     target="_blank" 

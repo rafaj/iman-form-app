@@ -6,57 +6,89 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
   User, 
-  Building, 
-  Linkedin, 
   ArrowLeft, 
-  Calendar
+  MessageSquare,
+  FileText
 } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
-// import MobileNavigation from "@/components/mobile-navigation"
 
-type UserProfile = {
+type Post = {
   id: string
-  name: string
-  email: string
-  professionalQualification?: string
-  interest?: string
-  contribution?: string
-  employer?: string
-  linkedin?: string
-  availableAsMentor: boolean
-  mentorProfile?: string
-  seekingMentor: boolean
-  menteeProfile?: string
+  title: string
+  content?: string
+  url?: string
+  type: string
   createdAt: string
-  image?: string
+  _count: {
+    comments: number
+    votes: number
+  }
 }
 
-export default function UserProfilePage() {
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+type Comment = {
+  id: string
+  content: string
+  createdAt: string
+  post: {
+    id: string
+    title: string
+  }
+}
+
+type UserActivity = {
+  id: string
+  name: string
+  posts: Post[]
+  comments: Comment[]
+}
+
+export default function UserActivityPage() {
+  const [userActivity, setUserActivity] = useState<UserActivity | null>(null)
   const [loading, setLoading] = useState(true)
   const params = useParams()
   const userId = params.id as string
 
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
+    
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes}m ago`
+    } else if (diffInMinutes < 1440) {
+      return `${Math.floor(diffInMinutes / 60)}h ago`
+    } else {
+      return `${Math.floor(diffInMinutes / 1440)}d ago`
+    }
+  }
+
+  const getPostTypeColor = (type: string) => {
+    switch (type) {
+      case "ANNOUNCEMENT": return "bg-blue-100 text-blue-800"
+      case "JOB_POSTING": return "bg-green-100 text-green-800"
+      default: return "bg-gray-100 text-gray-800"
+    }
+  }
+
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUserActivity = async () => {
       try {
-        const response = await fetch(`/api/users/${userId}`)
+        const response = await fetch(`/api/users/${userId}/activity`)
         if (response.ok) {
           const data = await response.json()
-          setProfile(data)
+          setUserActivity(data)
         } else {
-          console.error('Failed to fetch user profile')
+          console.error('Failed to fetch user activity')
         }
       } catch (error) {
-        console.error('Error fetching user profile:', error)
+        console.error('Error fetching user activity:', error)
       } finally {
         setLoading(false)
       }
     }
 
     if (userId) {
-      fetchUserProfile()
+      fetchUserActivity()
     }
   }, [userId])
 
@@ -71,21 +103,20 @@ export default function UserProfilePage() {
     )
   }
 
-  if (!profile) {
+  if (!userActivity) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* <MobileNavigation /> */}
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-4 mb-8">
             <Link href="/forum" className="text-emerald-600 hover:text-emerald-800">
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">User Profile</h1>
+            <h1 className="text-2xl font-bold text-gray-900">User Activity</h1>
           </div>
           <Card>
             <CardContent className="p-8 text-center">
               <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">User not found or profile not public.</p>
+              <p className="text-gray-500">User not found or no activity available.</p>
             </CardContent>
           </Card>
         </div>
@@ -95,141 +126,104 @@ export default function UserProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* <MobileNavigation /> */}
       <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/forum" className="text-emerald-600 hover:text-emerald-800">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">User Profile</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Activity for {userActivity.name}</h1>
         </div>
 
         <div className="space-y-6">
-          {/* Profile Header */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="h-20 w-20 bg-emerald-100 rounded-lg flex items-center justify-center">
-                    {profile.image ? (
-                      <Image 
-                        src={profile.image} 
-                        alt={profile.name}
-                        width={80}
-                        height={80}
-                        className="h-20 w-20 rounded-lg object-cover"
-                      />
-                    ) : (
-                      <User className="w-10 h-10 text-emerald-600" />
-                    )}
-                  </div>
-                  <div>
-                    <CardTitle className="text-2xl text-emerald-900">{profile.name}</CardTitle>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500">
-                        Member since {new Date(profile.createdAt).toLocaleDateString('en-US', { 
-                          year: 'numeric', 
-                          month: 'long' 
-                        })}
-                      </span>
+          {/* Posts Section */}
+          {userActivity.posts.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Posts ({userActivity.posts.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {userActivity.posts.map((post) => (
+                    <div key={post.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="secondary" className={getPostTypeColor(post.type)}>
+                          {post.type.replace('_', ' ')}
+                        </Badge>
+                        <span className="text-xs text-gray-500">{formatTimeAgo(post.createdAt)}</span>
+                      </div>
+                      
+                      <Link href={`/forum/posts/${post.id}`}>
+                        <h3 className="font-medium text-gray-900 hover:text-emerald-700 transition-colors mb-1">
+                          {post.title}
+                        </h3>
+                      </Link>
+                      
+                      {post.content && (
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-2">
+                          {post.content.length > 150 ? `${post.content.substring(0, 150)}...` : post.content}
+                        </p>
+                      )}
+                      
+                      <div className="flex items-center text-xs text-gray-500 space-x-3">
+                        <Link 
+                          href={`/forum/posts/${post.id}`}
+                          className="flex items-center space-x-1 hover:text-emerald-600"
+                        >
+                          <MessageSquare className="w-3 h-3" />
+                          <span>{post._count.comments} comments</span>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
-                <div className="flex gap-2">
-                  {profile.availableAsMentor && (
-                    <Badge variant="secondary" className="bg-blue-50 text-blue-700">
-                      Available as Mentor
-                    </Badge>
-                  )}
-                  {profile.seekingMentor && (
-                    <Badge variant="secondary" className="bg-purple-50 text-purple-700">
-                      Seeking Mentor
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
-
-          {/* Professional Information */}
-          {(profile.professionalQualification || profile.employer || profile.linkedin) && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Professional Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profile.professionalQualification && (
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-1">Professional Qualification</h3>
-                    <p className="text-gray-600">{profile.professionalQualification}</p>
-                  </div>
-                )}
-                {profile.employer && (
-                  <div className="flex items-center gap-2">
-                    <Building className="w-4 h-4 text-gray-400" />
-                    <span className="text-gray-600">{profile.employer}</span>
-                  </div>
-                )}
-                {profile.linkedin && (
-                  <div className="flex items-center gap-2">
-                    <Linkedin className="w-4 h-4 text-blue-600" />
-                    <a 
-                      href={profile.linkedin} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      LinkedIn Profile
-                    </a>
-                  </div>
-                )}
               </CardContent>
             </Card>
           )}
 
-          {/* Interests & Contributions */}
-          {(profile.interest || profile.contribution) && (
+          {/* Comments Section */}
+          {userActivity.comments.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Interests & Contributions</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5" />
+                  Comments ({userActivity.comments.length})
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {profile.interest && (
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-1">Interests</h3>
-                    <p className="text-gray-600">{profile.interest}</p>
-                  </div>
-                )}
-                {profile.contribution && (
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-1">How they contribute</h3>
-                    <p className="text-gray-600">{profile.contribution}</p>
-                  </div>
-                )}
+              <CardContent>
+                <div className="space-y-4">
+                  {userActivity.comments.map((comment) => (
+                    <div key={comment.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
+                        <span className="text-xs text-gray-400">•</span>
+                        <span className="text-xs text-gray-500">commented on</span>
+                        <Link 
+                          href={`/forum/posts/${comment.post.id}`}
+                          className="text-xs text-emerald-600 hover:text-emerald-800 font-medium"
+                        >
+                          {comment.post.title}
+                        </Link>
+                      </div>
+                      
+                      <div className="text-gray-700 text-sm leading-relaxed">
+                        {comment.content.length > 200 ? `${comment.content.substring(0, 200)}...` : comment.content}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Mentorship */}
-          {((profile.availableAsMentor && profile.mentorProfile) || (profile.seekingMentor && profile.menteeProfile)) && (
+          {/* No Activity */}
+          {userActivity.posts.length === 0 && userActivity.comments.length === 0 && (
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Mentorship</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {profile.availableAsMentor && profile.mentorProfile && (
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-1">Mentor Profile</h3>
-                    <p className="text-gray-600">{profile.mentorProfile}</p>
-                  </div>
-                )}
-                {profile.seekingMentor && profile.menteeProfile && (
-                  <div>
-                    <h3 className="font-medium text-gray-900 mb-1">Mentee Profile</h3>
-                    <p className="text-gray-600">{profile.menteeProfile}</p>
-                  </div>
-                )}
+              <CardContent className="p-8 text-center">
+                <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">No forum activity found for this user.</p>
               </CardContent>
             </Card>
           )}
