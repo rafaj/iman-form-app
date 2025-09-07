@@ -156,7 +156,7 @@ export default function CommunitySpotlight() {
                 </a>
 
                 {/* Right: Name and Hearts */}
-                <div className="flex flex-col justify-center min-w-0 flex-1">
+                <div className="flex flex-col justify-between min-w-0 flex-1 h-full">
                   <a 
                     href={sponsor.website} 
                     target="_blank" 
@@ -192,11 +192,9 @@ export default function CommunitySpotlight() {
                     <span>{sponsor.heartCount}</span>
                   </button>
                   
-                  {/* Recognition date */}
-                  <div className="mt-2 text-xs text-gray-500">
-                    <span>Recognized on:</span>
-                    <br />
-                    <span>{new Date(sponsor.createdAt).toLocaleDateString('en-US', { 
+                  {/* Recognition date - aligned to bottom */}
+                  <div className="text-xs text-gray-500 mt-auto">
+                    <span>Recognized on: {new Date(sponsor.createdAt).toLocaleDateString('en-US', { 
                       year: 'numeric', 
                       month: 'short', 
                       day: 'numeric' 
