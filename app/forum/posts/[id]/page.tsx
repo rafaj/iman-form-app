@@ -17,7 +17,8 @@ import {
   Phone,
   MapPin,
   MessageSquare,
-  ArrowLeft
+  ArrowLeft,
+  Reply
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -556,24 +557,129 @@ interface CommentItemProps {
   isFirst: boolean
 }
 
-const CommentItem = ({ comment, formatTimeAgo }: CommentItemProps) => {
+const CommentItem = ({ 
+  comment, 
+  postLocked, 
+  replyingTo, 
+  replyContent, 
+  onReply, 
+  onCancelReply, 
+  onReplyContentChange, 
+  onSubmitReply, 
+  formatTimeAgo 
+}: CommentItemProps) => {
   return (
     <div className="p-3 border-b border-gray-100 last:border-b-0">
-      <div className="flex items-start gap-2">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
+      <div className="flex gap-2">
+        {/* Vote Column */}
+        <div className="flex flex-col items-center space-y-1 min-w-[25px]">
+          <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
+            <ArrowUp className="w-2.5 h-2.5" />
+          </Button>
+          <span className="text-xs font-medium text-gray-600">{comment.score}</span>
+          <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
+            <ArrowDown className="w-2.5 h-2.5" />
+          </Button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center space-x-2 mb-1">
             <Link 
-              href="/directory" 
+              href={`/users/${comment.author.id}`}
               className="font-medium text-emerald-600 hover:text-emerald-800 text-sm"
-              title={`View ${comment.author.name} in directory`}
+              title={`View ${comment.author.name}'s profile`}
             >
               {comment.author.name}
             </Link>
             <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
           </div>
-          <div className="text-sm text-gray-700 leading-relaxed">
+          
+          <div className="mb-2 text-sm">
             {renderContentWithLinks(comment.content)}
           </div>
+          
+          <div className="flex items-center space-x-4 text-sm">
+            {!postLocked && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onReply(comment.id)}
+                className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
+              >
+                <Reply className="w-3 h-3" />
+                Reply
+              </Button>
+            )}
+            {comment._count.replies > 0 && (
+              <span className="text-gray-500">
+                {comment._count.replies} {comment._count.replies === 1 ? 'reply' : 'replies'}
+              </span>
+            )}
+          </div>
+
+          {/* Reply Form */}
+          {replyingTo === comment.id && (
+            <div className="mt-4 space-y-3">
+              <Textarea
+                value={replyContent}
+                onChange={(e) => onReplyContentChange(e.target.value)}
+                placeholder="Write your reply..."
+                rows={3}
+              />
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => onSubmitReply(comment.id)}
+                  disabled={!replyContent.trim()}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  Submit Reply
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={onCancelReply}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Replies */}
+          {comment.replies.length > 0 && (
+            <div className="mt-4 space-y-3 border-l border-gray-200 pl-4">
+              {comment.replies.map((reply) => (
+                <div key={reply.id} className="flex gap-2 text-sm">
+                  <div className="flex flex-col items-center space-y-0.5 min-w-[20px]">
+                    <Button variant="ghost" size="sm" className="p-0.5 h-4 w-4 hover:bg-gray-200">
+                      <ArrowUp className="w-2 h-2" />
+                    </Button>
+                    <span className="text-xs font-medium text-gray-500">{reply.score}</span>
+                    <Button variant="ghost" size="sm" className="p-0.5 h-4 w-4 hover:bg-gray-200">
+                      <ArrowDown className="w-2 h-2" />
+                    </Button>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <Link 
+                        href={`/users/${reply.author.id}`}
+                        className="font-medium text-emerald-600 hover:text-emerald-800 text-sm"
+                        title={`View ${reply.author.name}'s profile`}
+                      >
+                        {reply.author.name}
+                      </Link>
+                      <span className="text-xs text-gray-400">{formatTimeAgo(reply.createdAt)}</span>
+                    </div>
+                    <div className="text-gray-700 text-sm leading-relaxed">
+                      {renderContentWithLinks(reply.content)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
