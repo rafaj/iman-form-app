@@ -76,6 +76,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
         contribution: app.contribution,
         employer: app.employer,
         linkedin: app.linkedin,
+        skills: app.skills,
+        school: app.school,
         // Copy mentorship info if provided
         availableAsMentor: app.availableAsMentor,
         mentorProfile: app.mentorProfile,
@@ -92,6 +94,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
         contribution: app.contribution,
         employer: app.employer,
         linkedin: app.linkedin,
+        skills: app.skills,
+        school: app.school,
         // Copy mentorship info if provided
         availableAsMentor: app.availableAsMentor,
         mentorProfile: app.mentorProfile,

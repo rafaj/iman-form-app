@@ -38,6 +38,8 @@ export type CreateApplicationInput = {
   contribution: string
   employer?: string
   linkedin?: string
+  skills?: string
+  school?: string
   // Mentorship fields
   availableAsMentor?: boolean
   mentorProfile?: string
@@ -110,6 +112,8 @@ export async function createApplication(input: CreateApplicationInput): Promise<
       contribution: input.contribution,
       employer: input.employer,
       linkedin: input.linkedin,
+      skills: input.skills,
+      school: input.school,
       // Mentorship fields
       availableAsMentor: input.availableAsMentor || false,
       mentorProfile: input.mentorProfile,

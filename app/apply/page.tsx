@@ -210,6 +210,8 @@ function ApplyCard() {
       contribution: String(formData.get("contribution") || "").trim(),
       employer: String(formData.get("employer") || "").trim(),
       linkedin: String(formData.get("linkedin") || "").trim(),
+      skills: String(formData.get("skills") || "").trim(),
+      school: String(formData.get("school") || "").trim(),
       // Mentorship fields
       availableAsMentor: Boolean(formData.get("availableAsMentor")),
       mentorProfile: String(formData.get("mentorProfile") || "").trim(),
@@ -220,6 +222,8 @@ function ApplyCard() {
     // Remove optional empties so zod optional passes cleanly
     if (!payload.employer) delete (payload as Record<string, unknown>).employer
     if (!payload.linkedin) delete (payload as Record<string, unknown>).linkedin
+    if (!payload.skills) delete (payload as Record<string, unknown>).skills
+    if (!payload.school) delete (payload as Record<string, unknown>).school
     if (!payload.mentorProfile) delete (payload as Record<string, unknown>).mentorProfile
     if (!payload.menteeProfile) delete (payload as Record<string, unknown>).menteeProfile
 
@@ -357,6 +361,25 @@ function ApplyCard() {
                 name="linkedin"
                 type="url"
                 placeholder="https://www.linkedin.com/in/username"
+                className={inputClass}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="skills">Professional Skills (Optional)</Label>
+              <Textarea
+                id="skills"
+                name="skills"
+                placeholder="List your key professional skills and areas of expertise"
+                className={inputClass}
+                rows={3}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="school">Education (Optional)</Label>
+              <Input
+                id="school"
+                name="school"
+                placeholder="School/University attended (e.g., University of Washington)"
                 className={inputClass}
               />
             </div>

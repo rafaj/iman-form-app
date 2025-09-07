@@ -22,6 +22,8 @@ type DirectoryProfessional = {
   interest: string | null
   contribution: string | null
   linkedin: string | null
+  skills: string | null
+  school: string | null
   professionalSince: string
   memberSince: string
   lastSeenAt: string | null
@@ -105,7 +107,9 @@ export default function DirectoryPage() {
       const filtered = professionals.filter(professional =>
         professional.displayName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         professional.employer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        professional.professionalQualification?.toLowerCase().includes(searchTerm.toLowerCase())
+        professional.professionalQualification?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        professional.skills?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        professional.school?.toLowerCase().includes(searchTerm.toLowerCase())
       )
       setFilteredProfessionals(filtered)
     }
@@ -328,7 +332,7 @@ export default function DirectoryPage() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               type="text"
-              placeholder="Search professionals, companies, or expertise..."
+              placeholder="Search professionals, companies, skills, schools, or expertise..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 pr-4 py-2 w-full"
@@ -449,6 +453,22 @@ export default function DirectoryPage() {
                                   {professional.professionalQualification}
                                 </p>
                               )}
+                              {professional.skills && (
+                                <div className="mt-2">
+                                  <p className="text-xs text-emerald-700 font-medium">Skills:</p>
+                                  <p className="text-xs text-gray-600 line-clamp-1">
+                                    {professional.skills}
+                                  </p>
+                                </div>
+                              )}
+                              {professional.school && (
+                                <div className="mt-1">
+                                  <p className="text-xs text-emerald-700 font-medium">Education:</p>
+                                  <p className="text-xs text-gray-600 line-clamp-1">
+                                    {professional.school}
+                                  </p>
+                                </div>
+                              )}
                               <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <div className="flex items-center">
                                   <Calendar className="w-3 h-3 mr-1" />
@@ -550,6 +570,22 @@ export default function DirectoryPage() {
                               {professional.professionalQualification}
                             </p>
                           )}
+                          {professional.skills && (
+                            <div className="mt-2">
+                              <p className="text-xs text-emerald-700 font-medium">Skills:</p>
+                              <p className="text-xs text-gray-600 line-clamp-1">
+                                {professional.skills}
+                              </p>
+                            </div>
+                          )}
+                          {professional.school && (
+                            <div className="mt-1">
+                              <p className="text-xs text-emerald-700 font-medium">Education:</p>
+                              <p className="text-xs text-gray-600 line-clamp-1">
+                                {professional.school}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -609,6 +645,22 @@ export default function DirectoryPage() {
                             <p className="text-xs text-gray-600 line-clamp-2 mt-2">
                               {professional.professionalQualification}
                             </p>
+                          )}
+                          {professional.skills && (
+                            <div className="mt-2">
+                              <p className="text-xs text-emerald-700 font-medium">Skills:</p>
+                              <p className="text-xs text-gray-600 line-clamp-1">
+                                {professional.skills}
+                              </p>
+                            </div>
+                          )}
+                          {professional.school && (
+                            <div className="mt-1">
+                              <p className="text-xs text-emerald-700 font-medium">Education:</p>
+                              <p className="text-xs text-gray-600 line-clamp-1">
+                                {professional.school}
+                              </p>
+                            </div>
                           )}
                           <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                             <div className="flex items-center">
@@ -750,6 +802,28 @@ export default function DirectoryPage() {
                     </div>
                   )}
 
+                  {selectedProfessional.skills && (
+                    <div>
+                      <h4 className="font-medium text-emerald-900 mb-2">Professional Skills</h4>
+                      <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {selectedProfessional.skills}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedProfessional.school && (
+                    <div>
+                      <h4 className="font-medium text-emerald-900 mb-2">Education</h4>
+                      <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                          {selectedProfessional.school}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   {selectedProfessional.linkedin && (
                     <div>
                       <h4 className="font-medium text-emerald-900 mb-2">Professional Network</h4>
@@ -765,7 +839,7 @@ export default function DirectoryPage() {
                     </div>
                   )}
 
-                  {!selectedProfessional.professionalQualification && !selectedProfessional.interest && !selectedProfessional.contribution && !selectedProfessional.linkedin && (
+                  {!selectedProfessional.professionalQualification && !selectedProfessional.interest && !selectedProfessional.contribution && !selectedProfessional.skills && !selectedProfessional.school && !selectedProfessional.linkedin && (
                     <div className="text-center py-6">
                       <p className="text-gray-500">Professional information not yet provided.</p>
                     </div>

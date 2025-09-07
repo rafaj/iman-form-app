@@ -30,6 +30,8 @@ model Member {
   contribution             String?
   employer                 String?
   linkedin                 String?
+  skills                   String?   // Professional skills and expertise
+  school                   String?   // Educational institution
   
   // Mentorship Information
   availableAsMentor        Boolean   @default(false)
@@ -71,6 +73,8 @@ model Application {
   contribution             String
   employer                 String?
   linkedin                 String?
+  skills                   String?   // Professional skills and expertise
+  school                   String?   // Educational institution
   
   // Mentorship fields (optional)
   availableAsMentor        Boolean   @default(false)

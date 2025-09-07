@@ -107,6 +107,8 @@ export async function POST(
         contribution: application.contribution,
         employer: application.employer,
         linkedin: application.linkedin,
+        skills: application.skills,
+        school: application.school,
         // Copy mentorship info if provided
         availableAsMentor: application.availableAsMentor,
         mentorProfile: application.mentorProfile,
@@ -123,6 +125,8 @@ export async function POST(
         contribution: application.contribution,
         employer: application.employer,
         linkedin: application.linkedin,
+        skills: application.skills,
+        school: application.school,
         // Copy mentorship info if provided
         availableAsMentor: application.availableAsMentor,
         mentorProfile: application.mentorProfile,

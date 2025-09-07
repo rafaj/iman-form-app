@@ -55,6 +55,8 @@ export async function GET() {
       interest: member.interest,
       contribution: member.contribution,
       linkedin: member.linkedin,
+      skills: member.skills,
+      school: member.school,
       memberSince: member.createdAt,
       lastSeenAt: member.user?.lastSeenAt || null,
       // Create initials for avatar fallback

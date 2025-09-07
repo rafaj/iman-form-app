@@ -32,6 +32,8 @@ const CreateSchema = z.object({
 
   employer: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
   linkedin: z.preprocess(emptyToUndefined, z.string().url().max(300).optional()),
+  skills: z.preprocess(emptyToUndefined, z.string().max(1000).optional()),
+  school: z.preprocess(emptyToUndefined, z.string().max(200).optional()),
 
   // Mentorship fields (optional)
   availableAsMentor: z.boolean().default(false),
@@ -139,6 +141,8 @@ export async function POST(req: NextRequest) {
       contribution: body.contribution,
       employer: body.employer,
       linkedin: body.linkedin,
+      skills: body.skills,
+      school: body.school,
 
       // Mentorship fields
       availableAsMentor: body.availableAsMentor,
