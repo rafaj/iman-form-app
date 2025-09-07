@@ -162,15 +162,101 @@ export default function DirectoryPage() {
 
   const employerSections = Object.keys(groupedByEmployer).sort()
 
-  // Group professionals by school
+  // Group professionals by school (with parsing for multiple schools)
   const groupedBySchool = filteredProfessionals.reduce((groups, professional) => {
-    const school = professional.school || 'No school listed'
-    if (!groups[school]) {
-      groups[school] = []
+    if (!professional.school) {
+      const noSchool = 'No school listed'
+      if (!groups[noSchool]) {
+        groups[noSchool] = []
+      }
+      groups[noSchool].push(professional)
+      return groups
     }
-    groups[school].push(professional)
+
+    // Parse multiple schools from the education field
+    const schools = parseSchools(professional.school)
+    
+    schools.forEach(school => {
+      if (!groups[school]) {
+        groups[school] = []
+      }
+      groups[school].push(professional)
+    })
+    
     return groups
   }, {} as Record<string, DirectoryProfessional[]>)
+
+  // Helper function to parse multiple schools from education text
+  function parseSchools(educationText: string): string[] {
+    // Common separators: comma, semicolon, " and ", " & ", newlines
+    let schools = educationText.split(/[,;]|\sand\s|\s&\s|\n/)
+    
+    return schools
+      .map(school => {
+        // Clean up each school entry
+        let cleanSchool = school.trim()
+        
+        // Remove common degree abbreviations and parenthetical info for cleaner grouping
+        // But preserve the school name
+        cleanSchool = cleanSchool
+          .replace(/\s*\([^)]*\)/g, '') // Remove parentheses content like "(BS)", "(MBA)", "(2018-2022)"
+          .replace(/\s*-\s*\d{4}.*$/g, '') // Remove graduation years like "- 2020" or "- 2018-2022"
+          .replace(/\s*'\d{2,4}$/g, '') // Remove apostrophe years like "'20" or "'2020"
+          .replace(/\s*\b(BS|BA|MS|MA|MBA|PhD|PharmD|MD|JD|LLM)\b.*$/gi, '') // Remove degree types at end
+          .trim()
+        
+        // Skip if empty after cleaning
+        if (!cleanSchool) return null
+        
+        // Normalize common university name variations
+        cleanSchool = normalizeSchoolName(cleanSchool)
+        
+        return cleanSchool
+      })
+      .filter((school): school is string => school !== null && school.length > 0)
+      .filter((school, index, array) => array.indexOf(school) === index) // Remove duplicates
+  }
+
+  // Helper function to normalize school names
+  function normalizeSchoolName(school: string): string {
+    // Common abbreviations and variations
+    const normalizations: Record<string, string> = {
+      'UW': 'University of Washington',
+      'U of W': 'University of Washington',
+      'UDub': 'University of Washington',
+      'WSU': 'Washington State University',
+      'WWU': 'Western Washington University',
+      'CWU': 'Central Washington University',
+      'EWU': 'Eastern Washington University',
+      'Seattle U': 'Seattle University',
+      'UC Berkeley': 'University of California, Berkeley',
+      'UC Davis': 'University of California, Davis',
+      'UC San Diego': 'University of California, San Diego',
+      'UCSD': 'University of California, San Diego',
+      'UCLA': 'University of California, Los Angeles',
+      'USC': 'University of Southern California',
+      'MIT': 'Massachusetts Institute of Technology',
+      'NYU': 'New York University',
+      'ASU': 'Arizona State University',
+      'OSU': 'Oregon State University',
+      'UT Austin': 'University of Texas at Austin'
+    }
+
+    // Check for exact matches first
+    if (normalizations[school]) {
+      return normalizations[school]
+    }
+
+    // Check for partial matches (case insensitive)
+    const lowerSchool = school.toLowerCase()
+    for (const [abbrev, fullName] of Object.entries(normalizations)) {
+      if (lowerSchool === abbrev.toLowerCase()) {
+        return fullName
+      }
+    }
+
+    return school
+  }
 
   const schoolSections = Object.keys(groupedBySchool).sort()
 
