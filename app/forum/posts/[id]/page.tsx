@@ -461,32 +461,33 @@ export default function ForumPostPage() {
         )}
 
         {/* Comments Section */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">
-            Comments ({post._count.comments})
+        <div>
+          <h2 className="text-lg font-medium text-gray-900 mb-3">
+            {post._count.comments} {post._count.comments === 1 ? 'comment' : 'comments'}
           </h2>
           
           {post.comments.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-8">
-                <p className="text-gray-500">No comments yet. Be the first to share your thoughts!</p>
-              </CardContent>
-            </Card>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg py-8 text-center text-gray-500">
+              <p>No comments yet. Be the first to share your thoughts!</p>
+            </div>
           ) : (
-            post.comments.map((comment) => (
-              <CommentCard 
-                key={comment.id}
-                comment={comment}
-                postLocked={post.locked}
-                replyingTo={replyingTo}
-                replyContent={replyContent}
-                onReply={(commentId) => setReplyingTo(commentId)}
-                onCancelReply={() => setReplyingTo(null)}
-                onReplyContentChange={setReplyContent}
-                onSubmitReply={handleAddReply}
-                formatTimeAgo={formatTimeAgo}
-              />
-            ))
+            <div className="bg-white border border-gray-200 rounded-lg divide-y divide-gray-100">
+              {post.comments.map((comment, index) => (
+                <CommentItem 
+                  key={comment.id}
+                  comment={comment}
+                  postLocked={post.locked}
+                  replyingTo={replyingTo}
+                  replyContent={replyContent}
+                  onReply={(commentId) => setReplyingTo(commentId)}
+                  onCancelReply={() => setReplyingTo(null)}
+                  onReplyContentChange={setReplyContent}
+                  onSubmitReply={handleAddReply}
+                  formatTimeAgo={formatTimeAgo}
+                  isFirst={index === 0}
+                />
+              ))}
+            </div>
           )}
         </div>
       </main>
@@ -543,7 +544,7 @@ export default function ForumPostPage() {
   )
 }
 
-function CommentCard({ 
+function CommentItem({ 
   comment, 
   postLocked,
   replyingTo,
@@ -552,7 +553,8 @@ function CommentCard({
   onCancelReply,
   onReplyContentChange,
   onSubmitReply,
-  formatTimeAgo 
+  formatTimeAgo,
+  isFirst
 }: { 
   comment: Comment
   postLocked: boolean
@@ -563,11 +565,11 @@ function CommentCard({
   onReplyContentChange: (content: string) => void
   onSubmitReply: (parentId: string) => void
   formatTimeAgo: (date: string) => string
+  isFirst: boolean
 }) {
   return (
-    <div className="border-l-2 border-gray-100 pl-3 mb-4">
-      <div className="bg-gray-50 rounded-lg p-3">
-        <div className="flex gap-2">
+    <div className="p-3">
+      <div className="flex gap-2">
           {/* Vote Column */}
           <div className="flex flex-col items-center space-y-1 min-w-[25px]">
             <Button variant="ghost" size="sm" className="p-0.5 h-5 w-5 hover:bg-gray-200">
@@ -640,24 +642,24 @@ function CommentCard({
 
             {/* Replies */}
             {comment.replies.length > 0 && (
-              <div className="mt-6 space-y-4 border-l-2 border-gray-200 pl-6">
+              <div className="mt-4 space-y-3 border-l border-gray-200 pl-4">
                 {comment.replies.map((reply) => (
-                  <div key={reply.id} className="flex gap-3">
-                    <div className="flex flex-col items-center space-y-1 min-w-[30px]">
-                      <Button variant="ghost" size="sm" className="p-1 h-5 w-5">
-                        <ArrowUp className="w-2.5 h-2.5" />
+                  <div key={reply.id} className="flex gap-2 text-sm">
+                    <div className="flex flex-col items-center space-y-0.5 min-w-[20px]">
+                      <Button variant="ghost" size="sm" className="p-0.5 h-4 w-4 hover:bg-gray-200">
+                        <ArrowUp className="w-2 h-2" />
                       </Button>
-                      <span className="text-xs font-medium">{reply.score}</span>
-                      <Button variant="ghost" size="sm" className="p-1 h-5 w-5">
-                        <ArrowDown className="w-2.5 h-2.5" />
+                      <span className="text-xs font-medium text-gray-500">{reply.score}</span>
+                      <Button variant="ghost" size="sm" className="p-0.5 h-4 w-4 hover:bg-gray-200">
+                        <ArrowDown className="w-2 h-2" />
                       </Button>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
-                        <span className="font-medium text-gray-900 text-sm">{reply.author.name}</span>
-                        <span className="text-xs text-gray-500">{formatTimeAgo(reply.createdAt)}</span>
+                        <span className="font-medium text-gray-800 text-sm">{reply.author.name}</span>
+                        <span className="text-xs text-gray-400">{formatTimeAgo(reply.createdAt)}</span>
                       </div>
-                      <div className="text-gray-700 text-sm">
+                      <div className="text-gray-700 text-sm leading-relaxed">
                         {renderContentWithLinks(reply.content)}
                       </div>
                     </div>
