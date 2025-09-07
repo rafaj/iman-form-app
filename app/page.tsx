@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar, MessageSquare, Clock, Heart } from "lucide-react"
+import { Users, Building2, ArrowRight, Mail, Phone, MapPin, Calendar, MessageSquare, Heart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { auth, signOut } from "@/auth"
@@ -53,56 +53,42 @@ function ForumPostPreview({ post }: {
   }
 
   return (
-    <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Badge variant="secondary" className={getPostTypeColor(post.type)}>
-              {post.type.replace('_', ' ')}
-            </Badge>
-          </div>
-          
-          <Link href={`/forum/posts/${post.id}`}>
-            <h4 className="text-lg font-semibold text-emerald-900 hover:text-emerald-700 transition-colors mb-1">
-              {post.title}
-            </h4>
-          </Link>
-          
-          {post.url && (
-            <a 
-              href={post.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline flex items-center gap-1 mb-1"
-            >
-              {new URL(post.url).hostname}
-              <ArrowRight className="w-3 h-3" />
-            </a>
-          )}
-          
-          {post.content && (
-            <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-              {post.content.length > 150 ? `${post.content.substring(0, 150)}...` : post.content}
-            </p>
-          )}
-
-          <div className="flex items-center text-xs text-gray-500 space-x-4">
-            <div className="flex items-center space-x-1">
-              <span>by {post.author.name || 'Unknown'}</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3" />
-              <span>{formatTimeAgo(post.createdAt)}</span>
-            </div>
-            <Link 
-              href={`/forum/posts/${post.id}`}
-              className="flex items-center space-x-1 hover:text-emerald-600"
-            >
-              <MessageSquare className="w-3 h-3" />
-              <span>{post._count.comments} comments</span>
-            </Link>
-          </div>
-        </div>
+    <div className="p-4 hover:bg-gray-50 transition-colors">
+      <div className="flex items-center gap-3">
+        <Badge variant="secondary" className={`${getPostTypeColor(post.type)} text-xs px-2 py-1`}>
+          {post.type.replace('_', ' ')}
+        </Badge>
+        
+        <Link href={`/forum/posts/${post.id}`} className="flex-1 min-w-0">
+          <h4 className="font-medium text-gray-900 hover:text-emerald-700 transition-colors truncate">
+            {post.title}
+          </h4>
+        </Link>
+        
+        {post.url && (
+          <a 
+            href={post.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xs text-blue-600 hover:underline flex items-center gap-1 flex-shrink-0"
+            title={post.url}
+          >
+            {new URL(post.url).hostname}
+            <ArrowRight className="w-2.5 h-2.5" />
+          </a>
+        )}
+      </div>
+      
+      <div className="flex items-center text-xs text-gray-500 space-x-3 mt-1">
+        <span>by {post.author.name || 'Unknown'}</span>
+        <span>{formatTimeAgo(post.createdAt)}</span>
+        <Link 
+          href={`/forum/posts/${post.id}`}
+          className="flex items-center space-x-1 hover:text-emerald-600"
+        >
+          <MessageSquare className="w-2.5 h-2.5" />
+          <span>{post._count.comments}</span>
+        </Link>
       </div>
     </div>
   )
@@ -584,7 +570,7 @@ export default async function HomePage() {
                 Stay connected with the latest conversations in our community forum.
               </p>
             </div>
-            <div className="space-y-4">
+            <div className="bg-white border border-gray-200 rounded-lg divide-y divide-gray-100">
               {recentPosts.map((post) => (
                 <ForumPostPreview key={post.id} post={post} />
               ))}

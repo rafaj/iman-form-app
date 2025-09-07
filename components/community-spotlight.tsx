@@ -14,6 +14,7 @@ type Sponsor = {
   heartCount: number
   isHearted: boolean
   heartedByNames: string[]
+  createdAt: string
 }
 
 export default function CommunitySpotlight() {
@@ -190,6 +191,17 @@ export default function CommunitySpotlight() {
                     />
                     <span>{sponsor.heartCount}</span>
                   </button>
+                  
+                  {/* Recognition date */}
+                  <div className="mt-2 text-xs text-gray-500">
+                    <span>Recognized on:</span>
+                    <br />
+                    <span>{new Date(sponsor.createdAt).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric' 
+                    })}</span>
+                  </div>
                 </div>
               </div>
 

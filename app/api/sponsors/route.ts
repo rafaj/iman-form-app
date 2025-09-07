@@ -51,7 +51,8 @@ export async function GET() {
         logo: sponsor.logoUrl || '/globe.svg',
         heartCount: sponsor._count.hearts,
         isHearted,
-        heartedByNames
+        heartedByNames,
+        createdAt: sponsor.createdAt
       }
     })
 

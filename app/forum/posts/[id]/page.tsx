@@ -436,35 +436,43 @@ export default function ForumPostPage() {
 
         {/* Add Comment Section */}
         {!post.locked && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-lg">Add a Comment</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <Textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Share your thoughts..."
-                  rows={4}
-                />
-                <Button 
-                  onClick={handleAddComment}
-                  disabled={commenting || !newComment.trim()}
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
-                  {commenting ? "Adding..." : "Add Comment"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mb-8 bg-white border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center space-x-4 mb-4 text-sm">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => document.getElementById('comment-textarea')?.focus()}
+                className="flex items-center gap-1 text-gray-500 hover:text-gray-700"
+              >
+                <MessageSquare className="w-3 h-3" />
+                Add Comment
+              </Button>
+              <span className="text-gray-500">
+                {post._count.comments} {post._count.comments === 1 ? 'comment' : 'comments'}
+              </span>
+            </div>
+            <div className="space-y-3">
+              <Textarea
+                id="comment-textarea"
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder="Share your thoughts..."
+                rows={4}
+              />
+              <Button 
+                onClick={handleAddComment}
+                disabled={commenting || !newComment.trim()}
+                size="sm"
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
+                {commenting ? "Adding..." : "Submit Comment"}
+              </Button>
+            </div>
+          </div>
         )}
 
         {/* Comments Section */}
         <div>
-          <h2 className="text-lg font-medium text-gray-900 mb-3">
-            {post._count.comments} {post._count.comments === 1 ? 'comment' : 'comments'}
-          </h2>
           
           {post.comments.length === 0 ? (
             <div className="bg-gray-50 border border-gray-200 rounded-lg py-8 text-center text-gray-500">
