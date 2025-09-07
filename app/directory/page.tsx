@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin, Building2, ArrowLeft } from "lucide-react"
+import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin, Building2, GraduationCap, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import Image from "next/image"
@@ -65,8 +65,9 @@ export default function DirectoryPage() {
   const [selectedProfessional, setSelectedProfessional] = useState<DirectoryProfessional | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isProfessional, setIsProfessional] = useState(false)
-  const [viewMode, setViewMode] = useState<'alphabetical' | 'employer' | 'recent'>('alphabetical')
+  const [viewMode, setViewMode] = useState<'alphabetical' | 'employer' | 'school' | 'recent'>('alphabetical')
   const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
+  const [selectedSchool, setSelectedSchool] = useState<string | null>(null)
 
   useEffect(() => {
     // Handle URL parameters for initial view mode
@@ -160,6 +161,18 @@ export default function DirectoryPage() {
   }, {} as Record<string, DirectoryProfessional[]>)
 
   const employerSections = Object.keys(groupedByEmployer).sort()
+
+  // Group professionals by school
+  const groupedBySchool = filteredProfessionals.reduce((groups, professional) => {
+    const school = professional.school || 'No school listed'
+    if (!groups[school]) {
+      groups[school] = []
+    }
+    groups[school].push(professional)
+    return groups
+  }, {} as Record<string, DirectoryProfessional[]>)
+
+  const schoolSections = Object.keys(groupedBySchool).sort()
 
   // Sort professionals by join date for recent view
   const professionalsByJoinDate = [...filteredProfessionals].sort((a, b) => 
@@ -350,6 +363,7 @@ export default function DirectoryPage() {
                 onClick={() => {
                   setViewMode('alphabetical')
                   setSelectedEmployer(null)
+                  setSelectedSchool(null)
                 }}
                 className={`w-full sm:w-auto ${viewMode === 'alphabetical' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
               >
@@ -362,6 +376,7 @@ export default function DirectoryPage() {
                 onClick={() => {
                   setViewMode('employer')
                   setSelectedEmployer(null)
+                  setSelectedSchool(null)
                 }}
                 className={`w-full sm:w-auto ${viewMode === 'employer' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
               >
@@ -370,11 +385,26 @@ export default function DirectoryPage() {
                 <span className="sm:hidden">Employers</span>
               </Button>
               <Button
+                variant={viewMode === 'school' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setViewMode('school')
+                  setSelectedEmployer(null)
+                  setSelectedSchool(null)
+                }}
+                className={`w-full sm:w-auto ${viewMode === 'school' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
+              >
+                <GraduationCap className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Schools represented at IMAN</span>
+                <span className="sm:hidden">Schools</span>
+              </Button>
+              <Button
                 variant={viewMode === 'recent' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => {
                   setViewMode('recent')
                   setSelectedEmployer(null)
+                  setSelectedSchool(null)
                 }}
                 className={`w-full sm:w-auto ${viewMode === 'recent' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
               >
@@ -391,6 +421,17 @@ export default function DirectoryPage() {
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Back to all employers
+              </Button>
+            )}
+            {viewMode === 'school' && selectedSchool && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedSchool(null)}
+                className="text-emerald-700 hover:text-emerald-900"
+              >
+                <ArrowLeft className="h-4 w-4 mr-1" />
+                Back to all schools
               </Button>
             )}
           </div>
@@ -454,20 +495,14 @@ export default function DirectoryPage() {
                                 </p>
                               )}
                               {professional.skills && (
-                                <div className="mt-2">
-                                  <p className="text-xs text-emerald-700 font-medium">Skills:</p>
-                                  <p className="text-xs text-gray-600 line-clamp-1">
-                                    {professional.skills}
-                                  </p>
-                                </div>
+                                <p className="text-xs text-gray-600 line-clamp-1 mt-2">
+                                  <span className="text-emerald-700 font-medium">Skills:</span> {professional.skills}
+                                </p>
                               )}
                               {professional.school && (
-                                <div className="mt-1">
-                                  <p className="text-xs text-emerald-700 font-medium">Education:</p>
-                                  <p className="text-xs text-gray-600 line-clamp-1">
-                                    {professional.school}
-                                  </p>
-                                </div>
+                                <p className="text-xs text-gray-600 line-clamp-1 mt-1">
+                                  <span className="text-emerald-700 font-medium">Education:</span> {professional.school}
+                                </p>
                               )}
                               <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <div className="flex items-center">
@@ -497,6 +532,135 @@ export default function DirectoryPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          )
+        ) : viewMode === 'school' ? (
+          // School View
+          schoolSections.length === 0 ? (
+            <div className="text-center py-12">
+              <GraduationCap className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No schools found matching your search.</p>
+            </div>
+          ) : selectedSchool ? (
+            // Show professionals from selected school
+            <div className="space-y-6">
+              <div className="flex items-center mb-6">
+                <div className="flex items-center">
+                  <GraduationCap className="w-6 h-6 text-emerald-600 mr-3" />
+                  <h2 className="text-xl font-semibold text-emerald-900">{selectedSchool}</h2>
+                  <span className="ml-3 text-sm text-gray-600">
+                    ({groupedBySchool[selectedSchool]?.length || 0} professional{(groupedBySchool[selectedSchool]?.length || 0) !== 1 ? 's' : ''})
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {(groupedBySchool[selectedSchool] || []).map(professional => (
+                  <Card 
+                    key={professional.id}
+                    className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
+                    onClick={() => setSelectedProfessional(professional)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          {professional.image ? (
+                            <Image
+                              src={professional.image}
+                              alt={professional.displayName}
+                              width={48}
+                              height={48}
+                              className="rounded-full border-2 border-emerald-200"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-full flex items-center justify-center border-2 border-emerald-200">
+                              <Users className="h-6 w-6 text-emerald-700" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-emerald-900 truncate">
+                            {professional.displayName}
+                          </h3>
+                          {professional.employer && (
+                            <p className="text-sm text-emerald-700 truncate mt-1">
+                              {professional.employer}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between mt-2 text-xs">
+                            <div className="flex items-center text-emerald-600">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              Joined {new Date(professional.memberSince).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              })}
+                            </div>
+                            {professional.linkedin && (
+                              <a
+                                href={professional.linkedin}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Linkedin className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                          {professional.professionalQualification && (
+                            <p className="text-xs text-gray-600 line-clamp-2 mt-2">
+                              {professional.professionalQualification}
+                            </p>
+                          )}
+                          {professional.skills && (
+                            <p className="text-xs text-gray-600 line-clamp-1 mt-2">
+                              <span className="text-emerald-700 font-medium">Skills:</span> {professional.skills}
+                            </p>
+                          )}
+                          {professional.school && (
+                            <p className="text-xs text-gray-600 line-clamp-1 mt-1">
+                              <span className="text-emerald-700 font-medium">Education:</span> {professional.school}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          ) : (
+            // Show list of schools
+            <div className="space-y-6">
+              <h2 className="text-lg font-semibold text-emerald-900 mb-4">
+                Schools and Universities ({schoolSections.length})
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {schoolSections.map(school => (
+                  <Card
+                    key={school}
+                    className="hover:shadow-lg transition-shadow cursor-pointer border-emerald-100"
+                    onClick={() => setSelectedSchool(school)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center min-w-0">
+                          <GraduationCap className="w-8 h-8 text-emerald-600 mr-4 flex-shrink-0" />
+                          <div className="min-w-0">
+                            <h3 className="font-medium text-emerald-900 truncate">
+                              {school}
+                            </h3>
+                            <p className="text-sm text-gray-600">
+                              {groupedBySchool[school].length} professional{groupedBySchool[school].length !== 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                        <ArrowLeft className="w-4 h-4 text-emerald-600 rotate-180 flex-shrink-0" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           )
         ) : viewMode === 'recent' ? (
@@ -571,20 +735,14 @@ export default function DirectoryPage() {
                             </p>
                           )}
                           {professional.skills && (
-                            <div className="mt-2">
-                              <p className="text-xs text-emerald-700 font-medium">Skills:</p>
-                              <p className="text-xs text-gray-600 line-clamp-1">
-                                {professional.skills}
-                              </p>
-                            </div>
+                            <p className="text-xs text-gray-600 line-clamp-1 mt-2">
+                              <span className="text-emerald-700 font-medium">Skills:</span> {professional.skills}
+                            </p>
                           )}
                           {professional.school && (
-                            <div className="mt-1">
-                              <p className="text-xs text-emerald-700 font-medium">Education:</p>
-                              <p className="text-xs text-gray-600 line-clamp-1">
-                                {professional.school}
-                              </p>
-                            </div>
+                            <p className="text-xs text-gray-600 line-clamp-1 mt-1">
+                              <span className="text-emerald-700 font-medium">Education:</span> {professional.school}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -647,20 +805,14 @@ export default function DirectoryPage() {
                             </p>
                           )}
                           {professional.skills && (
-                            <div className="mt-2">
-                              <p className="text-xs text-emerald-700 font-medium">Skills:</p>
-                              <p className="text-xs text-gray-600 line-clamp-1">
-                                {professional.skills}
-                              </p>
-                            </div>
+                            <p className="text-xs text-gray-600 line-clamp-1 mt-2">
+                              <span className="text-emerald-700 font-medium">Skills:</span> {professional.skills}
+                            </p>
                           )}
                           {professional.school && (
-                            <div className="mt-1">
-                              <p className="text-xs text-emerald-700 font-medium">Education:</p>
-                              <p className="text-xs text-gray-600 line-clamp-1">
-                                {professional.school}
-                              </p>
-                            </div>
+                            <p className="text-xs text-gray-600 line-clamp-1 mt-1">
+                              <span className="text-emerald-700 font-medium">Education:</span> {professional.school}
+                            </p>
                           )}
                           <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                             <div className="flex items-center">
