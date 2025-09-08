@@ -65,10 +65,10 @@ export default function MobileAuthPage() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Opening IMAN App...</h1>
         <p className="text-gray-600 mb-6">
-          If the app doesn't open automatically, you'll be redirected to the web version.
+          If the app doesn&apos;t open automatically, you&apos;ll be redirected to the web version.
         </p>
         <p className="text-sm text-gray-500">
-          Don't have the app installed? 
+          Don&apos;t have the app installed? 
           <a href="/auth/signin" className="text-blue-600 hover:underline ml-1">
             Continue in browser
           </a>
