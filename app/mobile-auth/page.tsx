@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function MobileAuthPage() {
+function MobileAuthContent() {
   const searchParams = useSearchParams()
   const [redirected, setRedirected] = useState(false)
   
@@ -75,5 +75,20 @@ export default function MobileAuthPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function MobileAuthPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Loading...</h1>
+        </div>
+      </div>
+    }>
+      <MobileAuthContent />
+    </Suspense>
   )
 }
