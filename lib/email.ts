@@ -262,6 +262,15 @@ export async function sendMagicLinkEmail({
   url: string
 }) {
   try {
+    // Parse the original URL to extract token, email, and callbackUrl
+    const urlObj = new URL(url)
+    const token = urlObj.searchParams.get('token')
+    const email = urlObj.searchParams.get('email')
+    const callbackUrl = urlObj.searchParams.get('callbackUrl') || '/'
+    
+    // Create a mobile-friendly URL that will detect device type and redirect accordingly
+    const mobileAuthUrl = `${process.env.NEXTAUTH_URL}/mobile-auth?token=${encodeURIComponent(token || '')}&email=${encodeURIComponent(email || '')}&callbackUrl=${encodeURIComponent(callbackUrl)}`
+    
     const { data, error } = await resend.emails.send({
       from: 'IMAN Professional Network <admin@iman-wa.pro>',
       to,
@@ -282,18 +291,24 @@ export async function sendMagicLinkEmail({
           <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #e5e7eb;">
             <p style="font-size: 18px; margin-bottom: 20px;">Hello,</p>
             
-            <p style="margin-bottom: 25px;">Click the button below to sign in to your IMAN Professional Network account.</p>
+            <p style="margin-bottom: 25px;">Click the button below to sign in to your IMAN Professional Network account. This link works on both mobile devices and web browsers.</p>
             
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${url}" 
+              <a href="${mobileAuthUrl}" 
                  style="background: #10b981; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 16px;">
                 Sign In
               </a>
             </div>
             
+            <div style="background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 15px; margin: 20px 0;">
+              <p style="margin: 0; font-size: 14px; color: #047857;">
+                📱 <strong>Mobile App Users:</strong> This link will automatically open the IMAN app if you have it installed, or redirect you to the web version.
+              </p>
+            </div>
+            
             <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
               If the button doesn't work, copy and paste this link into your browser:<br>
-              <a href="${url}" style="color: #10b981; word-break: break-all;">${url}</a>
+              <a href="${mobileAuthUrl}" style="color: #10b981; word-break: break-all;">${mobileAuthUrl}</a>
             </p>
             
             <div style="border-top: 1px solid #e5e7eb; margin-top: 30px; padding-top: 20px; font-size: 14px; color: #6b7280;">

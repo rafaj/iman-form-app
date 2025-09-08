@@ -13,6 +13,7 @@ export async function middleware(req: NextRequest) {
     '/auth/signin',
     '/auth/error',
     '/auth/verify-request',
+    '/mobile-auth',
     '/api/auth/',
     '/_next',
     '/favicon.ico',
