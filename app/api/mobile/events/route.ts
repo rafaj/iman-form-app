@@ -22,13 +22,14 @@ export async function GET(request: Request) {
     // Transform events for mobile consumption
     const mobileEvents = events.map(event => ({
       id: event.id,
-      title: event.name,
+      title: event.title,
       description: event.description,
-      startDate: event.startDate,
-      endDate: event.endDate,
+      startDate: event.date,
+      endDate: event.date, // Using same date since we have date and time separate
+      time: event.time,
       location: event.location,
-      isOnline: event.isOnline,
-      eventUrl: event.eventUrl,
+      isOnline: event.location === 'Online Event',
+      eventUrl: event.registrationUrl,
       imageUrl: event.imageUrl,
       hasAvailableTickets: event.hasAvailableTickets
     }))
