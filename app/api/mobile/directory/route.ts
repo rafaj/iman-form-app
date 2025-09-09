@@ -50,6 +50,11 @@ export async function GET(request: Request) {
       linkedin: member.linkedin,
       skills: member.skills,
       school: member.school,
+      // Mentorship information
+      availableAsMentor: member.availableAsMentor,
+      mentorProfile: member.mentorProfile,
+      seekingMentor: member.seekingMentor,
+      menteeProfile: member.menteeProfile,
       memberSince: member.createdAt.toISOString(),
       lastSeenAt: member.user?.lastSeenAt?.toISOString() || null,
       // Create initials for avatar fallback
