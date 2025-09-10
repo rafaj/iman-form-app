@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MessageCircle, Clock, CheckCircle, XCircle, User, Calendar, ArrowLeft } from "lucide-react"
+import { MessageCircle, Clock, CheckCircle, XCircle, User, Calendar, ArrowLeft, Star, Users, Linkedin, Building2 } from "lucide-react"
 import Link from "next/link"
 
 type MentorshipRequest = {
@@ -50,6 +50,20 @@ type RequestSummary = {
   declined: number
 }
 
+type MentorshipMember = {
+  id: string
+  name: string
+  email: string
+  professionalQualification: string | null
+  employer: string | null
+  linkedin: string | null
+  availableAsMentor: boolean
+  mentorProfile: string | null
+  seekingMentor: boolean
+  menteeProfile: string | null
+  isCurrentUser: boolean
+}
+
 export default function MentorshipDashboard() {
   const { status } = useSession()
   const [requests, setRequests] = useState<MentorshipRequest[]>([])
@@ -59,10 +73,13 @@ export default function MentorshipDashboard() {
   const [selectedRequest, setSelectedRequest] = useState<MentorshipRequest | null>(null)
   const [response, setResponse] = useState('')
   const [responding, setResponding] = useState(false)
+  const [members, setMembers] = useState<MentorshipMember[]>([])
+  const [membersLoading, setMembersLoading] = useState(true)
 
   useEffect(() => {
     if (status === 'authenticated') {
       fetchRequests()
+      fetchMembers()
     }
   }, [status])
 
@@ -79,6 +96,21 @@ export default function MentorshipDashboard() {
       console.error('Failed to fetch mentorship requests:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchMembers = async () => {
+    try {
+      const response = await fetch('/api/mentorship/browse')
+      const data = await response.json()
+      
+      if (data.members) {
+        setMembers(data.members)
+      }
+    } catch (error) {
+      console.error('Failed to fetch mentorship members:', error)
+    } finally {
+      setMembersLoading(false)
     }
   }
 
@@ -249,11 +281,173 @@ export default function MentorshipDashboard() {
         </div>
 
         {/* Request Lists */}
-        <Tabs defaultValue="sent" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="sent">Requests Sent ({sentRequests.length})</TabsTrigger>
-            <TabsTrigger value="received">Requests Received ({receivedRequests.length})</TabsTrigger>
+        <Tabs defaultValue="browse" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="browse">Browse Members</TabsTrigger>
+            <TabsTrigger value="sent">Sent ({sentRequests.length})</TabsTrigger>
+            <TabsTrigger value="received">Received ({receivedRequests.length})</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="browse" className="space-y-4">
+            {membersLoading ? (
+              <Card>
+                <CardContent className="p-8 text-center">
+                  <div className="animate-pulse space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="h-24 bg-gray-300 rounded"></div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                {/* Available Mentors */}
+                {members.filter(m => m.availableAsMentor && !m.isCurrentUser).length > 0 && (
+                  <div>
+                    <div className="flex items-center mb-4">
+                      <Star className="w-5 h-5 text-emerald-600 mr-2" />
+                      <h3 className="text-lg font-semibold text-emerald-900">Available Mentors</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {members.filter(m => m.availableAsMentor && !m.isCurrentUser).map((member) => (
+                        <Card key={member.id} className="hover:shadow-lg transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-900">{member.name}</h4>
+                                {member.employer && (
+                                  <p className="text-sm text-emerald-700 flex items-center mt-1">
+                                    <Building2 className="w-3 h-3 mr-1" />
+                                    {member.employer}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold text-sm flex-shrink-0 ml-3">
+                                {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                              </div>
+                            </div>
+                            
+                            {member.mentorProfile && (
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{member.mentorProfile}</p>
+                            )}
+                            
+                            {member.professionalQualification && (
+                              <p className="text-xs text-gray-600 mb-3 line-clamp-2">{member.professionalQualification}</p>
+                            )}
+                            
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="text-emerald-600 border-emerald-300">
+                                <Star className="w-3 h-3 mr-1" />
+                                Mentor
+                              </Badge>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => {
+                                    // Handle mentorship request from dashboard
+                                    window.location.href = `/directory?mentor=${member.id}`
+                                  }}
+                                  className="flex items-center gap-1 px-2 py-1 text-xs text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded transition-all duration-200"
+                                  title="Request mentorship"
+                                >
+                                  <MessageCircle className="w-3 h-3" />
+                                  Connect
+                                </button>
+                                {member.linkedin && (
+                                  <a
+                                    href={member.linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-all duration-200"
+                                    title="View LinkedIn profile"
+                                  >
+                                    <Linkedin className="w-3 h-3" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Seeking Mentors */}
+                {members.filter(m => m.seekingMentor && !m.isCurrentUser).length > 0 && (
+                  <div>
+                    <div className="flex items-center mb-4">
+                      <Users className="w-5 h-5 text-blue-600 mr-2" />
+                      <h3 className="text-lg font-semibold text-blue-900">Seeking Mentors</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {members.filter(m => m.seekingMentor && !m.isCurrentUser).map((member) => (
+                        <Card key={member.id} className="hover:shadow-lg transition-shadow">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-3">
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-900">{member.name}</h4>
+                                {member.employer && (
+                                  <p className="text-sm text-blue-700 flex items-center mt-1">
+                                    <Building2 className="w-3 h-3 mr-1" />
+                                    {member.employer}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm flex-shrink-0 ml-3">
+                                {member.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                              </div>
+                            </div>
+                            
+                            {member.menteeProfile && (
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{member.menteeProfile}</p>
+                            )}
+                            
+                            {member.professionalQualification && (
+                              <p className="text-xs text-gray-600 mb-3 line-clamp-2">{member.professionalQualification}</p>
+                            )}
+                            
+                            <div className="flex items-center justify-between">
+                              <Badge variant="outline" className="text-blue-600 border-blue-300">
+                                <Users className="w-3 h-3 mr-1" />
+                                Seeking Mentor
+                              </Badge>
+                              {member.linkedin && (
+                                <a
+                                  href={member.linkedin}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-all duration-200"
+                                  title="View LinkedIn profile"
+                                >
+                                  <Linkedin className="w-3 h-3" />
+                                  LinkedIn
+                                </a>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Empty state if no mentors or mentees */}
+                {members.filter(m => !m.isCurrentUser && (m.availableAsMentor || m.seekingMentor)).length === 0 && (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <p className="text-gray-500 mb-4">No mentors or mentees available at the moment.</p>
+                      <Link href="/directory">
+                        <Button className="bg-emerald-600 hover:bg-emerald-700">
+                          View All Members
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="sent" className="space-y-4">
             {sentRequests.length === 0 ? (

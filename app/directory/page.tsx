@@ -669,17 +669,18 @@ export default function DirectoryPage() {
                                     : 'Never logged in'
                                   }
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-3">
                                   {professional.availableAsMentor && (
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation()
                                         handleMentorshipRequest(professional)
                                       }}
-                                      className="text-emerald-600 hover:text-emerald-800 transition-colors"
+                                      className="flex items-center gap-1 px-2 py-1 text-xs text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded transition-all duration-200"
                                       title="Request mentorship"
                                     >
-                                      <MessageCircle className="w-3 h-3" />
+                                      <MessageCircle className="w-4 h-4" />
+                                      <span>Connect</span>
                                     </button>
                                   )}
                                   {professional.linkedin && (
@@ -687,10 +688,12 @@ export default function DirectoryPage() {
                                       href={professional.linkedin}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                                      className="flex items-center gap-1 px-2 py-1 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-all duration-200"
                                       onClick={(e) => e.stopPropagation()}
+                                      title="View LinkedIn profile"
                                     >
-                                      <Linkedin className="w-3 h-3" />
+                                      <Linkedin className="w-4 h-4" />
+                                      <span>LinkedIn</span>
                                     </a>
                                   )}
                                 </div>
