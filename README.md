@@ -39,6 +39,7 @@ A comprehensive professional networking platform built for the Islamic Medical A
 - **Member** - Professional profiles with qualifications and interests
 - **Application** - Membership applications with approval workflow
 - **Post/Comment** - Forum content with voting system
+- **MentorshipRequest** - Mentor/mentee connection requests with approval workflow
 - **Sponsor** - Community spotlight organizations
 - **AuditLog** - Comprehensive activity tracking
 
@@ -230,6 +231,12 @@ npm run start
 - `GET /api/directory` - Member directory
 - `GET /api/forum/posts` - Forum posts
 - `POST /api/applications` - Submit application
+- `GET /api/mentorship/browse` - Browse available mentors
+
+### Member APIs (Authentication Required)
+- `POST /api/mentorship/request` - Send mentorship request
+- `GET /api/mentorship/requests` - View mentorship requests
+- `POST /api/mentorship/respond` - Respond to mentorship request
 
 ### Admin APIs (Authentication Required)
 - `GET /api/admin/members` - Member management

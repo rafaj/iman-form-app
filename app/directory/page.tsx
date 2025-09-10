@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin, Building2, GraduationCap, ArrowLeft } from "lucide-react"
+import { Search, Users, Linkedin, Calendar, Mail, Phone, MapPin, Building2, GraduationCap, ArrowLeft, MessageCircle, Star } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import Image from "next/image"
@@ -73,6 +73,14 @@ export default function DirectoryPage() {
   const [viewMode, setViewMode] = useState<'alphabetical' | 'employer' | 'school' | 'recent'>('alphabetical')
   const [selectedEmployer, setSelectedEmployer] = useState<string | null>(null)
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null)
+  const [showMentorshipDialog, setShowMentorshipDialog] = useState(false)
+  const [mentorshipTarget, setMentorshipTarget] = useState<DirectoryProfessional | null>(null)
+  const [mentorshipRequest, setMentorshipRequest] = useState({
+    message: '',
+    requestType: '',
+    preferredFormat: ''
+  })
+  const [sendingRequest, setSendingRequest] = useState(false)
 
   useEffect(() => {
     // Handle URL parameters for initial view mode
@@ -264,6 +272,49 @@ export default function DirectoryPage() {
   }
 
   const schoolSections = Object.keys(groupedBySchool).sort()
+
+  // Mentorship functions
+  const handleMentorshipRequest = (professional: DirectoryProfessional) => {
+    setMentorshipTarget(professional)
+    setShowMentorshipDialog(true)
+  }
+
+  const sendMentorshipRequest = async () => {
+    if (!mentorshipTarget || !mentorshipRequest.message || !mentorshipRequest.requestType) {
+      return
+    }
+
+    setSendingRequest(true)
+    try {
+      const response = await fetch('/api/mentorship/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          mentorId: mentorshipTarget.id,
+          message: mentorshipRequest.message,
+          requestType: mentorshipRequest.requestType,
+          preferredFormat: mentorshipRequest.preferredFormat || undefined
+        })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        setShowMentorshipDialog(false)
+        setMentorshipRequest({ message: '', requestType: '', preferredFormat: '' })
+        alert('Mentorship request sent successfully!')
+      } else {
+        alert(result.message || 'Failed to send request')
+      }
+    } catch (error) {
+      console.error('Error sending mentorship request:', error)
+      alert('Failed to send mentorship request')
+    } finally {
+      setSendingRequest(false)
+    }
+  }
 
   // Sort professionals by join date for recent view
   const professionalsByJoinDate = [...filteredProfessionals].sort((a, b) => 
@@ -595,6 +646,21 @@ export default function DirectoryPage() {
                                   <span className="text-emerald-700 font-medium">Education:</span> {professional.school}
                                 </p>
                               )}
+                              {/* Mentorship badges */}
+                              <div className="flex items-center gap-2 mt-2">
+                                {professional.availableAsMentor && (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">
+                                    <Star className="w-3 h-3 mr-1" />
+                                    Mentor
+                                  </span>
+                                )}
+                                {professional.seekingMentor && (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                                    <Users className="w-3 h-3 mr-1" />
+                                    Seeking Mentor
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                                 <div className="flex items-center">
                                   <Calendar className="w-3 h-3 mr-1" />
@@ -603,17 +669,31 @@ export default function DirectoryPage() {
                                     : 'Never logged in'
                                   }
                                 </div>
-                                {professional.linkedin && (
-                                  <a
-                                    href={professional.linkedin}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 hover:text-blue-800 transition-colors"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <Linkedin className="w-3 h-3" />
-                                  </a>
-                                )}
+                                <div className="flex items-center gap-2">
+                                  {professional.availableAsMentor && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleMentorshipRequest(professional)
+                                      }}
+                                      className="text-emerald-600 hover:text-emerald-800 transition-colors"
+                                      title="Request mentorship"
+                                    >
+                                      <MessageCircle className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                  {professional.linkedin && (
+                                    <a
+                                      href={professional.linkedin}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600 hover:text-blue-800 transition-colors"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <Linkedin className="w-3 h-3" />
+                                    </a>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1112,6 +1192,117 @@ export default function DirectoryPage() {
           </Link>
         </div>
       </main>
+
+      {/* Mentorship Request Dialog */}
+      <Dialog open={showMentorshipDialog} onOpenChange={setShowMentorshipDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Request Mentorship</DialogTitle>
+          </DialogHeader>
+          {mentorshipTarget && (
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-lg">
+                {mentorshipTarget.image ? (
+                  <Image
+                    src={mentorshipTarget.image}
+                    alt={mentorshipTarget.displayName}
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full border border-emerald-200"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold text-sm">
+                    {mentorshipTarget.initials}
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-medium text-emerald-900">{mentorshipTarget.displayName}</h3>
+                  <p className="text-sm text-emerald-600">{mentorshipTarget.employer}</p>
+                  {mentorshipTarget.mentorProfile && (
+                    <p className="text-xs text-gray-600 mt-1">{mentorshipTarget.mentorProfile}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    What type of mentorship are you seeking? *
+                  </label>
+                  <select
+                    value={mentorshipRequest.requestType}
+                    onChange={(e) => setMentorshipRequest(prev => ({ ...prev, requestType: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    required
+                  >
+                    <option value="">Select type...</option>
+                    <option value="Career Advice">Career Advice</option>
+                    <option value="Informational Interview">Informational Interview</option>
+                    <option value="Industry Insights">Industry Insights</option>
+                    <option value="Job Search Help">Job Search Help</option>
+                    <option value="Skill Development">Skill Development</option>
+                    <option value="Networking">Networking</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Preferred format (optional)
+                  </label>
+                  <select
+                    value={mentorshipRequest.preferredFormat}
+                    onChange={(e) => setMentorshipRequest(prev => ({ ...prev, preferredFormat: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  >
+                    <option value="">Any format</option>
+                    <option value="Coffee/Tea">Coffee/Tea</option>
+                    <option value="Video Call">Video Call</option>
+                    <option value="Phone Call">Phone Call</option>
+                    <option value="Lunch Meeting">Lunch Meeting</option>
+                    <option value="Email Exchange">Email Exchange</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Message to mentor *
+                  </label>
+                  <textarea
+                    value={mentorshipRequest.message}
+                    onChange={(e) => setMentorshipRequest(prev => ({ ...prev, message: e.target.value }))}
+                    placeholder="Please introduce yourself and explain what you're hoping to learn or discuss..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[100px]"
+                    required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Be specific about your goals and what you hope to gain from this mentorship.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowMentorshipDialog(false)}
+                  disabled={sendingRequest}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={sendMentorshipRequest}
+                  disabled={sendingRequest || !mentorshipRequest.message || !mentorshipRequest.requestType}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {sendingRequest ? 'Sending...' : 'Send Request'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="bg-emerald-900 text-white py-12">

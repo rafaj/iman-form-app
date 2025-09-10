@@ -41,7 +41,11 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    let whereClause: any = {}
+    let whereClause: {
+      menteeId?: string;
+      mentorId?: string;
+      OR?: Array<{ menteeId: string } | { mentorId: string }>;
+    } = {}
     
     if (validatedData.type === 'sent') {
       whereClause = { menteeId: member.id }

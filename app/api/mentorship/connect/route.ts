@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
     const menteeId = body.type === 'mentor' ? currentMember.id : targetMember.id
 
     // Check if connection already exists
-    const existingConnection = await prisma.mentorConnection.findUnique({
+    const existingConnection = await prisma.mentorshipRequest.findUnique({
       where: {
         mentorId_menteeId: {
           mentorId,
@@ -64,11 +64,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Create the connection request
-    await prisma.mentorConnection.create({
+    await prisma.mentorshipRequest.create({
       data: {
         mentorId,
         menteeId,
-        message: body.message,
+        message: body.message || '',
+        requestType: body.type === 'mentor' ? 'General mentorship request' : 'Mentee connection request',
         status: 'PENDING'
       }
     })

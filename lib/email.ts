@@ -254,6 +254,36 @@ export async function sendActivationEmail({
   }
 }
 
+export async function sendEmail({
+  to,
+  subject,
+  html,
+}: {
+  to: string | string[]
+  subject: string
+  html: string
+}) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'IMAN Professional Network <admin@iman-wa.pro>',
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      html,
+    })
+
+    if (error) {
+      console.error('Email sending error:', error)
+      throw new Error(`Failed to send email: ${error.message}`)
+    }
+
+    console.log('Email sent successfully:', data)
+    return { success: true, data }
+  } catch (error) {
+    console.error('Email service error:', error)
+    throw error
+  }
+}
+
 export async function sendMagicLinkEmail({
   to,
   url,

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/database"
 import { z } from "zod"
 import { sendEmail } from "@/lib/email"
@@ -13,7 +12,7 @@ const mentorshipResponseSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },

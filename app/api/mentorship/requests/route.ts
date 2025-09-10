@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/auth"
+import { auth } from "@/auth"
 import { prisma } from "@/lib/database"
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await auth()
     if (!session?.user?.email) {
       return NextResponse.json(
         { success: false, message: "Authentication required" },
@@ -29,7 +28,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') || 'all' // 'sent', 'received', or 'all'
 
-    let whereClause: any = {}
+    let whereClause: {
+      menteeId?: string;
+      mentorId?: string;
+      OR?: Array<{ menteeId: string } | { mentorId: string }>;
+    } = {}
     
     if (type === 'sent') {
       whereClause = { menteeId: member.id }
