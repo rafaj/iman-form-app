@@ -1,5 +1,4 @@
 import SwiftUI
-import GoogleSignIn
 
 @main
 struct IMANApp: App {
@@ -10,15 +9,7 @@ struct IMANApp: App {
             ContentView()
                 .environmentObject(deepLinkHandler)
                 .onAppear {
-                    // Configure Google Sign-In
-                    guard let path = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist"),
-                          let plist = NSDictionary(contentsOfFile: path),
-                          let clientId = plist["CLIENT_ID"] as? String else {
-                        print("Error: Could not find GoogleService-Info.plist or CLIENT_ID")
-                        return
-                    }
-                    
-                    GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientId)
+                    // App initialization - no Google Sign-In setup needed
                 }
                 .onOpenURL { url in
                     print("📱 Received URL: \(url.absoluteString)")
@@ -31,8 +22,8 @@ struct IMANApp: App {
                         // Handle general app deep links
                         deepLinkHandler.handleAppURL(url)
                     } else {
-                        // Handle Google Sign-In URL
-                        GIDSignIn.sharedInstance.handle(url)
+                        // Handle other URL schemes if needed
+                        print("Unhandled URL scheme: \(url.scheme ?? "unknown")")
                     }
                 }
         }

@@ -42,8 +42,8 @@ model Member {
   // Relations
   sponsoredApplications Application[] @relation("SponsorApplications")
   approvedApplications  Application[] @relation("ApproverApplications")
-  mentorConnections     MentorConnection[] @relation("MentorConnections")
-  menteeConnections     MentorConnection[] @relation("MenteeConnections")
+  mentorConnections     MentorshipRequest[] @relation("MentorConnections")
+  menteeConnections     MentorshipRequest[] @relation("MenteeConnections")
 
   // Performance indexes
   @@index([email, active])
@@ -333,12 +333,24 @@ model CommentVote {
   @@map("comment_votes")
 }
 
-model MentorConnection {
+model MentorshipRequest {
   id          String              @id @default(cuid())
   mentorId    String
   menteeId    String
   status      ConnectionStatus    @default(PENDING)
-  message     String?             // Optional message when requesting connection
+  
+  // Request details
+  message     String              // Message from mentee explaining what they're seeking
+  requestType String              // Type of mentorship (career advice, informational interview, etc.)
+  preferredFormat String?         // Coffee, video call, phone, etc.
+  
+  // Response from mentor
+  mentorResponse String?          // Optional response message
+  respondedAt DateTime?           // When mentor responded
+  
+  // Contact sharing (only when accepted)
+  contactShared Boolean @default(false)
+  
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   
@@ -347,7 +359,10 @@ model MentorConnection {
   mentee      Member              @relation("MenteeConnections", fields: [menteeId], references: [id], onDelete: Cascade)
   
   @@unique([mentorId, menteeId])
-  @@map("mentor_connections")
+  @@index([mentorId, status])
+  @@index([menteeId, status])
+  @@index([createdAt])
+  @@map("mentorship_requests")
 }
 
 model SponsorHeart {

@@ -24,6 +24,11 @@ type DirectoryProfessional = {
   linkedin: string | null
   skills: string | null
   school: string | null
+  // Mentorship fields
+  availableAsMentor: boolean
+  mentorProfile: string | null
+  seekingMentor: boolean
+  menteeProfile: string | null
   professionalSince: string
   memberSince: string
   lastSeenAt: string | null

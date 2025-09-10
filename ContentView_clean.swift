@@ -21,8 +21,7 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // Check for any persistent authentication state if needed
-            // For now, start with unauthenticated state
+            checkInitialAuthState()
         }
         .onChange(of: deepLinkHandler.shouldAuthenticate) { shouldAuth in
             if shouldAuth {
@@ -31,7 +30,12 @@ struct ContentView: View {
         }
     }
     
-    private func handleDeepLinkAuthentication() {
+    func checkInitialAuthState() {
+        // Check for any persistent authentication state if needed
+        // For now, start with unauthenticated state
+    }
+    
+    func handleDeepLinkAuthentication() {
         guard let token = deepLinkHandler.authToken,
               let email = deepLinkHandler.authEmail else {
             errorMessage = "Invalid authentication link"
@@ -59,7 +63,7 @@ struct ContentView: View {
         }
     }
     
-    private func validateMagicLinkToken(token: String, email: String, completion: @escaping (Result<User, Error>) -> Void) {
+    func validateMagicLinkToken(token: String, email: String, completion: @escaping (Result<User, Error>) -> Void) {
         guard let url = URL(string: "https://iman-form-app.vercel.app/api/auth/callback/resend") else {
             completion(.failure(URLError(.badURL)))
             return
@@ -141,28 +145,54 @@ struct LoginView: View {
                         .padding()
                 }
                 
-                // Email input field
-                TextField("Enter your email address", text: $emailAddress)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                    .padding(.horizontal)
-                
-                // Email Sign-In Button
-                Button(action: signInWithEmail) {
-                    HStack {
-                        Image(systemName: "envelope.fill")
-                            .foregroundColor(.white)
-                        Text(emailSent ? "Email Sent!" : "Send Sign-In Link")
-                            .foregroundColor(.white)
-                            .fontWeight(.medium)
+                if emailSent {
+                    VStack(spacing: 15) {
+                        Image(systemName: "envelope.circle.fill")
+                            .font(.system(size: 60))
+                            .foregroundColor(.green)
+                        
+                        Text("Email Sent!")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.green)
+                        
+                        Text("Check your email and click the link to sign in")
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.secondary)
+                        
+                        Button("Send Another Email") {
+                            emailSent = false
+                            emailAddress = ""
+                        }
+                        .foregroundColor(.blue)
+                        .padding(.top)
                     }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 50)
-                    .background(emailSent ? Color.green : Color.blue)
-                    .cornerRadius(10)
+                } else {
+                    VStack(spacing: 15) {
+                        // Email input field
+                        TextField("Enter your email address", text: $emailAddress)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                        
+                        // Email Sign-In Button
+                        Button(action: signInWithEmail) {
+                            HStack {
+                                Image(systemName: "envelope.fill")
+                                    .foregroundColor(.white)
+                                Text("Send Sign-In Link")
+                                    .foregroundColor(.white)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                        }
+                        .disabled(isLoading || emailAddress.isEmpty)
+                    }
                 }
-                .disabled(isLoading || emailAddress.isEmpty || emailSent)
                 
                 if isLoading {
                     ProgressView()
@@ -185,7 +215,7 @@ struct LoginView: View {
         .background(Color(.systemBackground))
     }
     
-    private func signInWithEmail() {
+    func signInWithEmail() {
         guard !emailAddress.isEmpty else { return }
         
         isLoading = true
@@ -207,7 +237,7 @@ struct LoginView: View {
         }
     }
     
-    private func sendMagicLink(email: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    func sendMagicLink(email: String, completion: @escaping (Result<Void, Error>) -> Void) {
         guard let url = URL(string: "https://iman-form-app.vercel.app/api/auth/send-magic-link") else {
             completion(.failure(URLError(.badURL)))
             return
@@ -319,7 +349,7 @@ struct DirectoryView: View {
         }
     }
     
-    private func loadDirectory() {
+    func loadDirectory() {
         isLoading = true
         errorMessage = nil
         
