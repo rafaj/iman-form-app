@@ -1,6 +1,6 @@
 # IMAN Professional Network
 
-A comprehensive professional networking platform built for the Islamic Medical Association of North America (IMAN) community. The platform features member directory, forum discussions, mentorship matching, event integration, and a comprehensive membership application system.
+A comprehensive professional networking platform built for the Ithna-asheri Muslim Association of the Northwest (IMAN) community. The platform features member directory, forum discussions, mentorship matching, event integration, and a comprehensive membership application system.
 
 ## 🌟 Features
 
@@ -274,7 +274,7 @@ npm run start
 
 ## 📄 License
 
-This project is proprietary software for the Islamic Medical Association of North America (IMAN).
+This project is proprietary software for the Ithna-asheri Muslim Association of the Northwest (IMAN).
 
 ## 🆘 Support
 
