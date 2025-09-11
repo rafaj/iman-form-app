@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
       await sendMagicLinkEmail({ to: body.to, url: body.url })
     } else {
       // New format for mobile clients
-      const { to, redirectUrl, callbackUrl } = body
+      const { to, callbackUrl } = body
       
       // Generate a secure token
       const token = crypto.randomBytes(32).toString('hex')
