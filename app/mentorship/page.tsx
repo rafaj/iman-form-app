@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -816,7 +815,7 @@ export default function MentorshipDashboard() {
                       <SelectItem value="phone-call">Phone Call</SelectItem>
                       <SelectItem value="coffee-chat">Coffee Chat</SelectItem>
                       <SelectItem value="email-exchange">Email Exchange</SelectItem>
-                      <SelectItem value="flexible">I'm flexible</SelectItem>
+                      <SelectItem value="flexible">I&apos;m flexible</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
