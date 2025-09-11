@@ -105,6 +105,10 @@ export default function MentorshipDashboard() {
       const data = await response.json()
       
       if (data.members) {
+        console.log('Mentorship members fetched:', data.members)
+        console.log('Total members:', data.members.length)
+        console.log('Available mentors:', data.members.filter(m => m.availableAsMentor && !m.isCurrentUser).length)
+        console.log('Seeking mentors:', data.members.filter(m => m.seekingMentor && !m.isCurrentUser).length)
         setMembers(data.members)
       }
     } catch (error) {
@@ -431,17 +435,44 @@ export default function MentorshipDashboard() {
                   </div>
                 )}
 
+                {/* Debug information (temporary) */}
+                <div className="mb-4 p-4 bg-gray-100 rounded">
+                  <h4 className="font-semibold">Debug Info:</h4>
+                  <p>Total members: {members.length}</p>
+                  <p>Available mentors: {members.filter(m => m.availableAsMentor && !m.isCurrentUser).length}</p>
+                  <p>Seeking mentors: {members.filter(m => m.seekingMentor && !m.isCurrentUser).length}</p>
+                  <p>Members with mentorship flags: {members.filter(m => m.availableAsMentor || m.seekingMentor).length}</p>
+                  {members.length > 0 && (
+                    <details>
+                      <summary>Raw member data (first 3)</summary>
+                      <pre className="text-xs mt-2 overflow-auto max-h-40">
+                        {JSON.stringify(members.slice(0, 3), null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                </div>
+
                 {/* Empty state if no mentors or mentees */}
                 {members.filter(m => !m.isCurrentUser && (m.availableAsMentor || m.seekingMentor)).length === 0 && (
                   <Card>
                     <CardContent className="p-8 text-center">
                       <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                       <p className="text-gray-500 mb-4">No mentors or mentees available at the moment.</p>
-                      <Link href="/directory">
-                        <Button className="bg-emerald-600 hover:bg-emerald-700">
-                          View All Members
-                        </Button>
-                      </Link>
+                      <p className="text-sm text-gray-400 mb-4">
+                        Members can set themselves as mentors or indicate they&apos;re seeking mentors in their profile settings.
+                      </p>
+                      <div className="flex gap-2 justify-center">
+                        <Link href="/directory">
+                          <Button className="bg-emerald-600 hover:bg-emerald-700">
+                            View All Members
+                          </Button>
+                        </Link>
+                        <Link href="/profile">
+                          <Button variant="outline">
+                            Update My Profile
+                          </Button>
+                        </Link>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
