@@ -6,6 +6,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { MessageCircle, Clock, CheckCircle, XCircle, User, Calendar, ArrowLeft, Star, Users, Linkedin, Building2 } from "lucide-react"
@@ -75,6 +78,14 @@ export default function MentorshipDashboard() {
   const [responding, setResponding] = useState(false)
   const [members, setMembers] = useState<MentorshipMember[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
+  
+  // Mentorship request dialog state
+  const [showRequestDialog, setShowRequestDialog] = useState(false)
+  const [selectedMentor, setSelectedMentor] = useState<MentorshipMember | null>(null)
+  const [requestMessage, setRequestMessage] = useState('')
+  const [requestType, setRequestType] = useState('')
+  const [preferredFormat, setPreferredFormat] = useState('')
+  const [submittingRequest, setSubmittingRequest] = useState(false)
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -154,6 +165,52 @@ export default function MentorshipDashboard() {
     setSelectedRequest(request)
     setShowResponseDialog(true)
     setResponse('')
+  }
+
+  const openRequestDialog = (mentor: MentorshipMember) => {
+    setSelectedMentor(mentor)
+    setShowRequestDialog(true)
+    setRequestMessage('')
+    setRequestType('')
+    setPreferredFormat('')
+  }
+
+  const handleSubmitRequest = async () => {
+    if (!selectedMentor || !requestMessage.trim() || !requestType) {
+      alert('Please fill in all required fields')
+      return
+    }
+
+    setSubmittingRequest(true)
+    try {
+      const response = await fetch('/api/mentorship/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          mentorId: selectedMentor.id,
+          message: requestMessage.trim(),
+          requestType,
+          preferredFormat: preferredFormat || null
+        })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        setShowRequestDialog(false)
+        alert('Mentorship request sent successfully!')
+        await fetchRequests() // Refresh the requests
+      } else {
+        alert(result.message || 'Failed to send mentorship request')
+      }
+    } catch (error) {
+      console.error('Error sending mentorship request:', error)
+      alert('Failed to send mentorship request')
+    } finally {
+      setSubmittingRequest(false)
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -342,10 +399,7 @@ export default function MentorshipDashboard() {
                             </Badge>
                             <div className="flex items-center gap-2">
                               <button 
-                                onClick={() => {
-                                  // TODO: Open mentorship request dialog for this mentor
-                                  alert(`Connect with ${member.name} - Feature coming soon!`)
-                                }}
+                                onClick={() => openRequestDialog(member)}
                                 className="flex items-center gap-1 px-2 py-1 text-xs text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded transition-all duration-200"
                               >
                                 <MessageCircle className="w-3 h-3" />
@@ -699,6 +753,108 @@ export default function MentorshipDashboard() {
                   className="bg-emerald-600 hover:bg-emerald-700"
                 >
                   {responding ? 'Accepting...' : 'Accept & Share Contact Info'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Mentorship Request Dialog */}
+      <Dialog open={showRequestDialog} onOpenChange={setShowRequestDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Send Mentorship Request</DialogTitle>
+          </DialogHeader>
+          {selectedMentor && (
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3 p-3 bg-emerald-50 rounded-lg">
+                <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-semibold">
+                  {selectedMentor.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </div>
+                <div>
+                  <h3 className="font-medium text-gray-900">{selectedMentor.name}</h3>
+                  {selectedMentor.employer && (
+                    <p className="text-sm text-gray-600">{selectedMentor.employer}</p>
+                  )}
+                  {selectedMentor.mentorProfile && (
+                    <p className="text-sm text-emerald-700 mt-1">{selectedMentor.mentorProfile}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="requestType" className="text-sm font-medium text-gray-700">
+                    Type of mentorship request *
+                  </Label>
+                  <Select value={requestType} onValueChange={setRequestType}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select request type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="career-advice">Career Advice</SelectItem>
+                      <SelectItem value="informational-interview">Informational Interview</SelectItem>
+                      <SelectItem value="skill-development">Skill Development</SelectItem>
+                      <SelectItem value="networking">Professional Networking</SelectItem>
+                      <SelectItem value="industry-insights">Industry Insights</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="preferredFormat" className="text-sm font-medium text-gray-700">
+                    Preferred meeting format
+                  </Label>
+                  <Select value={preferredFormat} onValueChange={setPreferredFormat}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select preferred format" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="video-call">Video Call</SelectItem>
+                      <SelectItem value="phone-call">Phone Call</SelectItem>
+                      <SelectItem value="coffee-chat">Coffee Chat</SelectItem>
+                      <SelectItem value="email-exchange">Email Exchange</SelectItem>
+                      <SelectItem value="flexible">I'm flexible</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="message" className="text-sm font-medium text-gray-700">
+                    Your message *
+                  </Label>
+                  <Textarea
+                    id="message"
+                    value={requestMessage}
+                    onChange={(e) => setRequestMessage(e.target.value)}
+                    placeholder="Introduce yourself and explain what you're hoping to learn or discuss..."
+                    className="mt-1 min-h-[120px]"
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {requestMessage.length}/500 characters
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowRequestDialog(false)}
+                  disabled={submittingRequest}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleSubmitRequest}
+                  disabled={submittingRequest || !requestMessage.trim() || !requestType}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {submittingRequest ? 'Sending...' : 'Send Request'}
                 </Button>
               </div>
             </div>
