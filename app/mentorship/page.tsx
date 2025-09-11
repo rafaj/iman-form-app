@@ -107,8 +107,8 @@ export default function MentorshipDashboard() {
       if (data.members) {
         console.log('Mentorship members fetched:', data.members)
         console.log('Total members:', data.members.length)
-        console.log('Available mentors:', data.members.filter(m => m.availableAsMentor && !m.isCurrentUser).length)
-        console.log('Seeking mentors:', data.members.filter(m => m.seekingMentor && !m.isCurrentUser).length)
+        console.log('Available mentors:', data.members.filter((m: MentorshipMember) => m.availableAsMentor && !m.isCurrentUser).length)
+        console.log('Seeking mentors:', data.members.filter((m: MentorshipMember) => m.seekingMentor && !m.isCurrentUser).length)
         setMembers(data.members)
       }
     } catch (error) {
@@ -306,14 +306,14 @@ export default function MentorshipDashboard() {
             ) : (
               <div className="space-y-6">
                 {/* Available Mentors */}
-                {members.filter(m => m.availableAsMentor && !m.isCurrentUser).length > 0 && (
+                {members.filter((m: MentorshipMember) => m.availableAsMentor && !m.isCurrentUser).length > 0 && (
                   <div>
                     <div className="flex items-center mb-4">
                       <Star className="w-5 h-5 text-emerald-600 mr-2" />
                       <h3 className="text-lg font-semibold text-emerald-900">Available Mentors</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {members.filter(m => m.availableAsMentor && !m.isCurrentUser).map((member) => (
+                      {members.filter((m: MentorshipMember) => m.availableAsMentor && !m.isCurrentUser).map((member) => (
                         <Card key={member.id} className="hover:shadow-lg transition-shadow">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between mb-3">
@@ -377,14 +377,14 @@ export default function MentorshipDashboard() {
                 )}
 
                 {/* Seeking Mentors */}
-                {members.filter(m => m.seekingMentor && !m.isCurrentUser).length > 0 && (
+                {members.filter((m: MentorshipMember) => m.seekingMentor && !m.isCurrentUser).length > 0 && (
                   <div>
                     <div className="flex items-center mb-4">
                       <Users className="w-5 h-5 text-blue-600 mr-2" />
                       <h3 className="text-lg font-semibold text-blue-900">Seeking Mentors</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {members.filter(m => m.seekingMentor && !m.isCurrentUser).map((member) => (
+                      {members.filter((m: MentorshipMember) => m.seekingMentor && !m.isCurrentUser).map((member) => (
                         <Card key={member.id} className="hover:shadow-lg transition-shadow">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between mb-3">
@@ -439,9 +439,9 @@ export default function MentorshipDashboard() {
                 <div className="mb-4 p-4 bg-gray-100 rounded">
                   <h4 className="font-semibold">Debug Info:</h4>
                   <p>Total members: {members.length}</p>
-                  <p>Available mentors: {members.filter(m => m.availableAsMentor && !m.isCurrentUser).length}</p>
-                  <p>Seeking mentors: {members.filter(m => m.seekingMentor && !m.isCurrentUser).length}</p>
-                  <p>Members with mentorship flags: {members.filter(m => m.availableAsMentor || m.seekingMentor).length}</p>
+                  <p>Available mentors: {members.filter((m: MentorshipMember) => m.availableAsMentor && !m.isCurrentUser).length}</p>
+                  <p>Seeking mentors: {members.filter((m: MentorshipMember) => m.seekingMentor && !m.isCurrentUser).length}</p>
+                  <p>Members with mentorship flags: {members.filter((m: MentorshipMember) => m.availableAsMentor || m.seekingMentor).length}</p>
                   {members.length > 0 && (
                     <details>
                       <summary>Raw member data (first 3)</summary>
@@ -453,7 +453,7 @@ export default function MentorshipDashboard() {
                 </div>
 
                 {/* Empty state if no mentors or mentees */}
-                {members.filter(m => !m.isCurrentUser && (m.availableAsMentor || m.seekingMentor)).length === 0 && (
+                {members.filter((m: MentorshipMember) => !m.isCurrentUser && (m.availableAsMentor || m.seekingMentor)).length === 0 && (
                   <Card>
                     <CardContent className="p-8 text-center">
                       <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
