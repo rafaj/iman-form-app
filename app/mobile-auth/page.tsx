@@ -21,7 +21,7 @@ function MobileAuthContent() {
       
       if (isMobile) {
         // Try to open the iOS app with the authentication parameters
-        const appUrl = `iman-auth://authenticate?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(callbackUrl || '/')}`
+        const appUrl = `iman-auth://auth?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(callbackUrl || '/')}`
         
         console.log('Attempting to open app:', appUrl)
         
