@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -10,8 +10,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MessageCircle, Clock, CheckCircle, XCircle, User, Calendar, ArrowLeft, Star, Users, Linkedin, Building2 } from "lucide-react"
+import { MessageCircle, Clock, CheckCircle, XCircle, User, Calendar, ArrowLeft, Star, Users, Linkedin, Building2, Mail, Phone, MapPin } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+import MobileNavigation from "@/components/mobile-navigation"
 
 type MentorshipRequest = {
   id: string
@@ -67,7 +69,7 @@ type MentorshipMember = {
 }
 
 export default function MentorshipDashboard() {
-  const { status } = useSession()
+  const { data: session, status } = useSession()
   const [requests, setRequests] = useState<MentorshipRequest[]>([])
   const [summary, setSummary] = useState<RequestSummary>({ total: 0, pending: 0, accepted: 0, declined: 0 })
   const [loading, setLoading] = useState(true)
@@ -77,6 +79,7 @@ export default function MentorshipDashboard() {
   const [responding, setResponding] = useState(false)
   const [members, setMembers] = useState<MentorshipMember[]>([])
   const [membersLoading, setMembersLoading] = useState(true)
+  const [isProfessional, setIsProfessional] = useState(false)
   
   // Mentorship request dialog state
   const [showRequestDialog, setShowRequestDialog] = useState(false)
@@ -87,11 +90,26 @@ export default function MentorshipDashboard() {
   const [submittingRequest, setSubmittingRequest] = useState(false)
 
   useEffect(() => {
+    if (status === "loading") return
+    
+    const checkProfessionalStatus = async () => {
+      if (!session?.user?.email) return
+      
+      try {
+        const response = await fetch('/api/auth/check-admin')
+        const data = await response.json()
+        setIsProfessional(data.isMember || data.isAdmin)
+      } catch (error) {
+        console.error('Error checking professional status:', error)
+      }
+    }
+    
     if (status === 'authenticated') {
+      checkProfessionalStatus()
       fetchRequests()
       fetchMembers()
     }
-  }, [status])
+  }, [session, status])
 
   const fetchRequests = async () => {
     try {
@@ -241,11 +259,15 @@ export default function MentorshipDashboard() {
   if (status === "loading" || loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+        {/* Header */}
         <header className="bg-white shadow-sm border-b border-emerald-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-6">
               <div className="flex items-center">
-                <h1 className="text-xl md:text-2xl font-bold text-emerald-900">Mentorship Dashboard</h1>
+                <div className="flex-shrink-0">
+                  <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                  <p className="text-xs md:text-sm text-emerald-600">Mentorship Dashboard</p>
+                </div>
               </div>
               <div className="animate-pulse">
                 <div className="h-8 bg-gray-300 rounded w-32"></div>
@@ -267,28 +289,100 @@ export default function MentorshipDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-100">
+      {/* Header */}
       <header className="bg-white shadow-sm border-b border-emerald-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-emerald-600 hover:text-emerald-800">
-                <ArrowLeft className="w-6 h-6" />
-              </Link>
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold text-emerald-900">Mentorship Dashboard</h1>
-                <p className="text-sm text-emerald-600">Manage your mentorship connections</p>
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <h1 className="text-xl md:text-2xl font-bold text-emerald-900">IMAN Professional Network</h1>
+                <p className="text-xs md:text-sm text-emerald-600">
+                  {isProfessional && session ? `Welcome back, ${session.user?.name}!` : "Connecting Professionals in the Seattle Metro"}
+                </p>
               </div>
             </div>
+            
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-8 items-center">
+              {session ? (
+                <>
+                  <Link href="/" className="text-emerald-700 hover:text-emerald-900 font-medium">Home</Link>
+                  {isProfessional && (
+                    <>
+                      <Link href="/directory" className="text-emerald-700 hover:text-emerald-900 font-medium">Directory</Link>
+                      <Link href="/events" className="text-emerald-700 hover:text-emerald-900 font-medium">Meetups</Link>
+                      <Link href="/forum" className="text-emerald-700 hover:text-emerald-900 font-medium">Forum</Link>
+                      <Link href="/mentorship" className="text-emerald-700 hover:text-emerald-900 font-medium border-b-2 border-emerald-600">Mentorship</Link>
+                    </>
+                  )}
+                  {session.user?.role === 'ADMIN' && (
+                    <Link href="/admin" className="text-emerald-700 hover:text-emerald-900 font-medium">Admin</Link>
+                  )}
+                  <div className="flex items-center space-x-3">
+                    {session.user?.image && (
+                      <Image 
+                        src={session.user.image} 
+                        alt={session.user.name || "User"} 
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full"
+                      />
+                    )}
+                    <Link href="/profile" className="text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors">
+                      {session.user?.name}
+                    </Link>
+                  </div>
+                  <Button 
+                    onClick={() => signOut()}
+                    variant="outline" 
+                    size="sm" 
+                    className="border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <a href="#about" className="text-emerald-700 hover:text-emerald-900 font-medium">About</a>
+                  <Link href="/auth/signin" className="text-emerald-700 hover:text-emerald-900 font-medium">
+                    Sign In
+                  </Link>
+                  <Link href="/apply">
+                    <Button variant="outline" className="border-emerald-600 text-emerald-700 hover:bg-emerald-50">
+                      Join IMAN Professional Network
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </nav>
+
+            {/* Mobile Navigation */}
+            <MobileNavigation session={session} isProfessional={isProfessional} />
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Page Header */}
+        <header className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
+            <Link href="/" className="text-emerald-600 hover:text-emerald-800">
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold text-emerald-800">Mentorship Dashboard</h1>
+              <p className="text-emerald-600">Manage your mentorship connections and find opportunities to grow</p>
+            </div>
+          </div>
+          <div className="flex justify-end">
             <Link href="/directory">
               <Button className="bg-emerald-600 hover:bg-emerald-700">
                 Find Mentors
               </Button>
             </Link>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
@@ -860,6 +954,65 @@ export default function MentorshipDashboard() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Footer */}
+      <footer className="bg-emerald-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">IMAN Professional Network</h4>
+              <p className="text-emerald-200">
+                Connecting Muslim professionals in the Seattle Metro through 
+                networking, professional development, and community service.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-emerald-200">
+                <li><Link href="/" className="hover:text-white">Home</Link></li>
+                {session && isProfessional && (
+                  <>
+                    <li><Link href="/directory" className="hover:text-white">Directory</Link></li>
+                    <li><Link href="/events" className="hover:text-white">Meetups</Link></li>
+                    <li><Link href="/forum" className="hover:text-white">Forum</Link></li>
+                    <li><Link href="/mentorship" className="hover:text-white">Mentorship</Link></li>
+                  </>
+                )}
+                {!session && (
+                  <>
+                    <li><Link href="/apply" className="hover:text-white">Apply</Link></li>
+                    <li><Link href="/auth/signin" className="hover:text-white">Professional Sign In</Link></li>
+                  </>
+                )}
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-xl font-semibold mb-4">Contact</h4>
+              <div className="space-y-2 text-emerald-200">
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span>info@iman-wa.org</span>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 mr-2" />
+                  <span>(206) 202-IMAN (4626)</span>
+                </div>
+                <div className="flex items-start">
+                  <MapPin className="h-4 w-4 mr-2 mt-1" />
+                  <div>
+                    <div>IMAN Center</div>
+                    <div>515 State St. S</div>
+                    <div>Kirkland, WA 98033</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-emerald-800 mt-8 pt-8 text-center text-emerald-200">
+            <p>&copy; 2025 IMAN Professional Network. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
