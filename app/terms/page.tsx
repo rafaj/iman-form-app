@@ -120,7 +120,7 @@ export default function TermsOfServicePage() {
 
               <section>
                 <h2 className="text-2xl font-semibold text-emerald-900 mb-4">1. Acceptance of Terms</h2>
-                <p>By accessing or using the IMAN Professional Network mobile application ("App") and website at https://www.iman-wa.pro/ ("Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.</p>
+                <p>By accessing or using the IMAN Professional Network mobile application (&quot;App&quot;) and website at https://www.iman-wa.pro/ (&quot;Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you disagree with any part of these terms, you may not access the Service.</p>
               </section>
 
               <section>
@@ -169,7 +169,7 @@ export default function TermsOfServicePage() {
                   <li>Harassment, discrimination, or hate speech</li>
                   <li>Sharing false, misleading, or defamatory content</li>
                   <li>Commercial solicitation without permission</li>
-                  <li>Violation of others' privacy or intellectual property</li>
+                  <li>Violation of others&apos; privacy or intellectual property</li>
                   <li>Attempting to access unauthorized areas of the Service</li>
                   <li>Using the Service for any illegal activities</li>
                 </ul>
@@ -181,7 +181,7 @@ export default function TermsOfServicePage() {
                 <ul className="list-disc pl-6 space-y-2">
                   <li>You retain ownership of content you post</li>
                   <li>You grant IMAN a license to use, display, and distribute your content within the Service</li>
-                  <li>You are responsible for ensuring your content doesn't violate others' rights</li>
+                  <li>You are responsible for ensuring your content doesn&apos;t violate others&apos; rights</li>
                   <li>We reserve the right to remove content that violates these Terms</li>
                 </ul>
 
@@ -204,7 +204,7 @@ export default function TermsOfServicePage() {
                 <ul className="list-disc pl-6 space-y-2">
                   <li>Maintain professional and respectful communication</li>
                   <li>Provide accurate professional information</li>
-                  <li>Respect others' time and expertise in mentorship interactions</li>
+                  <li>Respect others&apos; time and expertise in mentorship interactions</li>
                 </ul>
 
                 <h3 className="text-xl font-medium text-emerald-800 mb-2 mt-4">7.2 Religious Respect</h3>
@@ -226,7 +226,7 @@ export default function TermsOfServicePage() {
 
                 <h3 className="text-xl font-medium text-emerald-800 mb-2 mt-4">8.2 Mentee Responsibilities</h3>
                 <ul className="list-disc pl-6 space-y-2">
-                  <li>Be respectful of mentors' time and expertise</li>
+                  <li>Be respectful of mentors&apos; time and expertise</li>
                   <li>Come prepared to mentorship sessions</li>
                   <li>Provide feedback to help improve the program</li>
                 </ul>
@@ -285,7 +285,7 @@ export default function TermsOfServicePage() {
                 <h3 className="text-xl font-medium text-emerald-800 mb-2 mt-4">13.2 By IMAN</h3>
                 <ul className="list-disc pl-6 space-y-2">
                   <li>We may suspend or terminate accounts for violations of these Terms</li>
-                  <li>We may terminate the Service with 30 days' notice</li>
+                  <li>We may terminate the Service with 30 days&apos; notice</li>
                 </ul>
               </section>
 

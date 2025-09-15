@@ -120,7 +120,7 @@ export default function PrivacyPolicyPage() {
 
               <section>
                 <h2 className="text-2xl font-semibold text-emerald-900 mb-4">1. Introduction</h2>
-                <p>The Ithna-asheri Muslim Association of the Northwest ("IMAN," "we," "us," or "our") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our IMAN Professional Network mobile application and website at https://www.iman-wa.pro/ (collectively, the "Service").</p>
+                <p>The Ithna-asheri Muslim Association of the Northwest (&quot;IMAN,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our IMAN Professional Network mobile application and website at https://www.iman-wa.pro/ (collectively, the &quot;Service&quot;).</p>
               </section>
 
               <section>
@@ -278,7 +278,7 @@ export default function PrivacyPolicyPage() {
                 <ul className="list-disc pl-6 mt-3 space-y-2">
                   <li>Right to know what personal information is collected</li>
                   <li>Right to delete personal information</li>
-                  <li>Right to opt-out of the sale of personal information (which we don't engage in)</li>
+                  <li>Right to opt-out of the sale of personal information (which we don&apos;t engage in)</li>
                   <li>Right to non-discrimination for exercising privacy rights</li>
                 </ul>
               </section>
@@ -301,7 +301,7 @@ export default function PrivacyPolicyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold text-emerald-900 mb-4">9. Children's Privacy</h2>
+                <h2 className="text-2xl font-semibold text-emerald-900 mb-4">9. Children&apos;s Privacy</h2>
                 <p>Our Service is not intended for children under 18. We do not knowingly collect personal information from minors. If we become aware that we have collected information from a child under 18, we will delete such information promptly.</p>
               </section>
 
