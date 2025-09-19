@@ -409,7 +409,7 @@ export default function PrivacyPolicyPage() {
               <div className="space-y-2 text-emerald-200">
                 <div>admin@iman.org</div>
                 <div>(206) 202-IMAN (4626)</div>
-                <div>515 State St. S<br />Kirkland, WA 98033</div>
+                <div>515 State St.<br />Kirkland, WA 98033</div>
               </div>
             </div>
           </div>

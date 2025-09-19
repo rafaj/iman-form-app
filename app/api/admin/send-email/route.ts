@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
             <strong>Contact Information:</strong><br>
             Email: info@iman-wa.org<br>
             Phone: (206) 202-IMAN (4626)<br>
-            Address: 515 State St. S, Kirkland, WA 98033
+            Address: 515 State St., Kirkland, WA 98033
           </p>
         </div>
       </div>

@@ -52,7 +52,7 @@ EVENTBRITE_ORGANIZATION_ID="your_organization_id_from_profile"
 - **Title**: `Weekly Networking Mixer`
 - **Date**: Next Thursday
 - **Time**: `6:00 PM - 8:00 PM PST`
-- **Location**: `IMAN Center, 515 State St. S, Kirkland, WA 98033`
+- **Location**: `IMAN Center, 515 State St., Kirkland, WA 98033`
 - **Category**: `Business & Professional`
 - **Type**: `In Person`
 - **Capacity**: 50 people

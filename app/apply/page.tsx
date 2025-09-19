@@ -169,7 +169,7 @@ export default function HomePage() {
                   <MapPin className="h-4 w-4 mr-2 mt-1" />
                   <div>
                     <div>IMAN Center</div>
-                    <div>515 State St. S</div>
+                    <div>515 State St.</div>
                     <div>Kirkland, WA 98033</div>
                   </div>
                 </div>
