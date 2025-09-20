@@ -82,15 +82,22 @@ export async function GET(request: NextRequest) {
       where: { authorId: user.id }
     })
 
-    const totalLikes = await prisma.vote.count({
+    // Count upvotes on user's posts and comments separately
+    const postUpvotes = await prisma.postVote.count({
       where: {
-        OR: [
-          { post: { authorId: user.id } },
-          { comment: { authorId: user.id } }
-        ],
-        type: "UPVOTE"
+        post: { authorId: user.id },
+        voteType: "UP"
       }
     })
+
+    const commentUpvotes = await prisma.commentVote.count({
+      where: {
+        comment: { authorId: user.id },
+        voteType: "UP"
+      }
+    })
+
+    const totalLikes = postUpvotes + commentUpvotes
 
     // Combine posts and comments into recent activity
     const recentActivity = []
