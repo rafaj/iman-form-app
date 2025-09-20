@@ -100,7 +100,17 @@ export async function GET(request: NextRequest) {
     const totalLikes = postUpvotes + commentUpvotes
 
     // Combine posts and comments into recent activity
-    const recentActivity = []
+    const recentActivity: Array<{
+      id: string
+      type: string
+      title: string | null
+      content: string
+      createdAt: string
+      postId: string | null
+      score: number
+      commentCount: number | null
+      voteCount: number
+    }> = []
 
     // Add posts to activity
     userPosts.forEach(post => {
