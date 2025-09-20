@@ -25,6 +25,7 @@ export async function GET(request: Request) {
         user: {
           select: {
             name: true,
+            email: true,
             image: true,
             lastSeenAt: true
           }
@@ -42,6 +43,7 @@ export async function GET(request: Request) {
       name: member.name,
       // Use OAuth name if available, fallback to member name
       displayName: member.user?.name || member.name,
+      email: member.user?.email || null,
       image: member.user?.image || null,
       employer: member.employer,
       professionalQualification: member.professionalQualification,
