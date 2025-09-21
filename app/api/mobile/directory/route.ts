@@ -43,7 +43,7 @@ export async function GET(request: Request) {
       name: member.name,
       // Use OAuth name if available, fallback to member name
       displayName: member.user?.name || member.name,
-      email: member.user?.email || null,
+      email: member.user?.email || member.email,
       image: member.user?.image || null,
       employer: member.employer,
       professionalQualification: member.professionalQualification,
